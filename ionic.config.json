@@ -1,0 +1,7 @@
+{
+  "name": "lecyclelyonnais",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
