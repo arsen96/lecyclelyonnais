@@ -1,0 +1,33 @@
+ion-input,ion-item{
+    --background:transparent;
+    color:black;
+  }
+  
+  ion-card{
+    display: flex;
+    flex-direction: column;
+    height:100%;
+  }
+
+  ion-card-content{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  ion-button{
+    color:white;
+  }
+
+  section {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    height: 100%; 
+  }
+
+  ion-row{
+    display: flex;
+    justify-content: center;
+  }

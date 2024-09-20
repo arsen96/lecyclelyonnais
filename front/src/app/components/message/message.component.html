@@ -1,0 +1,12 @@
+
+@if (messageService.message$ | async) {
+  @if (displayMessage) {
+      <div *ngIf="messageService.message$ | async as currMessage">
+          <div [class]="'alert alert-'+currMessage.status" role="alert">
+              <ng-container *ngFor="let msg of currMessage.message">
+                  <p class="m-0 text-center">{{ msg }}</p>
+              </ng-container>
+          </div>
+      </div>
+  }
+}

@@ -1,0 +1,166 @@
+<ion-content>
+  <!-- Hero Section-->
+  <section class="hero py-6">
+    <div class="container">
+      <!-- Hero Content-->
+      <div class="hero-content">
+        <h1 class="hero-heading mb-3">Zone d'Accès</h1>
+      </div>
+    </div>
+  </section>
+  <!-- customer login-->
+  <section class="pb-5">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-lg="5" size-md="8"  size-xs="12" offset-lg="0"  offset-md="2">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title><h5>Déjà client ?</h5></ion-card-title>
+            </ion-card-header>
+            <ion-card-content class="ion-padding">
+             
+              <div class="cardInfo mt-3 mb-3">
+                <h1 class="mb-4">Nouveau client</h1>
+                <p class="text-muted text-sm">Veuillez vous connecter pour accéder à votre compte et réserver une
+                  intervention pour votre vélo ou consulter vos interventions passées.</p>
+              </div>
+              @if(error.type == 'login'){
+                <app-message></app-message>
+              }
+              <form (ngSubmit)="onSubmitLogin()" #loginForm="ngForm">
+                <div class="mb-3">
+                  <ion-item>
+                    <ion-input label="Email" id="emailLogin"  name="email" type="text"  #emailField="ngModel" [(ngModel)]="modelLogin.email" required></ion-input>
+                  </ion-item>
+                  @if(emailField.errors?.["required"] && emailField.touched){
+                    <small class="invalid">L'email est requis.</small>
+                  }
+
+                </div>
+                <div class="mb-3">
+                  <ion-item>
+                    <ion-input label="Mot de passe"  id="passwordLogin" name="password" #passwordField="ngModel"
+                    type="password" [(ngModel)]="modelLogin.password" required></ion-input>
+                  </ion-item>
+                  @if(passwordField.errors?.["required"] && passwordField.touched){
+                    <small class="invalid">Le mot de passe est requis.</small>
+                  }
+                </div>
+
+                <div class="mb-3">
+                  <p routerLink="/reset"><a routerLink="/request" class="forgetPassword">Mot de passe oublié ?</a></p>
+                </div>
+                <ion-button type="submit" [disabled]="!loginForm.valid">Se connecter</ion-button>
+                <button class="btn btn-dark" type="submit" ><i
+                    class="fa fa-sign-in-alt me-2"></i> </button>
+                <div class="my-2">
+                  <ion-button class="btn btn-google btn-social-login" (click)="onGoogleLogin()"><fa-icon [icon]="faGoogle" class="mr-2" size="2xl"></fa-icon>Google</ion-button>
+                </div>
+              </form>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size-lg="5" size-xs="12" offset-lg="1" size-md="8" offset-md="2">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title><h5>Nouveau compte</h5></ion-card-title>
+            </ion-card-header>
+
+              <ion-card-content class="ion-padding">
+                <div class="cardInfo mt-3 mb-3">
+                  <h1 class="mb-4">Pas encore enregistré ?</h1>
+                  <p class="text-muted text-sm">Avec votre inscription, vous pourrez facilement planifier des interventions
+                    à domicile, consulter vos historiques de maintenance et gérer vos cycles.</p>
+                </div>
+
+
+                @if(error.type == 'register'){
+                    <app-message></app-message>
+               }
+          
+                <form [formGroup]="registrationForm" (ngSubmit)="onSubmitRegister()">
+                  <!-- Champ Prénom -->
+                  <div class="mb-3">
+                    <ion-item>
+                      <ion-input placeholder="Prénom" formControlName="firstName"></ion-input>
+                    </ion-item>
+                    @if(f['firstName'].invalid && f['firstName'].touched){
+                      <small class="invalid" *ngIf="f['firstName'].errors?.['required']">Le prénom est obligatoire.</small>
+                      <small class="invalid" *ngIf="f['firstName'].errors?.['minlength']">Le prénom doit avoir au moins 2 caractères.</small>
+                    }
+                  </div>
+                
+                  <!-- Champ Nom -->
+                  <div class="mb-3">
+                    <ion-item>
+                      <ion-input placeholder="Nom" formControlName="lastName"></ion-input>
+                    </ion-item>
+                    @if(f['lastName'].invalid && f['lastName'].touched){
+                      <small class="invalid" *ngIf="f['lastName'].errors?.['required']">Le nom est obligatoire.</small>
+                      <small class="invalid" *ngIf="f['lastName'].errors?.['minlength']">Le nom doit avoir au moins 2 caractères.</small>
+                    }
+                  </div>
+                
+                  <!-- Champ Email -->
+                  <div class="mb-3">
+                    <ion-item>
+                      <ion-input placeholder="Email" formControlName="email"></ion-input>
+                    </ion-item>
+                    @if(f['email'].invalid && f['email'].touched){
+                      <small class="invalid" *ngIf="f['email'].errors?.['required']">L'email est obligatoire.</small>
+                      <small class="invalid" *ngIf="f['email'].errors?.['email']">L'email doit être valide.</small>
+                    }
+                  </div>
+                
+                  <!-- Champ Mot de Passe -->
+                  <div class="mb-3">
+                    <ion-item>
+                      <ion-input placeholder="Mot de passe" type="password" formControlName="password"></ion-input>
+                    </ion-item>
+                      @if(f['password'].invalid && f['password'].touched){
+                      <small class="invalid" *ngIf="f['password'].errors?.['required']">Le mot de passe est obligatoire.</small>
+                      <small class="invalid" *ngIf="f['password'].errors?.['minlength']">Le mot de passe doit avoir au moins 6 caractères.</small>
+                      }
+                  </div>
+                
+                  <!-- Champ Téléphone -->
+                  <div class="mb-3">
+                    <ion-item>
+                      <ion-input placeholder="Numéro de téléphone" formControlName="phone"></ion-input>
+                    </ion-item>
+                      @if(f['phone'].invalid && f['phone'].touched){
+                        <small class="invalid" *ngIf="f['phone'].errors?.['required']">Le numéro de téléphone est obligatoire.</small>
+                        <small class="invalid" *ngIf="f['phone'].errors?.['pattern']">Le numéro de téléphone doit comporter 10 chiffres.</small>
+                      }
+                  </div>
+
+                  <div class="mb-3">
+                    <ion-item>
+                      <ion-input placeholder="Adresse" formControlName="address"></ion-input>
+                    </ion-item>
+                    @if(f['address'].invalid && f['address'].touched){
+                      <small class="invalid" *ngIf="f['address'].errors?.['required']">Le prénom est obligatoire.</small>
+                      <small class="invalid" *ngIf="f['address'].errors?.['minlength']">Le prénom doit avoir au moins 2 caractères.</small>
+                    }
+                  </div>
+
+                  
+                
+                  <ion-button type="submit" [disabled]="registrationForm.invalid">Créer un compte</ion-button>
+                </form>
+                
+                
+                
+              </ion-card-content>
+            </ion-card>
+              <!-- @if(error.type == 'register'){
+                  <app-message></app-message>
+                } -->
+
+           
+          <!-- </div> -->
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+</ion-content>
