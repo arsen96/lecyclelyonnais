@@ -5,25 +5,53 @@ import { AuthGuard } from './guards/access-controls.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'zones-list',
     pathMatch: 'full'
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule),
+    loadChildren: () => import('./pages/auth/login/login.module').then( m => m.LoginPageModule),
     canActivate: [AuthGuard],
   },
   {
-    path: 'home',
-    loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
+    path: 'prise-rdv',
+    loadChildren: () => import('./pages/user/home/home-user.module').then( m => m.HomePageModule)
   },
   {
     path: 'reset',
-    loadChildren: () => import('./pages/reset/reset.module').then( m => m.ResetPageModule)
+    loadChildren: () => import('./pages/auth/reset/reset.module').then( m => m.ResetPageModule)
   },
   {
     path: 'reset-password/:token',
-    loadChildren: () => import('./pages/reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
+    loadChildren: () => import('./pages/auth/reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
+  },
+  {
+    path: 'address',
+    loadChildren: () => import('./pages/user/address/address.module').then( m => m.AddressPageModule)
+  },
+  {
+    path: 'zone/:id',
+    loadChildren: () => import('./pages/leaflet/leaflet.module').then( m => m.LeafletPageModule)
+  },
+  {
+    path: 'zone',
+    loadChildren: () => import('./pages/leaflet/leaflet.module').then( m => m.LeafletPageModule)
+  },
+  {
+    path: 'zones-list',
+    loadChildren: () => import('./pages/leaflet-list/leaflet-list.module').then( m => m.LeafletListPageModule)
+  },
+  {
+    path: 'list-technicien',
+    loadChildren: () => import('./pages/technician-list/technician-list.module').then( m => m.TechnicianListPageModule)
+  },
+  {
+    path: 'technicien',
+    loadChildren: () => import('./pages/technician/technician.module').then( m => m.TechnicianPageModule)
+  },
+  {
+    path: 'technicien/:id',
+    loadChildren: () => import('./pages/technician/technician.module').then( m => m.TechnicianPageModule)
   },
 ];
 

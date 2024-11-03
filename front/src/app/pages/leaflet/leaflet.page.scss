@@ -1,0 +1,62 @@
+#map {
+    min-height: 88vh;
+}
+  
+
+::ng-deep .leaflet-control-container{
+    display: none!important;
+  }
+
+  ion-toast{
+    --background:black;
+    --color:white;
+    font-family: "vremenagroteskbold", sans-serif;
+    font-size:1.2em;
+    text-align: center;
+  }
+
+  input[ngx-gp-autocomplete] {
+    width: 100%;
+    box-sizing: border-box; 
+    padding: 10px; 
+    font-size: 1em;
+    font-family: "Arial", sans-serif; 
+    border: none;
+    outline: none; 
+
+    &:focus {
+      border: none; 
+      outline: none;
+    }
+  }
+
+  ion-header {
+    background-color: #f8f9fa; 
+  }
+
+
+  ion-toolbar {
+    border-bottom: 1px solid #ddd; 
+  }
+
+  ion-button {
+    width: 100%;
+    height: 100%;
+  }
+
+
+  .inputBtnContainer{
+    padding:5px;
+  }
+
+/* Style pour le bouton de retour */
+.back-button {
+  // position: absolute;
+  // top: 10px;
+  // left: 10px;
+  z-index: 1000; /* Assurez-vous qu'il est au-dessus des autres éléments */
+}
+
+.ion-content{
+  position: relative;
+}

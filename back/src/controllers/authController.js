@@ -20,11 +20,12 @@ const generateToken = (user) => {
  */
 const register = async (req, res) => {
   const { email, password,firstName,lastName,phone,address } = req.body;
-
+  console.log("reqbodddyy",req.body)
   try {
     // Vérifier si l'utilisateur existe déjà dans la base de données
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
     const result = await pool.query(checkUserQuery, [email]);
+
     // console.log("first row",result)
     if (result.rows.length > 0) {
       return res.status(400).json({ success: false, message: "L'adresse e-mail existe déjà" });
@@ -32,11 +33,11 @@ const register = async (req, res) => {
     
     // Hasher le mot de passe avant de le sauvegarder
     const hashedPassword = await bcrypt.hash(password, 12);
-
+    console.log("hashedPassword",hashedPassword)
     // Insérer l'utilisateur dans la base de données
     const insertUserQuery = 'INSERT INTO client (first_name,last_name,email, password, phone) VALUES ($1, $2,$3, $4, $5 ) RETURNING *';
     const newUser = await pool.query(insertUserQuery, [firstName,lastName,email, hashedPassword,phone]);
-
+    console.log("newUser",newUser)
     const token = generateToken(newUser.rows[0]);
     // Retourner le token et l'utilisateur enregistré
     res.status(201).json({

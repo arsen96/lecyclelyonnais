@@ -1,0 +1,29 @@
+
+
+.mat-stepper-horizontal {
+    margin-top: 8px;
+  }
+  
+  .mat-mdc-form-field {
+    margin-top: 16px;
+  }
+
+  ::ng-deep .mat-horizontal-stepper-header-container{
+    display: flex;
+    align-items: center;
+  }
+
+  ::ng-deep .mat-horizontal-stepper-content, ::ng-deep .mat-horizontal-content-container{
+    height:100%;
+  }
+
+  ::ng-deep  .mat-horizontal-stepper-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  mat-stepper{
+    display: flex;
+    height: 100%;
+  }

@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests/index.test.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,9 +17,14 @@
     "dotenv": "^16.4.5",
     "express": "^4.20.0",
     "jsonwebtoken": "^9.0.2",
+    "leaflet-draw": "^1.0.4",
     "nodemailer": "^6.9.15",
     "nodemon": "^3.1.4",
     "pg": "^8.12.0",
     "pg-pool": "^3.6.2"
+  },
+  "devDependencies": {
+    "mocha": "^10.7.3",
+    "request": "^2.88.2"
   }
 }

@@ -1,0 +1,43 @@
+<ion-content [fullscreen]="true">
+  
+  <div class="centered-form">
+    <div>
+      @if(displayError){
+        <app-message></app-message>
+      }
+    </div>
+    <form [formGroup]="technicianForm" (ngSubmit)="onSubmit()" >
+      <ion-item>
+        <ion-label position="floating">Nom</ion-label>
+        <ion-input formControlName="last_name" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Prénom</ion-label>
+        <ion-input formControlName="first_name" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" formControlName="email" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Mot de passe</ion-label>
+        <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
+        <ion-button (click)="generatePassword()">Générer</ion-button>
+        <ion-button slot="end" (click)="this.showPassword = !this.showPassword">
+          <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Numéro de téléphone</ion-label>
+        <ion-input type="tel" formControlName="phone" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <!-- <ion-label position="floating">Adresse</ion-label> -->
+        <input formControlName="address" class="addressInput" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" required/>
+      </ion-item>
+      <div class="ion-text-center">
+        <ion-button type="submit" [disabled]="!technicianForm.valid">Ajouter</ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

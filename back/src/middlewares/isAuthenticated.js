@@ -10,7 +10,7 @@ const verifyToken = (req,res,next) => {
       });
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        jwt.verify(token, process.env.JWT_SECRET);
         next()
       } catch(err) {
         if (err.name === 'TokenExpiredError') {
@@ -20,11 +20,6 @@ const verifyToken = (req,res,next) => {
             message: 'invalidtoken',
           });
         }
-    
-        return res.status(401).json({
-          success: false,
-          message: 'invalidtoken',
-        });
       }
 }
 

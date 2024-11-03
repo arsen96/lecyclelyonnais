@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, lastValueFrom, map, shareReplay, tap, throwError } from 'rxjs';
 import { AuthBaseService } from './auth-base.service';
-import { FormLoginModel, FormRegisterModel } from 'src/app/pages/login/login.page';
+import { FormLoginModel, FormRegisterModel } from 'src/app/pages/auth/login/login.page';
 import { GlobalService } from '../global.service';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class StandardAuth extends AuthBaseService {
     super();
    }
    loginStandard(loginCredentials:FormLoginModel): any{
-      const value = super.login(loginCredentials,`${this.postApi}/auth/login`);
+      const value = super.login(loginCredentials,`${this.baseApi}/auth/login`);
       return value.pipe(
         map((data:string) => {
           this.globalService.isAuthenticated.next(true)
@@ -23,7 +23,7 @@ export class StandardAuth extends AuthBaseService {
     }
 
     register(form:FormRegisterModel){
-        return this.http.post<any>(`${this.postApi}/auth/register`,form)
+        return this.http.post<any>(`${this.baseApi}/auth/register`,form)
         .pipe(
           catchError(this.handleError)
         )
@@ -41,7 +41,7 @@ export class StandardAuth extends AuthBaseService {
   }
 
   resetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.postApi}/auth/forgot-password`,data).pipe(
+    return this.http.post<any>(`${this.baseApi}/auth/forgot-password`,data).pipe(
       catchError(this.handleError)
     ).pipe(
       map(data => {
@@ -52,7 +52,7 @@ export class StandardAuth extends AuthBaseService {
   }
 
   confirmResetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.postApi}/auth/reset-password`,data).pipe(
+    return this.http.post<any>(`${this.baseApi}/auth/reset-password`,data).pipe(
       catchError(this.handleError)
     ).pipe(
       map(data => {

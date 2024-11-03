@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientModule } from '@angular/common/http';
 
-import { StandardService } from './standard.service';
+import { StandardAuth } from './standard.service';
 
 describe('StandardService', () => {
-  let service: StandardService;
+  let service: StandardAuth;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(StandardService);
+    TestBed.configureTestingModule({
+      imports: [HttpClientModule],
+    });
+    service = TestBed.inject(StandardAuth);
   });
 
   it('should be created', () => {

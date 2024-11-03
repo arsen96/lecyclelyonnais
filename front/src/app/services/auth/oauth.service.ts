@@ -57,7 +57,7 @@ export class OauthService extends AuthBaseService{
 
   async loginOauthApi(email:string): Promise<string | null>{
     const oauthValue = { email }
-    return await lastValueFrom(super.login(oauthValue,`${this.postApi}/auth/oauth`));
+    return await lastValueFrom(super.login(oauthValue,`${this.baseApi}/auth/oauth`));
   }
   
    override logout(){

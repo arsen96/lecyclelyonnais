@@ -91,7 +91,7 @@ export class AuthBaseService extends BaseService{
   }
 
   test(){
-    this.http.get(`${this.postApi}/auth/test`)
+    this.http.get(`${this.baseApi}/auth/test`)
     .pipe(catchError(this.handleError.bind(this)))
     .subscribe({
       next : (res) => {

@@ -1,0 +1,39 @@
+<ion-content [fullscreen]="true">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title class="ion-text-center">
+        @if(zoneSelected){
+          {{ zoneSelected.zone_name }}
+        }@else{
+          Ajouter une nouvelle zone
+        }
+    </ion-title>
+      <ion-buttons slot="start">
+        <ion-button routerLink="/zones-list">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+
+  @if(newMapAdded){
+    @if(!zoneSelected){
+        <ion-grid class="inputBtnContainer">
+          <ion-row>
+          <ion-col size="10" class="ion-no-padding">
+            <input #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" />
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    }
+    <div id="map"
+      leaflet 
+      (leafletMapReady)="onMapReady($event)"
+      [leafletOptions]="options">
+    </div>
+  
+  }
+  <!-- Ajout du champ de recherche d'adresse avec autocomplétion -->
+
+</ion-content>

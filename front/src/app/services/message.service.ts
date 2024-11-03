@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { ToastController } from "@ionic/angular";
 import { BehaviorSubject, filter, map } from "rxjs"
 
 
@@ -13,6 +14,7 @@ export class MessageStatus {
   providedIn:'root'
 })
 export class MessageService {
+  constructor(private toastController: ToastController) {}
   private messageEmitter = new BehaviorSubject<any>({message:[],status:''})
   message$ = this.messageEmitter.asObservable().pipe(
     filter((value) => {
@@ -27,6 +29,18 @@ export class MessageService {
 
   hideMessage(){
     this.messageEmitter.next(false);
+  }
+
+
+ 
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'info', position: 'top' | 'bottom' | 'middle' = 'bottom') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position
+    });
+    toast.present();
   }
 
 }

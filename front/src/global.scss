@@ -8,6 +8,9 @@
  * For more information on global stylesheets, visit the documentation:
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
+ @import "~@angular/material/prebuilt-themes/rose-red.css";
+
+
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -43,6 +46,8 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+
  @font-face {
   font-family: "vremenagrotesk";
   font-weight: 300;
@@ -135,6 +140,12 @@
     border-bottom: 0px solid rgba(0, 0, 0, 0);
   }
 
+  ion-input,
+  ion-item{
+    --background:transparent;
+    color:black;
+  }
+
   
   @media (prefers-reduced-motion: no-preference) {
     :root {
@@ -144,7 +155,6 @@
   
   body {
     margin: 0;
-    font-family: var(--bs-body-font-family);
     font-size: var(--bs-body-font-size);
     font-weight: var(--bs-body-font-weight);
     line-height: var(--bs-body-line-height);
@@ -153,6 +163,10 @@
     background-color: var(--bs-body-bg);
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+  }
+
+  td,ion-button,ion-label,body{
+    font-family: var(--bs-body-font-family);
   }
   
   hr {
@@ -953,4 +967,14 @@
 
 small.invalid{
   color:firebrick;
+}
+
+ion-button{
+  --background:var(--ion-item-background);
+  --color:var(--ion-text-color);
+}
+
+input{
+  background-color: white;
+  color:black;
 }

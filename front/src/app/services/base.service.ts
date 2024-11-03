@@ -7,7 +7,7 @@ import { throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class BaseService {
-  postApi = "http://localhost:3000";
+  baseApi = "http://localhost:3000";
   constructor() { }
   protected handleError(error: HttpErrorResponse) {
     let errorMessage: string | Array<string> = 'An unknown error occurred!';

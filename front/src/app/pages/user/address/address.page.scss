@@ -1,0 +1,14 @@
+.globalWrapper{
+    display: flex;
+    align-items: center;
+    height: calc(100% - var(--stepperHeight));
+}
+
+:host {
+    --stepperHeight:calc(var(--padding-top) + var(--offset-top))
+}
+
+.globalContainer{
+ width: 100%;
+ justify-content: center;
+}
