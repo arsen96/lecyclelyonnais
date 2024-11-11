@@ -1,12 +1,11 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { TechnicianService } from 'src/app/services/technician.service';
-import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import { ZoneService } from 'src/app/services/zone.service';
-import { MessageService, MessageStatus } from 'src/app/services/message.service';
+import { MessageService } from 'src/app/services/message.service';
 import { LoadingService } from 'src/app/services/loading.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-technician-list',
@@ -23,16 +22,34 @@ export class TechnicianListPage implements OnInit {
   public messageService = inject(MessageService);
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public loaderService = inject(LoadingService);
-  constructor(
-  ) {}
+  @ViewChild('paginator') paginator: MatPaginator;
+  pageSizes = [3, 6, 10, 15];
+  techniciansLoaded: Promise<boolean>;
+  techniciansLoadedResolver: (value: boolean) => void;
+  constructor(public cd:ChangeDetectorRef) {
+    this.techniciansLoaded = new Promise((resolve) => {
+      this.techniciansLoadedResolver = resolve;
+    }); 
+  }
 
   ionViewWillEnter() {
+    this.loaderService.setLoading(true);
     this.technicianService.get().then(res => {
       this.dataSource.data = res;
+      this.loaderService.setLoading(false);
+      this.cd.detectChanges();
+      this.techniciansLoadedResolver(true);
     });
   }
 
-  ngOnInit() {}
+  async ngAfterViewInit() {
+    await this.techniciansLoaded;
+     this.dataSource.paginator = this.paginator;
+  }
+
+  ngOnInit() {
+
+  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -51,23 +68,23 @@ export class TechnicianListPage implements OnInit {
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
-  deleteSelected(elementId?:number) {
+  deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
     console.log('Deleting items with IDs:', selectedIds);
-    // const zoneRemoved$ = this.technicianService.delete(selectedIds);
-    // const result = this.loaderService.showLoaderUntilCompleted(zoneRemoved$);
-    // result.subscribe({
-    //   next: (response: any) => {
-    //     console.log('Delete response:', response);
-    //     this.dataSource.data = this.dataSource.data.filter(item => !selectedIds.includes(item.id));
-    //     this.selection.clear();
-    //     this.messageService.showToast(response.message, 'success'); 
-    //   },
-    //   error: message => {
-    //     console.error('Delete error:', message);
-    //     this.messageService.showToast(message, 'danger'); 
-    //   }
-    // });
+    const zoneRemoved$ = this.technicianService.delete(selectedIds);
+    const result = this.loaderService.showLoaderUntilCompleted(zoneRemoved$);
+    result.subscribe({
+      next: (response: any) => {
+        console.log('Delete response:', response);
+        this.dataSource.data = this.dataSource.data.filter(item => !selectedIds.includes(item.id));
+        this.selection.clear();
+        this.messageService.showToast(response.message, 'success'); 
+      },
+      error: message => {
+        console.error('Delete error:', message);
+        this.messageService.showToast(message, 'danger'); 
+      }
+    });
   }
 
   sortData(sort: any) {
@@ -82,8 +99,10 @@ export class TechnicianListPage implements OnInit {
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'zone_name':
-          return compare(a.zone_name, b.zone_name, isAsc);
+        case 'first_name':
+          return compare(a.first_name, b.first_name, isAsc);
+        case 'last_name':
+          return compare(a.last_name, b.last_name, isAsc);
         case 'created_at':
           return compare(a.created_at, b.created_at, isAsc);
         case 'id':

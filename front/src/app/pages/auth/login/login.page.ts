@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, effect, inject, OnInit, ViewChild } from '@angular/core';
-import { Form, FormBuilder, FormGroup, FormsModule, NgForm, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ChangeDetectorRef, Component, inject} from '@angular/core';
+import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { faLinkedin, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { OauthService } from 'src/app/services/auth/oauth.service';
@@ -48,6 +48,7 @@ export class LoginPage{
   }
 
   registrationForm: FormGroup;
+  addressValidated = false;
 
   constructor(public route: ActivatedRoute, public messageService: MessageService) {
     this.route.fragment.subscribe(async (fragment) => {
@@ -95,7 +96,7 @@ export class LoginPage{
     result.subscribe(
       {
         next: () => {
-          this.router.navigateByUrl("zones-list")
+          this.router.navigateByUrl("list-zones")
         }, error: (err) => {
           this.displayError(err,'login')
           console.log("login error", err)
@@ -116,19 +117,21 @@ export class LoginPage{
 
 
   async onSubmitRegister() {
-    if (this.registrationForm.valid) {
+    this.displayError('', 'register')
+    if (this.registrationForm.valid && this.addressValidated) {
       const register$ = this.standardAuthService.register(this.registrationForm.value);
       const result = this.loaderService.showLoaderUntilCompleted(register$);
       result.subscribe({
         next: (res) => {
-          this.router.navigateByUrl('zones-list')
+          this.router.navigateByUrl('list-zones')
         }, error: (err) => {
           this.displayError(err, 'register')
           console.log("register error", err)
         }
       })
+    } else {
+      this.messageService.showMessage('Veuillez sélectionner une adresse valide.', Message.danger);
     }
-
   }
 
   onGoogleLogin() {
@@ -139,6 +142,14 @@ export class LoginPage{
 
   ionViewWillLeave() {
     this.messageService.hideMessage()
+  }
+
+  handleAddressChange(place: any) {
+    if (place.geometry) {
+      console.log(place);
+      this.registrationForm.patchValue({ address: place.formatted_address });
+      this.addressValidated = true;
+    }
   }
 
 }

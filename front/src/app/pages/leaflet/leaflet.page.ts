@@ -9,6 +9,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Zones } from 'src/app/models/zones';
 import { async } from 'rxjs';
 import { MessageService } from 'src/app/services/message.service';
+import { ModalController } from '@ionic/angular';
+import { TechnicianModalComponent } from './technician-modal/technician-modal.component';
+import { Technician } from 'src/app/models/technicians';
+import { TechnicianService } from 'src/app/services/technician.service';
 
 declare var google: any;
 
@@ -40,11 +44,30 @@ export class LeafletPage{
   mapReady: Promise<boolean>;
   private mapReadyResolver: (value: boolean | PromiseLike<boolean>) => void;
 
-  constructor(private cd: ChangeDetectorRef, private route: ActivatedRoute,public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router) {
+  searchTerm: string = '';
+  filteredTechnicians = [];
+
+  constructor(private cd: ChangeDetectorRef,private technicianService:TechnicianService, private route: ActivatedRoute,public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
     this.zoneIdSelected = Number(this.route.snapshot.params['id']) ? Number(this.route.snapshot.params['id']) : null;
     this.mapReady = new Promise<boolean>((resolve) => {
       this.mapReadyResolver = resolve;
     });
+  }
+
+  ngOnInit() {
+    this.filteredTechnicians = this.zoneSelected?.technicians || [];
+  }
+
+  filterTechnicians() {
+    console.log("this.searchTerm", this.searchTerm);
+    if (this.searchTerm.trim() === '') {
+      this.filteredTechnicians = this.zoneSelected?.technicians || [];
+    } else {
+      const normalizeString = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+      this.filteredTechnicians = this.zoneSelected?.technicians.filter(technician =>
+        normalizeString(`${technician.first_name} ${technician.last_name}`).toLowerCase().includes(normalizeString(this.searchTerm).toLowerCase())
+      );
+    }
   }
 
   onMapReady(map: Map) {
@@ -53,7 +76,7 @@ export class LeafletPage{
       setTimeout(() => {
         this.map.invalidateSize();
         this.mapReadyResolver(true);
-      }, 1000);
+      }, 1500);
       this.configLeafletDraw();
     });
   }
@@ -104,7 +127,6 @@ export class LeafletPage{
           const result = await this.alertConfirm();
           if (wkt && result) {
             this.zoneService.create(wkt, result).subscribe((res: any) => {
-              console.log("resresres", res);
               this.zoneService.allZones = new Array();
               this.drawControl.remove();
             });
@@ -194,8 +216,7 @@ export class LeafletPage{
     this.resetDrawing();
   }
 
-  onModalDismiss() {
-  }
+
 
 
   async editeMap() {
@@ -211,6 +232,8 @@ export class LeafletPage{
             coordinates: this.zoneSelected.geojson.coordinates
           }
         } as any;
+
+        console.log("geoJsonData", geoJsonData);
           await this.mapReady
           const layer = geoJSON(geoJsonData).addTo(this.map);
           this.map.fitBounds(layer.getBounds());
@@ -220,5 +243,41 @@ export class LeafletPage{
     }
   }
 
+  async addTechnicians() {
+    this.technicianService.technicians = new Array();
+    await this.technicianService.get();
+    const modal = await this.modalController.create({
+      component: TechnicianModalComponent,
+      componentProps: { 
+        zoneId: this.zoneIdSelected,
+        currentZone:this.zoneSelected,
+        technicians:this.technicianService.technicians.filter(t => !t.address)
+      }
+    });
+
+    modal.onDidDismiss().then((data) => {
+      this.technicianService.technicians = new Array();
+      console.log("data", data);
+    });
+
+    return await modal.present();
+  }
+
+  removeTechnician(technicianId:number) {
+    this.zoneService.removeTechnicianFromZone(this.zoneIdSelected, technicianId).subscribe({
+      next: (res:any) => {
+        this.zoneSelected.technicians = this.zoneSelected.technicians.filter(t => t.id !== technicianId);
+        this.filterTechnicians(); 
+        this.messageService.showToast(res.message, 'success');
+      },
+      error: (error) => {
+        console.error("Erreur lors de la suppression du technicien", error);
+      }
+    });
+  }
+
+  onSidenavClose() {
+    this.technicianService.technicians = new Array();
+  }
 
 }

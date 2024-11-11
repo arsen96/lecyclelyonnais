@@ -7,33 +7,64 @@
         }@else{
           Ajouter une nouvelle zone
         }
-    </ion-title>
+      </ion-title>
       <ion-buttons slot="start">
-        <ion-button routerLink="/zones-list">
+        <ion-button routerLink="/list-zones">
           <ion-icon name="arrow-back-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-
-  @if(newMapAdded){
-    @if(!zoneSelected){
-        <ion-grid class="inputBtnContainer">
-          <ion-row>
-          <ion-col size="10" class="ion-no-padding">
-            <input #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" />
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+  <mat-sidenav-container>
+    <mat-sidenav #sidenav mode="over" position="end" (closedStart)="onSidenavClose()">
+      @if(filteredTechnicians.length === 0 && searchTerm.trim() === ''){
+        <h5 class="ion-text-center no-technician-found">Aucun technicien ne se trouve dans cette zone</h5>
+      }@else{ 
+        <ion-input placeholder="Rechercher un technicien" [(ngModel)]="searchTerm" (ionInput)="filterTechnicians()"></ion-input>
+        @if(filteredTechnicians.length > 0 || searchTerm.trim() === ''){
+        @for(technician of filteredTechnicians; track zoneSelected.id){ 
+          <div class="technician-item">
+            <ion-icon name="person-circle-outline"></ion-icon>
+            <p>{{ technician.first_name }} {{ technician.last_name }}</p>
+            <ion-button fill="clear" slot="end" (click)="removeTechnician(technician.id)">
+              <ion-icon name="trash-outline" class="rmvUserFromList"></ion-icon>
+            </ion-button>
+          </div>
+        }
+      }@else{
+        <p>Aucun technicien trouvé</p>
+      }
     }
-    <div id="map"
-      leaflet 
-      (leafletMapReady)="onMapReady($event)"
-      [leafletOptions]="options">
-    </div>
-  
-  }
-  <!-- Ajout du champ de recherche d'adresse avec autocomplétion -->
+    </mat-sidenav>
 
+    <mat-sidenav-content>
+      @if(newMapAdded){
+        @if(!zoneSelected){
+          <ion-grid class="inputBtnContainer">
+            <ion-row>
+              <ion-col size="10" class="ion-no-padding">
+                <input #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" />
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        }
+        <div id="map"
+          leaflet 
+          (leafletMapReady)="onMapReady($event)"
+          [leafletOptions]="options">
+        </div>
+
+        <div class="sidenav-toggle">
+          <ion-button (click)="filterTechnicians(); sidenav.toggle()">
+            <ion-icon name="people-outline" class="sidenav-user-list-icon"></ion-icon>
+            <span matBadge="{{ zoneSelected?.technicians?.length || 0 }}" matBadgeOverlap="false" matBadgeColor="primary" matBadgePosition="above"></span>
+          </ion-button>
+          <ion-button  (click)="addTechnicians()">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </ion-button>
+        </div>
+      }
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </ion-content>

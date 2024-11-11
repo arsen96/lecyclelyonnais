@@ -1,3 +1,5 @@
+import { Technician } from "./technicians";
+
 export class Zones {
     id: number;
     zone_name: string;
@@ -6,4 +8,5 @@ export class Zones {
         type: string;
         coordinates: number[][][];
     };
+    technicians: Partial<Technician>[];
 }

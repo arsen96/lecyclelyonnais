@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { LeafletListPage } from './leaflet-list.page';
 import { MessageComponent } from 'src/app/components/message/message.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 @NgModule({
   imports: [
     CommonModule,
@@ -18,6 +19,7 @@ import { MessageComponent } from 'src/app/components/message/message.component';
     IonicModule,
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     MatInputModule,
     MatCheckboxModule,
     MessageComponent,

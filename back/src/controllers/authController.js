@@ -20,13 +20,11 @@ const generateToken = (user) => {
  */
 const register = async (req, res) => {
   const { email, password,firstName,lastName,phone,address } = req.body;
-  console.log("reqbodddyy",req.body)
   try {
     // Vérifier si l'utilisateur existe déjà dans la base de données
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
     const result = await pool.query(checkUserQuery, [email]);
 
-    // console.log("first row",result)
     if (result.rows.length > 0) {
       return res.status(400).json({ success: false, message: "L'adresse e-mail existe déjà" });
     }
@@ -34,12 +32,10 @@ const register = async (req, res) => {
     // Hasher le mot de passe avant de le sauvegarder
     const hashedPassword = await bcrypt.hash(password, 12);
     console.log("hashedPassword",hashedPassword)
-    // Insérer l'utilisateur dans la base de données
-    const insertUserQuery = 'INSERT INTO client (first_name,last_name,email, password, phone) VALUES ($1, $2,$3, $4, $5 ) RETURNING *';
-    const newUser = await pool.query(insertUserQuery, [firstName,lastName,email, hashedPassword,phone]);
+    const insertUserQuery = 'INSERT INTO client (first_name,last_name,email, password, phone, address) VALUES ($1, $2,$3, $4, $5, $6 ) RETURNING *';
+    const newUser = await pool.query(insertUserQuery, [firstName,lastName,email, hashedPassword,phone,address]);
     console.log("newUser",newUser)
     const token = generateToken(newUser.rows[0]);
-    // Retourner le token et l'utilisateur enregistré
     res.status(201).json({
       success: true,
       token,
@@ -63,10 +59,9 @@ const register = async (req, res) => {
  * @returns obtenir le token de session
  */
 const login = async (req, res) => {
-  var token = req.headers.authorization || '';
   const { email, password} = req.body;
   try {
-    const checkUserQuery = 'SELECT email,password FROM client WHERE email = $1';
+    const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
     const user = await pool.query(checkUserQuery, [email]);
     if (user.rows.length === 0) {
       return res.status(400).json({ success: false, message: "Ce mail n'existe pas" });
@@ -77,7 +72,6 @@ const login = async (req, res) => {
     if(!passwordExist){
       return res.status(400).json({ success: false, message: "Mot de passe incorrect" });
     }
-
     const token = generateToken(currentUser);
     res.status(201).json({
       success: true,
@@ -118,7 +112,7 @@ const oauth = async (req, res) => {
       success: true,
       token,
       data: {
-        user: currentUser  
+        user: currentUser
       }
     });
   } catch (error) {
@@ -188,19 +182,34 @@ const resetPassword = async (req, res) => {
 };
 
 
+const getConnectedUser = async (req, res) => {
+  const token = req.headers.authorization
+  console.log("token",req.headers.authorization)
+  if (!token) {
+    return res.status(401).json({ success: false, message: "Token manquant" });
+  }
 
-/**
- * Connecter un nouveau client
- * 
- * @param {*} req 
- * @param {*} res 
- * @returns obtenir le token de session
- */
-const test = async (req, res) => {
-    res.status(201).json({
-      success: true,
-      message : 'aaaaa'
-    });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    console.log("decoded",decoded)
+    const userId = decoded.id;
+
+    const userQuery = 'SELECT * FROM client WHERE id = $1';
+    const userResult = await pool.query(userQuery, [userId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+    }
+
+    const user = userResult.rows[0];
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Erreur lors de la récupération de l'utilisateur" });
+  }
 };
 
-module.exports = { register,login, oauth, passwordForgot,resetPassword,test };
+
+
+
+module.exports = { register,login, oauth, passwordForgot,resetPassword,getConnectedUser };

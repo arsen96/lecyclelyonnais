@@ -31,7 +31,6 @@ export class BaseService {
     }
 
     if(errorMessage === 'invalidtoken'){
-      console.log("thisss",this)
       this.unauthenticated();
     }
     return throwError(() => errorMessage);

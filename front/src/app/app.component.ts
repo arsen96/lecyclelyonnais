@@ -19,6 +19,9 @@ export class AppComponent {
   public globalService = inject(GlobalService)
   public appPagesFix: any[] = [
     { title: 'Accueil', url: '/home', icon: 'home', condition: () => true },
+    { title: 'Zones', url: '/list-zones', icon: 'home', condition: () => true },
+    { title: 'Techniciens', url: '/list-technicien', icon: 'home', condition: () => true },
+    { title: 'Actions', url: '/actions', icon: 'home', condition: () => true },
     { title: 'Login', url: '/login', icon: 'log-in', condition: () => !localStorage.getItem("access_token") },
     { title: 'Déconnexion', url:'/login', icon: 'log-out', condition: () => localStorage.getItem("access_token"), func: () => this.logout() },
   ];

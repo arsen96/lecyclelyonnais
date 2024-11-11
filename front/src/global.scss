@@ -969,7 +969,7 @@ small.invalid{
   color:firebrick;
 }
 
-ion-button{
+ion-button:not(.button-clear){
   --background:var(--ion-item-background);
   --color:var(--ion-text-color);
 }
@@ -977,4 +977,9 @@ ion-button{
 input{
   background-color: white;
   color:black;
+}
+
+
+ion-toast{
+  color:white!important;
 }

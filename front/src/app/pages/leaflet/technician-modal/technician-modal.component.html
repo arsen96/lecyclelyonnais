@@ -1,0 +1,69 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ajouter un Technicien</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+@if(technicians?.length > 0) {
+    <div>
+      <div class="searchBarItem">
+        <ion-label>Rechercher un technicien</ion-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Nom du technicien">
+      </div>
+      @if(selection.hasValue()){
+        <ion-button class="addBtn" (click)="addMultipleTechnicians()" color="success">
+          Ajouter 
+        </ion-button>
+      }
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef> Sélectionner </th>
+        <td mat-cell *matCellDef="let technician">
+          <mat-checkbox (change)="$event ? selection.toggle(technician) : null"
+                        [checked]="selection.isSelected(technician)"></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="first_name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>
+        <td mat-cell *matCellDef="let technician"> {{technician.first_name}}  </td>
+      </ng-container>
+
+      <ng-container matColumnDef="last_name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+        <td mat-cell *matCellDef="let technician"> {{technician.last_name}}  </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef style="position: sticky; top: 0; background: white; z-index: 1;"> Ajouter </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="btnActionContainer">
+              <ion-button color="success" class="btnAction" (click)="manageSelected(element.id)">
+                <ion-icon name="person-add-outline"></ion-icon>
+              </ion-button>
+
+            <!-- <ion-button color="danger" class="btnAction" (click)="manageSelected(element.id,false)">
+              <ion-icon name="person-remove-outline"></ion-icon>
+            </ion-button> -->
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+
+    <mat-paginator #paginator [pageSizeOptions]="pageSizes" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  </div>
+}@else{
+  <h4 class="ion-text-center">Aucun technicien n'est disponible</h4>
+}
+</ion-content> 

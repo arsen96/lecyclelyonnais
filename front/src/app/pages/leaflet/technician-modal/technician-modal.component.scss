@@ -1,0 +1,43 @@
+.searchBarItem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0px;
+}
+
+ion-title{
+    text-align: center;
+}
+
+.addBtn{
+    width: auto;
+}
+
+th{
+    text-align: center;
+    font-weight: bold;
+}
+
+ion-icon{
+   color:white;
+}
+
+h4{
+    color: wheat;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+}
+.btnActionContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.btnAction{
+    width: 70%;
+}

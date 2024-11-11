@@ -3,21 +3,23 @@ import { BehaviorSubject, Observable, catchError, lastValueFrom, map, shareRepla
 import { AuthBaseService } from './auth-base.service';
 import { FormLoginModel, FormRegisterModel } from 'src/app/pages/auth/login/login.page';
 import { GlobalService } from '../global.service';
+import { User } from 'src/app/models/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StandardAuth extends AuthBaseService {
-
   constructor() {
     super();
    }
    loginStandard(loginCredentials:FormLoginModel): any{
       const value = super.login(loginCredentials,`${this.baseApi}/auth/login`);
       return value.pipe(
-        map((data:string) => {
+        map((data:any) => {
           this.globalService.isAuthenticated.next(true)
-          return data;
+          console.log("datadatadata",data)
+          this.globalService.user.next(data.data.user);
+          return data.token;
         })
       )
     }
@@ -30,6 +32,7 @@ export class StandardAuth extends AuthBaseService {
         .pipe(
           tap(res => {
             if (res) {
+              this.globalService.user.next(res.data.user);
               this.setSession(res.token);
             } 
           }),

@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, Sort } from '@angular/material/sort';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ZoneService } from 'src/app/services/zone.service';
 import { MessageService, MessageStatus } from 'src/app/services/message.service';
 import { LoadingService } from 'src/app/services/loading.service';
-
 
 @Component({
   selector: 'app-leaflet-list',
@@ -20,17 +20,40 @@ export class LeafletListPage implements OnInit {
   public messageService = inject(MessageService);
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public loaderService = inject(LoadingService);
+  @ViewChild('paginator') paginator: MatPaginator;
+  pageSizes = [3, 6, 10, 15];
+  pageSize = 10;
+  pageIndex = 0;
+  totalItems = 0;
+  leafletLoaded: Promise<boolean>;
+  leafletLoadedResolver: (value: boolean) => void;
+
   constructor(
     public zoneService: ZoneService,
-  ) {}
+    public cd: ChangeDetectorRef
+  ) {
+    this.leafletLoaded = new Promise((resolve) => {
+      this.leafletLoadedResolver = resolve;
+    }); 
+  }
 
   ionViewWillEnter() {
+    this.loaderService.setLoading(true);
     this.zoneService.get().then(zones => {
       this.dataSource.data = zones;
+      this.totalItems = zones.length;
+      this.cd.detectChanges();
+      this.leafletLoadedResolver(true);
+      this.loaderService.setLoading(false);
     });
   }
 
   ngOnInit() {}
+
+  async ngAfterViewInit() {
+    await this.leafletLoaded;
+    this.dataSource.paginator = this.paginator;
+  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -90,5 +113,17 @@ export class LeafletListPage implements OnInit {
           return 0;
       }
     });
+  }
+
+  pageChanged(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updateDataSource();
+  }
+
+  updateDataSource() {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    // this.dataSource.data = this.zoneService.get().slice(startIndex, endIndex);
   }
 }

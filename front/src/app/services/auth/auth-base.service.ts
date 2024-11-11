@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { BaseService } from 'src/app/services/base.service';
 import { jwtDecode } from "jwt-decode";
 import { GlobalService } from '../global.service';
+import { User } from 'src/app/models/user';
 
 export interface BearerToken {
 	token: string;
@@ -20,10 +21,18 @@ export class AuthBaseService extends BaseService{
   http = inject(HttpClient) 
   router = inject(Router);
   public globalService = inject(GlobalService)
-  // isAuthenticated = new BehaviorSubject<boolean>(false)
+  private isUserLoadedSubject = new BehaviorSubject<boolean>(false);
+  isUserLoaded$ = this.isUserLoadedSubject.asObservable();
+
   constructor(){
     super();
-    this.globalService.isAuthenticated.next(!!localStorage.getItem("access_token"));
+    const isAuthenticated = !!this.checkIsAuthenicated();
+    this.globalService.isAuthenticated.next(isAuthenticated);
+    if (!isAuthenticated) {
+      localStorage.removeItem("access_token");
+    }
+
+    this.getUser();
   }
   getToken(): string | null {
     const token = localStorage.getItem('authToken');
@@ -40,8 +49,12 @@ export class AuthBaseService extends BaseService{
       const decodedToken = jwtDecode(token);
       const now = Date.now() / 1000;
       const tokenValid =  typeof decodedToken.exp !== 'undefined' && decodedToken.exp > now;
+      if (!tokenValid) {
+        this.globalService.user.next(null);
+      }
       return tokenValid
     }
+    this.globalService.user.next(null);
     return false;
   }
 
@@ -52,11 +65,14 @@ export class AuthBaseService extends BaseService{
       .pipe(
         tap(res => {
           if (res) {
+            console.log("resresres",res)
+            // this.getUserSubject.next(res.data.user);
             this.setSession(res.token);
+            this.isUserLoadedSubject.next(true);
           } 
         }),
         map(data => {
-          return data.token
+          return data
         }),
         shareReplay()
       );
@@ -65,6 +81,24 @@ export class AuthBaseService extends BaseService{
   }
 
 
+
+  getUser(){
+    return new Promise((resolve,reject) => {  
+      this.http.get(`${this.baseApi}/auth/user`)
+      .pipe(catchError(this.handleError.bind(this)))
+      .subscribe({
+        next : (res) => {
+          this.globalService.user.next(res.data);
+          resolve(res.data);
+            this.isUserLoadedSubject.next(true);
+        },
+        error : (error) => {
+          reject(error);
+          this.isUserLoadedSubject.next(true);
+        }
+      })
+    })
+  }
 
 
   decodeJWT(token: string) {
@@ -81,6 +115,7 @@ export class AuthBaseService extends BaseService{
 
   logout(){
     this.tokenObs = null;
+    this.globalService.user.next(null);
     localStorage.removeItem("access_token");
     this.router.navigateByUrl("login")
   }

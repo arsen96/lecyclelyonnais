@@ -11,8 +11,11 @@ import { RouterLink } from '@angular/router';
 import { CoolSocialLoginButtonsModule } from '@angular-cool/social-login-buttons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MessageComponent } from 'src/app/components/message/message.component';
+import { Loader } from '@googlemaps/js-api-loader';
+import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 @NgModule({
   imports: [
+    NgxGpAutocompleteModule,
     CommonModule,
     MessageComponent,
     FormsModule,
@@ -23,6 +26,15 @@ import { MessageComponent } from 'src/app/components/message/message.component';
     IonicModule,
     LoginPageRoutingModule
   ],
-  declarations: [LoginPage]
+  declarations: [LoginPage],
+  providers: [
+    {
+      provide: Loader,
+      useValue: new Loader({
+        apiKey: 'AIzaSyBkR-iE9z0QmKidHCvMiTEB7Z36rKwxXpQ',
+        libraries: ['places']
+      })
+    },
+  ]
 })
 export class LoginPageModule {}

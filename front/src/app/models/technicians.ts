@@ -3,4 +3,6 @@ export class Technician {
     last_name: string;
     first_name: string;
     created_at: string;
+    geographical_zone_id: number;
+    address: string;
 }

@@ -8,6 +8,15 @@ import { NgxGpAutocompleteModule } from "@angular-magic/ngx-gp-autocomplete";
 import { LeafletPage } from './leaflet.page';
 import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import { Loader } from '@googlemaps/js-api-loader';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { TechnicianModalComponent } from './technician-modal/technician-modal.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import {MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatBadgeModule } from '@angular/material/badge';
+
+
 @NgModule({
   imports: [
     NgxGpAutocompleteModule,
@@ -17,8 +26,14 @@ import { Loader } from '@googlemaps/js-api-loader';
     FormsModule,
     IonicModule,
     LeafletPageRoutingModule,
+    MatSidenavModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatCheckboxModule,
+    MatBadgeModule
   ],
-  declarations: [LeafletPage],
+  declarations: [LeafletPage, TechnicianModalComponent],
   providers: [
     {
       provide: Loader,

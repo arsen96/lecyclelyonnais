@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { Technician } from '../models/technicians';
-import { catchError, lastValueFrom, map, of, tap } from 'rxjs';
+import { catchError, lastValueFrom, map, Observable, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +21,9 @@ export class TechnicianService extends BaseService {
 
     return lastValueFrom(this.http.get(`${this.baseApi}/technicians/get`).pipe(
       map((res: Technician[]) => {
-        this.technicians = res; 
+        this.technicians = res
         console.log("this.technicians", this.technicians)
-        return res;
+        return this.technicians;
       }),
       catchError(this.handleError.bind(this))
     ))
@@ -39,7 +39,25 @@ export class TechnicianService extends BaseService {
     ))
   }
 
-  delete(techniciansIds: number[]){
-
+  update(technician: Technician){
+    console.log("technician", technician)
+    return lastValueFrom(this.http.post(`${this.baseApi}/technicians/update`, technician).pipe(
+      catchError(this.handleError.bind(this))
+    ))
   }
+
+  delete(techniciansIds: number[]):Observable<void>{
+    console.log("techniciansIds", techniciansIds)
+    return this.http.post(`${this.baseApi}/technicians/delete`, { ids: techniciansIds }).pipe(map((res: any) => {
+      this.technicians.forEach(technician => {
+        if(techniciansIds.includes(technician.id)){  
+          technician.geographical_zone_id = null;
+        }
+      });
+      return res;
+      }),
+      catchError(this.handleError.bind(this))
+    )
+  }
+
 }

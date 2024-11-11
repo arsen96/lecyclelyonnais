@@ -14,8 +14,9 @@
 
   <div class="table-container">
     <table mat-table [dataSource]="dataSource" (matSortChange)="sortData($event)" matSort class="mat-elevation-z8">
+      <!-- Table columns definition -->
       <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef >
+        <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()"
@@ -29,27 +30,23 @@
           </mat-checkbox>
         </td>
       </ng-container>
-  
+      <!-- Other columns -->
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef style="position: sticky; top: 0; background: white; z-index: 1;"> ID </th>
         <td mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </td> 
       </ng-container>
-  
       <ng-container matColumnDef="last_name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header style="position: sticky; top: 0; background: white; z-index: 1;"> Nom </th>
         <td mat-cell *matCellDef="let element"> {{element.last_name}} </td>
       </ng-container>
-
       <ng-container matColumnDef="first_name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header style="position: sticky; top: 0; background: white; z-index: 1;"> Prénom </th>
         <td mat-cell *matCellDef="let element"> {{element.first_name}} </td>
       </ng-container>
-  
       <ng-container matColumnDef="created_at">
         <th mat-header-cell *matHeaderCellDef mat-sort-header style="position: sticky; top: 0; background: white; z-index: 1;"> Date de création </th>
         <td mat-cell *matCellDef="let element"> {{element.created_at}} </td>
       </ng-container>
-  
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef style="position: sticky; top: 0; background: white; z-index: 1;"> Actions </th>
         <td mat-cell *matCellDef="let element">
@@ -61,10 +58,14 @@
           </ion-button>
         </td>
       </ng-container>
-  
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    <mat-paginator
+    #paginator
+    [pageSizeOptions]="pageSizes"
+      showFirstLastButtons
+    ></mat-paginator>
   </div>
   }@else{
   <ion-grid class="ion-justify-content-center ion-align-items-center" style="height: 100%; display: flex;">

@@ -5,7 +5,7 @@ import { AuthGuard } from './guards/access-controls.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'zones-list',
+    redirectTo: 'actions',
     pathMatch: 'full'
   },
   {
@@ -38,7 +38,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/leaflet/leaflet.module').then( m => m.LeafletPageModule)
   },
   {
-    path: 'zones-list',
+    path: 'list-zones',
     loadChildren: () => import('./pages/leaflet-list/leaflet-list.module').then( m => m.LeafletListPageModule)
   },
   {
@@ -52,6 +52,10 @@ const routes: Routes = [
   {
     path: 'technicien/:id',
     loadChildren: () => import('./pages/technician/technician.module').then( m => m.TechnicianPageModule)
+  },
+  {
+    path: 'actions',
+    loadChildren: () => import('./pages/user/actions/actions.module').then( m => m.ActionsPageModule)
   },
 ];
 

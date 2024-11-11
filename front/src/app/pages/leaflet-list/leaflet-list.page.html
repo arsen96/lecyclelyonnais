@@ -60,6 +60,7 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons (page)="pageChanged($event)"></mat-paginator>
   </div>
   }@else{
   <ion-grid class="ion-justify-content-center ion-align-items-center" style="height: 100%; display: flex;">
