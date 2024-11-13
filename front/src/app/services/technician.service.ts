@@ -60,4 +60,12 @@ export class TechnicianService extends BaseService {
     )
   }
 
+  getTechnicianById(technicianId: number){
+    return this.technicians.find(technician => technician.id === technicianId)
+  }
+
+  getTechniciansByZone(geographicalZoneId: number){
+    return this.technicians.filter(technician => technician.geographical_zone_id === geographicalZoneId)
+  }
+
 }

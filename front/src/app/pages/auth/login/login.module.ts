@@ -27,6 +27,9 @@ import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
     LoginPageRoutingModule
   ],
   declarations: [LoginPage],
+  exports: [
+    LoginPage
+  ],
   providers: [
     {
       provide: Loader,

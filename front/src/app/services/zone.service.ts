@@ -69,4 +69,10 @@ export class ZoneService extends BaseService {
       catchError(this.handleError.bind(this))
     );
   }
+
+  isAddressInZone(address: string): Observable<boolean> {
+    return this.http.post(`${this.baseApi}/zones/isAddressInZone`, { address }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  } 
 }

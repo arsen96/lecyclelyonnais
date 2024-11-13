@@ -5,4 +5,5 @@ export class Technician {
     created_at: string;
     geographical_zone_id: number;
     address: string;
+    is_available: boolean;
 }

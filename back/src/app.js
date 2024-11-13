@@ -4,6 +4,8 @@ const routes = require('./routes/index');
 const routesAuth = require('./routes/authRoute');
 const routesZone = require('./routes/zoneRoute');
 const routesTechnician = require('./routes/technicianRoute');
+const routesBicycle = require('./routes/bicycleRoute');
+const routesIntervention = require('./routes/interventionRoute');
 require('dotenv').config()
 const cors = require('cors'); 
 var bodyParser = require('body-parser');
@@ -22,7 +24,8 @@ app.use('/api', routes);
 app.use('/auth', routesAuth);
 app.use('/zones', routesZone);
 app.use('/technicians', routesTechnician);
-
+app.use('/bicycles', routesBicycle);
+app.use('/interventions', routesIntervention);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

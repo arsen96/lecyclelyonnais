@@ -13,14 +13,17 @@
   </ion-header>
 
   <div class="stepper-container">
-    <mat-horizontal-stepper #stepper [linear]="true">
-      <mat-step [stepControl]="addressFormGroup" [completed]="addressFormGroup.valid && addressFormCompleted">
+    <mat-horizontal-stepper #stepper [linear]="true" (selectionChange)="onStepChange($event)">
+      <mat-step [stepControl]="addressFormGroup" [completed]="addressFormGroup.valid && addressFormCompleted && addressValidated">
         <form [formGroup]="addressFormGroup" (ngSubmit)="onAddressSubmit()">
           <ng-template matStepLabel>Votre adresse</ng-template>
           <div class="form-content">
+              @if(displayError){  
+              <app-message></app-message>
+            }
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Adresse</mat-label>
-              <input matInput placeholder="Saisissez votre adresse" formControlName="address" required>
+              <input matInput placeholder="Saisissez votre adresse" formControlName="address" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="changeAddressValidated()" required>
               <mat-error *ngIf="addressFormGroup.get('address').hasError('required')">
                 L'adresse est requise.
               </mat-error>
@@ -35,7 +38,6 @@
         <form [formGroup]="detailsFormGroup" (ngSubmit)="onDetailsSubmit()">
           <ng-template matStepLabel>Détails du cycle</ng-template>
           <div class="form-content">
-            <app-message></app-message>
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Marque</mat-label>
               <input matInput placeholder="Saisissez la marque" formControlName="brand" required>
@@ -72,7 +74,7 @@
               </mat-error>
             </mat-form-field>
             <div class="button-group">
-              <button *ngIf="!this.globalService.isAuthenticated.getValue() === true" mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
+              <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
               <button mat-raised-button class="next-btn" type="submit">Suivant</button>
             </div>
           </div>
@@ -106,8 +108,8 @@
           </div>
         </form>
       </mat-step>
-      <mat-step *ngIf="operationFormGroup.get('operation').value === 'maintenance'" [stepControl]="maintenanceFormGroup" [completed]="maintenanceFormGroup.valid && maintenanceFormCompleted">
-        <form [formGroup]="maintenanceFormGroup" (ngSubmit)="onMaintenanceSubmit()">
+      <mat-step *ngIf="operationFormGroup.get('operation').value === 'maintenance'" [stepControl]="maintenanceFormGroup" [completed]="maintenanceFormGroup.valid">
+        <form [formGroup]="maintenanceFormGroup" >
           <ng-template matStepLabel>Maintenance</ng-template>
           <div class="form-content">
             <mat-form-field appearance="fill" class="full-width">
@@ -131,17 +133,25 @@
                   accept="image/png, image/jpeg" multiple>
               </ion-item>
             </div>
-            <ion-datetime display-format="MMM DD, YYYY HH:mm" picker-format="MMM DD YYYY HH:mm" formControlName="schedule" required
-                [min]="minDate" (ionChange)="onDateTimeChange($event)"></ion-datetime>
+            <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD YYYY" formControlName="scheduleDate" required
+            [min]="minDate" (ionChange)="onDateChange($event)" presentation="date"></ion-datetime>
+
+            <div class="selectContainer">
+              <ion-select formControlName="scheduleTime" placeholder="Sélectionnez un créneau horaire" *ngIf="availableTimeSlots.length > 0" (ionChange)="onTimeSlotSelect($event)">
+                <ion-select-option *ngFor="let timeSlot of availableTimeSlots" [value]="timeSlot.time" [disabled]="!timeSlot.available">
+                  {{ timeSlot.time }}
+                </ion-select-option>
+              </ion-select>
+            </div>
             <div class="button-group">
               <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
-              <button mat-raised-button class="next-btn" type="submit" (click)="onSubmit()">Finaliser</button>
+              <button mat-raised-button class="next-btn" type="submit" (click)="onSubmit()">{{globalService.isAuthenticated.getValue() === true ? 'Finaliser' : 'Suivant'}}</button>
             </div>
           </div>
         </form>
       </mat-step>
-      <mat-step *ngIf="operationFormGroup.get('operation').value === 'reparation'" [stepControl]="repairFormGroup" [completed]="repairFormGroup.valid && repairFormCompleted">
-        <form [formGroup]="repairFormGroup" (ngSubmit)="onRepairSubmit()">
+      <mat-step *ngIf="operationFormGroup.get('operation').value === 'reparation'" [stepControl]="repairFormGroup" [completed]="repairFormGroup.valid">
+        <form [formGroup]="repairFormGroup" >
           <ng-template matStepLabel>Réparation</ng-template>
           <div class="form-content">
             <mat-form-field appearance="fill" class="full-width">
@@ -161,14 +171,41 @@
                   accept="image/png, image/jpeg" multiple>
               </ion-item>
             </div>
-            <ion-datetime display-format="MMM DD, YYYY HH:mm" picker-format="MMM DD YYYY HH:mm" formControlName="schedule" required
-            [min]="minDate" (ionChange)="onDateTimeChange($event)"></ion-datetime>
+            <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD YYYY" formControlName="scheduleDate" required
+            [min]="minDate" (ionChange)="onDateChange($event)" presentation="date"></ion-datetime>
+
+            <div class="selectContainer">
+              <ion-select formControlName="scheduleTime" placeholder="Sélectionnez un créneau horaire" *ngIf="availableTimeSlots.length > 0" (ionChange)="onTimeSlotSelect($event)">
+                <ion-select-option *ngFor="let timeSlot of availableTimeSlots" [value]="timeSlot.time" [disabled]="!timeSlot.available">
+                  {{ timeSlot.time }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+           
             <div class="button-group">
               <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
               <button mat-raised-button class="next-btn" type="submit" (click)="onSubmit()">Finaliser</button>
             </div>
           </div>
         </form>
+      </mat-step>
+
+      @if(this.globalService.isAuthenticated.getValue() === false){
+      <mat-step>
+        <ng-template matStepLabel>Connexion</ng-template>
+         <div class="loginPageContainer">  
+          <app-login [isStepper]="true" (stepperAuthentication)="onAuthenticated($event)"></app-login>
+        </div>
+      </mat-step>
+      }
+      <mat-step>
+        <ng-template matStepLabel>Confirmation</ng-template>
+        <div class="confirmation-content">
+          <ion-icon name="checkmark-circle" class="confirmation-icon"></ion-icon>
+          <h2>Merci d'avoir pris le rendez-vous !</h2>
+          <p>Nous vous avons envoyé un email de confirmation avec les détails de votre rendez-vous.</p>
+          <ion-button color="primary" (click)="resetForm()">Créer une nouvelle intervention</ion-button>
+        </div>
       </mat-step>
     </mat-horizontal-stepper>
   </div>

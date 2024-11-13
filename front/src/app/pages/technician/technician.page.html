@@ -40,7 +40,7 @@
           <ion-label position="floating">{{ technicianSelected ? 'Modifier le mot de passe' : 'Mot de passe' }}</ion-label>
           <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password"></ion-input>
           <ion-button (click)="generatePassword()">Générer</ion-button>
-          <ion-button slot="end" *ngIf="technicianForm.get('password').value.length > 0" (click)="this.showPassword = !this.showPassword">
+          <ion-button slot="end" *ngIf="technicianForm.get('password')?.value?.length > 0" (click)="this.showPassword = !this.showPassword">
             <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
           </ion-button>
         </ion-item>

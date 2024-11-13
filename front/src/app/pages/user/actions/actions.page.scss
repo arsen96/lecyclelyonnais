@@ -1,5 +1,6 @@
 .stepper-container {
   height: 100%;
+  flex: 1;
 }
 
 .form-content {
@@ -107,3 +108,33 @@ ion-datetime {
   background:green;
 }
 
+.selectContainer ion-select {
+  color:black;
+}
+
+.confirmation-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.confirmation-icon {
+  font-size: 50px;
+  color: var(--ion-color-success);
+  margin-bottom: 20px;
+}
+
+.loginPageContainer{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  app-login{
+    width: 100%;
+    height: 100%;
+  }
+}

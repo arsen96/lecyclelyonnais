@@ -2,6 +2,34 @@ const pool = require('../config/db'); // Connexion à PostgreSQL via le pool
 const bcrypt = require('bcrypt');
 const fetch = require('node-fetch'); // Assurez-vous d'installer node-fetch
 /**
+ * Convertir une adresse en coordonnées géographiques et trouver l'ID de la zone géographique
+ * @param {string} address - L'adresse à convertir
+ * @returns {Promise<number|null>} - L'ID de la zone géographique ou null si non trouvé
+ */
+const getGeographicalZoneId = async (address) => {
+  if (address?.length > 0) {
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    const response = await fetch(nominatimUrl);
+    const data = await response.json();
+
+    if (data.length === 0) {
+      return null;
+    }
+
+    const { lat, lon } = data[0];
+    const point = `POINT(${lon} ${lat})`;
+
+    const zoneQuery = `
+      SELECT id FROM geographical_zone 
+      WHERE ST_Contains(coordinates, ST_GeomFromText($1, 4326))
+    `;
+    const zoneResult = await pool.query(zoneQuery, [point]);
+    return zoneResult.rows.length > 0 ? zoneResult.rows[0].id : null;
+  }
+  return null;
+};
+
+/**
  * Créer un nouveau client
  * 
  * @param {*} req 
@@ -13,8 +41,10 @@ const save = async (req, res) => {
   try {
     const { last_name, first_name, phone, address, password, email } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO technician (last_name, first_name, phone, address, password, email) VALUES ($1, $2, $3, $4, $5, $6)';
-    await pool.query(query, [last_name, first_name, phone, address, hashedPassword, email]);
+    const geographical_zone_id = await getGeographicalZoneId(address);
+
+    const query = 'INSERT INTO technician (last_name, first_name, phone, address, password, email, geographical_zone_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+    await pool.query(query, [last_name, first_name, phone, address, hashedPassword, email, geographical_zone_id]);
     res.status(201).send({ success: true, message: "Technicien créé avec succès" });
   } catch (error) {
     console.error(error);
@@ -48,32 +78,7 @@ const update = async (req, res) => {
     console.log("first_name", first_name)
     console.log("phone", phone)
     console.log("email", email)
-    let geographical_zone_id;
-    // Convertir l'adresse en coordonnées géographiques
-    if(address?.length > 0){
-      const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-      const response = await fetch(nominatimUrl);
-      const data = await response.json();
-
-      if (data.length === 0) {
-      return res.status(400).send({ success: false, message: "Adresse non trouvée" });
-      }
-
-      const { lat, lon } = data[0];
-      const point = `POINT(${lon} ${lat})`;
-
-        const zoneQuery = `
-        SELECT id FROM geographical_zone 
-        WHERE ST_Contains(coordinates,  ST_GeomFromText($1, 4326))
-      `;
-      const zoneResult = await pool.query(zoneQuery, [point]);
-      geographical_zone_id = zoneResult.rows.length > 0 ? zoneResult.rows[0].id : null;
-    }
-
-
-
-    // Vérifier si les coordonnées se trouvent dans une zone géographique
-
+    const geographical_zone_id = await getGeographicalZoneId(address);
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);

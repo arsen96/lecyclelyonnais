@@ -76,7 +76,7 @@ export class TechnicianPage implements OnInit{
 
     onSubmit() {
       if (this.technicianForm.valid) {
-        if (!this.addressValidated) {
+        if (!this.addressValidated && this.technicianForm.value.address.length > 0) {
           this.messageService.showMessage('Veuillez sélectionner une adresse valide dans la liste des suggestions.', Message.danger);
           this.displayMsg = true;
         }else{

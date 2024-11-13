@@ -7,4 +7,5 @@ router.get('/get', zoneController.get);
 router.post('/delete', zoneController.deleteSelected);
 router.post('/removeTechnicianFromZone', zoneController.removeTechnicianFromZone);
 router.post('/addTechnicianToZone', zoneController.addTechnicianToZone);
+router.post('/isAddressInZone', zoneController.isAddressInZone);
 module.exports = router;

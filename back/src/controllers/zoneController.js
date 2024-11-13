@@ -112,4 +112,25 @@ const addTechnicianToZone = async (req, res) => {
   }
 }
 
-module.exports = { save,get,deleteSelected,removeTechnicianFromZone,addTechnicianToZone }
+
+const isAddressInZone = async (req, res) => {
+  const { address } = req.body;
+  console.log("address", address);
+  const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+  const response = await fetch(nominatimUrl);
+  const data = await response.json();
+  let notFoundMessage = "Nous n'avons pas de technicien dans votre zone";
+  if (data.length === 0) {
+    return res.status(404).json({ success: false, message: notFoundMessage });
+  }
+
+  const { lat, lon } = data[0];
+  const point = `POINT(${lon} ${lat})`;
+  const query = `SELECT id FROM geographical_zone WHERE ST_Contains(coordinates, ST_GeomFromText($1, 4326)) LIMIT 1`;
+  const result = await pool.query(query, [point]);
+  const zoneConcerned = result.rows[0]?.id;
+  console.log("zoneConcerned",zoneConcerned)
+  res.status(200).json({ success: zoneConcerned, message: !zoneConcerned ? notFoundMessage : "" });
+}
+
+module.exports = { save,get,deleteSelected,removeTechnicianFromZone,addTechnicianToZone,isAddressInZone }

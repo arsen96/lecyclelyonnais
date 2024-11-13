@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faLinkedin, faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -49,7 +49,9 @@ export class LoginPage{
 
   registrationForm: FormGroup;
   addressValidated = false;
-
+  @Input() isStepper = false;
+  @Output() stepperAuthentication = new EventEmitter<boolean>();
+    
   constructor(public route: ActivatedRoute, public messageService: MessageService) {
     this.route.fragment.subscribe(async (fragment) => {
       if (fragment) {
@@ -96,7 +98,11 @@ export class LoginPage{
     result.subscribe(
       {
         next: () => {
-          this.router.navigateByUrl("list-zones")
+          if(this.isStepper){
+            this.stepperAuthentication.emit(true)
+          }else{
+            this.router.navigateByUrl("list-zones")
+          }
         }, error: (err) => {
           this.displayError(err,'login')
           console.log("login error", err)
