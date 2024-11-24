@@ -184,14 +184,12 @@ const resetPassword = async (req, res) => {
 
 const getConnectedUser = async (req, res) => {
   const token = req.headers.authorization
-  console.log("token",req.headers.authorization)
   if (!token) {
     return res.status(401).json({ success: false, message: "Token manquant" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-    console.log("decoded",decoded)
     const userId = decoded.id;
 
     const userQuery = 'SELECT * FROM client WHERE id = $1';
