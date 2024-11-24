@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>interventions</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="interventions-container">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+      <ion-title size="large">interventions</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-template #interventionCard let-intervention>
+    <ion-col size="4">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <ion-icon name="hammer-outline"></ion-icon> {{ intervention.type }} {{ intervention.id }}
+          </mat-panel-title>
+          <mat-panel-description>
+            <ion-icon name="calendar-outline"></ion-icon> {{ intervention.appointment_start | date:'d/M/yyyy' }} 
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ion-card color="primary">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="calendar-outline"></ion-icon> {{ intervention.type }}
+            </ion-card-title>
+            <ion-card-subtitle>
+              {{ intervention.appointment_start | date:'dd MMMM yyyy' }}
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="intervention-details">
+              <h3>Date</h3>
+              <p><strong>Heure : </strong>{{ intervention.appointment_start | date:'hh:mm' }} - {{ intervention.appointment_end| date:'hh:mm' }}</p>
+              <p><strong>Création : </strong>{{ intervention.created_at | date:'d/M/yyyy' }}</p>
+            </div>
+            <div class="bicycle-details">
+              <h3>Vélo</h3>
+              <p>{{ intervention.bicycle.brand }} - {{ intervention.bicycle.model }}</p>
+              <p>{{ intervention.bicycle.type }}</p>
+            </div>
+            <div class="technician-details">
+              <h3>Technicien</h3>
+              <div class="technician-info">
+                <ion-icon name="person-outline"></ion-icon>
+                <p>{{ intervention.technician.first_name }} {{ intervention.technician.last_name }}</p>
+              </div>
+            </div>
+
+            @if(intervention.photos?.length > 0){
+              @for(photo of intervention.photos; track photo){
+                <img [src]="interventionService.baseApi+'/'+photo" alt="photo">
+              }
+            }
+          </ion-card-content>
+        </ion-card>
+      </mat-expansion-panel>
+    </ion-col>
+  </ng-template>
+
+  <mat-accordion>
+
+    <div class="passedInterventions"> 
+      <h2>Interventions Passées</h2>
+      <ion-grid>
+      <ion-row>
+        <ng-container *ngFor="let intervention of pastInterventions; let i = index">
+          <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention }"></ng-container>
+        </ng-container>
+      </ion-row>
+      </ion-grid>
+    </div>
+
+    <div class="upcomingInterventions">
+      <h2>Interventions à Venir</h2>
+      <ion-grid>
+      <ion-row>
+        <ng-container *ngFor="let intervention of upcomingInterventions; let i = index">
+          <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention }"></ng-container>
+        </ng-container>
+      </ion-row>
+      </ion-grid>
+    </div>
+  </mat-accordion>
+  </div>
+</ion-content>

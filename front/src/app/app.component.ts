@@ -20,6 +20,7 @@ export class AppComponent {
   public appPagesFix: any[] = [
     { title: 'Accueil', url: '/home', icon: 'home', condition: () => true },
     { title: 'Zones', url: '/list-zones', icon: 'home', condition: () => true },
+    { title: 'Interventions', url: '/interventions', icon: 'home', condition: () => true },
     { title: 'Techniciens', url: '/list-technicien', icon: 'home', condition: () => true },
     { title: 'Actions', url: '/actions', icon: 'home', condition: () => true },
     { title: 'Login', url: '/login', icon: 'log-in', condition: () => !localStorage.getItem("access_token") },

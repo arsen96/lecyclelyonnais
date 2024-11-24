@@ -14,10 +14,6 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'prise-rdv',
-    loadChildren: () => import('./pages/user/home/home-user.module').then( m => m.HomePageModule)
-  },
-  {
     path: 'reset',
     loadChildren: () => import('./pages/auth/reset/reset.module').then( m => m.ResetPageModule)
   },
@@ -57,6 +53,12 @@ const routes: Routes = [
     path: 'actions',
     loadChildren: () => import('./pages/user/actions/actions.module').then( m => m.ActionsPageModule)
   },
+  {
+    path: 'interventions',
+    loadChildren: () => import('./pages/interventions/interventions.module').then( m => m.InterventionsPageModule)
+  },
+
+ 
 ];
 
 @NgModule({
