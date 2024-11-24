@@ -2,16 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { Technician } from '../models/technicians';
-import { catchError, lastValueFrom, map, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, lastValueFrom, map, Observable, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TechnicianService extends BaseService {
-
+  techniciansLoaded = new BehaviorSubject<boolean>(false);
   technicians: Technician[] = [];
   constructor(private http: HttpClient) {
     super();
+    this.get();
    }
 
   get(){
@@ -23,9 +24,16 @@ export class TechnicianService extends BaseService {
       map((res: Technician[]) => {
         this.technicians = res
         console.log("this.technicians", this.technicians)
+        this.techniciansLoaded.next(true);
         return this.technicians;
       }),
-      catchError(this.handleError.bind(this))
+      catchError((err) => {
+        this.techniciansLoaded.next(false);
+        return of(err);
+      }),
+      finalize(() => {
+        this.techniciansLoaded.complete();
+      })
     ))
   }
 
