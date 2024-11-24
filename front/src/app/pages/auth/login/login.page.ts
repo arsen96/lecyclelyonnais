@@ -129,7 +129,11 @@ export class LoginPage{
       const result = this.loaderService.showLoaderUntilCompleted(register$);
       result.subscribe({
         next: (res) => {
-          this.router.navigateByUrl('list-zones')
+          if(this.isStepper){
+            this.stepperAuthentication.emit(true)
+          }else{
+            this.router.navigateByUrl("list-zones")
+          }
         }, error: (err) => {
           this.displayError(err, 'register')
           console.log("register error", err)
