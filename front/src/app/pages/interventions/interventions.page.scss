@@ -1,0 +1,51 @@
+::ng-deep mat-panel-title {
+    gap: 5px;
+}
+
+::ng-deep mat-panel-description {
+    gap: 5px;
+}
+
+ion-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+
+  .intervention-details, .bicycle-details, .technician-details {
+    margin-bottom: 10px;
+  }
+
+  .technician-info{
+    display: flex;
+    align-items: center;
+    gap:5px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+  }
+
+  p {
+    font-size: 1em;
+    color: #666;
+    font-family: monospace;
+  }
+
+  ion-icon {
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  
+}
+
+.interventions-container {
+    margin:20px;
+  }
+
+  .passedInterventions{
+    margin-bottom: 20px;
+  }

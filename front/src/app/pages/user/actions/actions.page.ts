@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import { AuthBaseService } from 'src/app/services/auth/auth-base.service';
 import { GlobalService } from 'src/app/services/global.service';
@@ -28,6 +28,7 @@ export class ActionsPage implements OnInit {
   operationFormCompleted: boolean = false;
   addressValidated = false
   loginFormGroup: FormGroup;
+  isAtConfirmationStep: boolean = false;
   constructor(private _formBuilder: FormBuilder,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService) { }
   displayError = false
   concernedZone:number;
@@ -46,7 +47,7 @@ export class ActionsPage implements OnInit {
       this.addressValidated = true
     }
     console.log(" this.addressValidated", this.addressValidated)
-
+    
     this.addressFormGroup = this._formBuilder.group({
       address: [adresse || '', Validators.required]
     });
@@ -63,13 +64,13 @@ export class ActionsPage implements OnInit {
       package: ['', Validators.required],
       scheduleDate: [currentDateTime, Validators.required],
       scheduleTime: ['', Validators.required],
-      photos: ['']
+      photos:  new FormArray([])
     });
     this.repairFormGroup = this._formBuilder.group({
       issueDetails: ['', Validators.required],
       scheduleDate: [currentDateTime, Validators.required],
       scheduleTime: ['', Validators.required],
-      photos: ['']
+      photos:  new FormArray([])
     });
     this.previousTimeSlot = '';
     this.selectedTimeSlotDate = this.maintenanceFormGroup.value.scheduleDate;
@@ -139,7 +140,23 @@ export class ActionsPage implements OnInit {
 
 
   handleFileInput(event) {
-    console.log(event.target.files);
+    const files: FileList = event.target.files;
+    let photosArray: FormArray;
+    if(this.operationFormGroup.get('operation').value === 'maintenance'){
+      photosArray = this.maintenanceFormGroup.get('photos') as FormArray;
+      (this.repairFormGroup.get('photos') as FormArray).clear();
+    }else{
+      photosArray = this.repairFormGroup.get('photos') as FormArray;
+      (this.maintenanceFormGroup.get('photos') as FormArray).clear();
+    }
+    photosArray.clear(); 
+
+    for (let i = 0; i < files.length; i++) {
+        photosArray.push(this._formBuilder.control(files[i]));
+    }
+
+    photosArray.updateValueAndValidity();
+    event.target.value = '';
   }
 
   onDateTimeChange(event: any) {
@@ -184,7 +201,7 @@ export class ActionsPage implements OnInit {
     this.repairFormGroup.value.scheduleTimeStart = this.repairFormGroup.value.scheduleDate + "T" + this.repairFormGroup.value.scheduleTime?.split('-')[0]?.trim() + ":00Z";
     this.repairFormGroup.value.scheduleTimeEnd = this.repairFormGroup.value.scheduleDate + "T" + this.repairFormGroup.value.scheduleTime?.split('-')[1]?.trim() + ":00Z";
     
-    console.log('Form submitted');
+    
     const allData = {
       address: {zone:this.concernedZone,...this.addressFormGroup.value},
       details: this.detailsFormGroup.value,
@@ -193,6 +210,8 @@ export class ActionsPage implements OnInit {
       repair: this.repairFormGroup.value,
       userId:this.globalService.user.getValue()?.id
     }
+
+    console.log("allData", allData)
 
     this.interventionFinalData = allData
     if(this.globalService.isAuthenticated.getValue() === true){
@@ -203,7 +222,12 @@ export class ActionsPage implements OnInit {
   }
 
   createNewIntervention(){
-    const intervention$ = this.interventionService.save(this.interventionFinalData);
+    const formData = new FormData();
+    formData.append('intervention', JSON.stringify(this.interventionFinalData));
+    this.maintenanceFormGroup.get('photos').value.forEach(photo => {
+      formData.append('photos', photo);
+    });
+    const intervention$ = this.interventionService.save(formData);
     this.loadingService.showLoaderUntilCompleted(intervention$).subscribe({
     next: (res: any) => {
       this.interventionService.allInterventions = [];
@@ -222,9 +246,26 @@ export class ActionsPage implements OnInit {
         this.stepper.selectedIndex = 0;
         this.cd.detectChanges();
       });
-      this.displayError = true
+      this.displayError = true;
       this.msgService.showMessage("Veuillez valider votre adresse avant de continuer.", Message.danger);
     }
+
+    // Check if the user is at the confirmation step
+
+  }
+
+  preventBackNavigation(event: any) {
+    if ((this.isAtConfirmationStep && event.previouslySelectedIndex > event.selectedIndex) || ((this.addressValidated === false || this.displayError === true) && event.selectedIndex > 0)) {
+      // Prevent going back from the confirmation step
+      setTimeout(() => {
+        this.cd.detectChanges();
+        this.stepper.selectedIndex = event.previouslySelectedIndex;
+        this.cd.detectChanges();
+      },0);
+    }
+
+    this.isAtConfirmationStep = event.selectedIndex === this.stepper.steps.length - 1;
+    console.log("this.isAtConfirmationStep", this.isAtConfirmationStep)
   }
 
   changeAddressValidated(){
@@ -293,7 +334,7 @@ export class ActionsPage implements OnInit {
     });
 
     if(interventions.length > 0){
-      const technicians = interventions.map(intervention => this.technicianService.getTechnicianById(intervention.technician_id));
+      const technicians = interventions.map(intervention => this.technicianService.getTechnicianById(intervention.technician.id));
       isAvailable = !(this.techniciansByZone.length === technicians.length);
     }
     return isAvailable;

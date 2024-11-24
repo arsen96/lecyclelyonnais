@@ -13,7 +13,7 @@
   </ion-header>
 
   <div class="stepper-container">
-    <mat-horizontal-stepper #stepper [linear]="true" (selectionChange)="onStepChange($event)">
+    <mat-horizontal-stepper #stepper [linear]="true" (selectionChange)="preventBackNavigation($event)">
       <mat-step [stepControl]="addressFormGroup" [completed]="addressFormGroup.valid && addressFormCompleted && addressValidated">
         <form [formGroup]="addressFormGroup" (ngSubmit)="onAddressSubmit()">
           <ng-template matStepLabel>Votre adresse</ng-template>
@@ -109,7 +109,7 @@
         </form>
       </mat-step>
       <mat-step *ngIf="operationFormGroup.get('operation').value === 'maintenance'" [stepControl]="maintenanceFormGroup" [completed]="maintenanceFormGroup.valid">
-        <form [formGroup]="maintenanceFormGroup" >
+        <form [formGroup]="maintenanceFormGroup">
           <ng-template matStepLabel>Maintenance</ng-template>
           <div class="form-content">
             <mat-form-field appearance="fill" class="full-width">
@@ -129,7 +129,7 @@
                   <ion-icon lazy="true" slot="start" name="image"></ion-icon>
                   <ion-label slot="end">Ajouter des photos</ion-label>
                 </ion-button>
-                <input class="ion-hide" #f type="file" (change)="handleFileInput($event)" formControlName="photos" id="file-input"
+                <input class="ion-hide" #f type="file" (change)="handleFileInput($event)" formArrayName="photos" id="file-input"
                   accept="image/png, image/jpeg" multiple>
               </ion-item>
             </div>
