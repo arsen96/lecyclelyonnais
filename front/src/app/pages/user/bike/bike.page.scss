@@ -1,0 +1,31 @@
+.centered-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+  margin: 0 auto;
+}
+
+.centered-form form {
+  width: 100%;
+}
+
+ion-item {
+  --inner-padding-end: 0;
+}
+
+ion-input {
+  width: 100%;
+}
+
+.btnAddContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+ion-select {
+  --placeholder-color: black;
+}
+

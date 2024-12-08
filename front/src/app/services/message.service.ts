@@ -16,11 +16,12 @@ export class MessageStatus {
 export class MessageService {
   constructor(private toastController: ToastController) {}
   private messageEmitter = new BehaviorSubject<any>({message:[],status:''})
-  message$ = this.messageEmitter.asObservable().pipe(
-    filter((value) => {
-      return value && value.message?.length > 0
-    })
-  )
+  message$ = this.messageEmitter.asObservable()
+  // .pipe(
+  //   filter((value) => {
+  //     return value && value.message?.length > 0
+  //   })
+  // )
 
   showMessage(message:string | string[],status:MessageStatus){
     let messageSave = Array.isArray(message) ? message : [message]
@@ -28,15 +29,14 @@ export class MessageService {
   }
 
   hideMessage(){
-    this.messageEmitter.next(false);
+    this.messageEmitter.next({message:[],status:''});
   }
 
 
- 
-  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'info', position: 'top' | 'bottom' | 'middle' = 'bottom') {
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'info', position: 'top' | 'bottom' | 'middle' = 'bottom',duration:number = 2000) {
     const toast = await this.toastController.create({
       message,
-      duration: 2000,
+      duration,
       color,
       position
     });

@@ -51,11 +51,13 @@
               </div>
             </div>
 
-            @if(intervention.photos?.length > 0){
-              @for(photo of intervention.photos; track photo){
-                <img [src]="interventionService.baseApi+'/'+photo" alt="photo">
+            <ion-button *ngIf="intervention.photos?.length > 0" (click)="openImageModal(intervention.photos, 0)">
+              @if(intervention.photos?.length > 1){
+                Voir les photos
+              } @else {
+                Voir la photo
               }
-            }
+            </ion-button>
           </ion-card-content>
         </ion-card>
       </mat-expansion-panel>
@@ -64,6 +66,7 @@
 
   <mat-accordion>
 
+    @if(pastInterventions?.length > 0){
     <div class="passedInterventions"> 
       <h2>Interventions Passées</h2>
       <ion-grid>
@@ -74,7 +77,9 @@
       </ion-row>
       </ion-grid>
     </div>
+    }
 
+    @if(upcomingInterventions?.length > 0){
     <div class="upcomingInterventions">
       <h2>Interventions à Venir</h2>
       <ion-grid>
@@ -85,6 +90,21 @@
       </ion-row>
       </ion-grid>
     </div>
+    }
+
+    @if(pastInterventions?.length === 0 && upcomingInterventions?.length === 0){
+      <ion-grid class="ion-justify-content-center ion-align-items-center noInterventions" style="height: 100%; display: flex;">
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="12" size-md="12" class="ion-text-center">
+            <h1>Aucune intervention trouvée</h1>
+            <ion-button class="ion-margin-top addZoneBtn" routerLink="/actions">
+              <ion-icon name="add"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    }
+
   </mat-accordion>
   </div>
 </ion-content>

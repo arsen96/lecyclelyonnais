@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Fermer</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="image-container">
+    @if(photos.length > 1){
+      <ion-button (click)="previous()" fill="clear">
+        <ion-icon name="arrow-back-circle" size="large"></ion-icon>
+      </ion-button>
+    }
+    <img [src]="photos[index]" alt="photo" />
+    @if(photos.length > 1){
+      <ion-button (click)="next()" fill="clear">
+        <ion-icon name="arrow-forward-circle" size="large"></ion-icon>
+      </ion-button>
+    }
+  </div>
+</ion-content>

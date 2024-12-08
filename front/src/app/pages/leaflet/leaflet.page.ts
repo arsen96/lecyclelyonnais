@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit, ViewEncapsulation, ElementRef, ViewChild, Input, AfterViewInit, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, ViewEncapsulation, ElementRef, ViewChild, Input, AfterViewInit, provideExperimentalZonelessChangeDetection, inject } from '@angular/core';
 import { tileLayer, latLng, map, FeatureGroup, Control, Map, LatLng, circleMarker, Layer, Polygon,geoJSON } from 'leaflet';
 import 'leaflet-draw'; // Importer le plugin leaflet-draw
 import * as turf from '@turf/turf';  // Importer Turf.js
@@ -8,11 +8,12 @@ import { ZoneService } from 'src/app/services/zone.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Zones } from 'src/app/models/zones';
 import { async } from 'rxjs';
-import { MessageService } from 'src/app/services/message.service';
+import { Message, MessageService } from 'src/app/services/message.service';
 import { ModalController } from '@ionic/angular';
 import { TechnicianModalComponent } from './technician-modal/technician-modal.component';
 import { Technician } from 'src/app/models/technicians';
 import { TechnicianService } from 'src/app/services/technician.service';
+import { LoadingService } from 'src/app/services/loading.service';
 
 declare var google: any;
 
@@ -46,6 +47,9 @@ export class LeafletPage{
 
   searchTerm: string = '';
   filteredTechnicians = [];
+  zoneAdded = false;
+  public loaderService = inject(LoadingService);
+  
 
   constructor(private cd: ChangeDetectorRef,private technicianService:TechnicianService, private route: ActivatedRoute,public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
     this.zoneIdSelected = Number(this.route.snapshot.params['id']) ? Number(this.route.snapshot.params['id']) : null;
@@ -124,11 +128,24 @@ export class LeafletPage{
       } else {
         const wkt = this.convertToWKT(layer);
         try {
-          const result = await this.alertConfirm();
-          if (wkt && result) {
-            this.zoneService.create(wkt, result).subscribe((res: any) => {
-              this.zoneService.allZones = new Array();
-              this.drawControl.remove();
+          const alertData = await this.alertConfirm() as any;
+          if (wkt && alertData) {
+            this.loaderService.setLoading(true);
+            this.zoneService.create(wkt, alertData).subscribe({
+              next: (res: {success: boolean, message: string, zoneId: number}) => {
+                  this.zoneService.allZones = new Array();
+                  console.log("res", res);
+                  this.zoneService.get().then(() => {
+                  this.zoneAdded = true
+                  this.zoneIdSelected = res.zoneId;
+                  this.zoneSelected = this.zoneService.allZones.find(zone => zone.id === this.zoneIdSelected);
+                  this.loaderService.setLoading(false);
+                });
+                this.drawControl.remove();
+              },
+              error: (error) => {
+                this.loaderService.setLoading(false);
+              }
             });
           }
           this.detectChange();
@@ -178,7 +195,7 @@ export class LeafletPage{
   }
 
   async alertConfirm(): Promise<string> {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       this.alertController.create({
         header: !this.zoneSelected ? 'Choisissez le titre de la zone' : 'Etes vous sur de vouloir remplacer cette zone ?',
         inputs: !this.zoneSelected ? [
@@ -186,6 +203,21 @@ export class LeafletPage{
             name: 'zoneTitle',
             type: 'text',
             placeholder: 'Entrez le titre de la zone'
+          },
+          {
+            name: 'zoneStartTime',
+            type: 'number',
+            placeholder: "Saisissez l'heure du début de travail"
+          },
+          {
+            name: 'zoneEndTime',
+            type: 'number',
+            placeholder: "Saisissez l'heure de fin de travail"
+          },
+          {
+            name: 'zoneSlotDuration',
+            type: 'number',
+            placeholder: "Indiquez la durée du créneau"
           }
         ] : [],
         buttons: [
@@ -200,9 +232,16 @@ export class LeafletPage{
           {
             text: 'Valider',
             handler: (data) => {
-              console.log("Titre de la zone:", data.zoneTitle);
-              this.zoneName = data.zoneTitle;
-              resolve(data.zoneTitle);
+              if (!data.zoneStartTime || !data.zoneEndTime || !data.zoneSlotDuration) {
+                this.messageService.showToast("L'heure de début, l'heure de fin et la durée du créneau sont obligatoires.", Message.danger,'bottom',4500);
+                return false;
+              } else {
+                console.log("datadata", data);
+                console.log("Titre de la zone:", data.zoneTitle);
+                this.zoneName = data.zoneTitle;
+                resolve(data);
+              }
+              return true; 
             }
           }
         ]
@@ -245,7 +284,7 @@ export class LeafletPage{
 
   async addTechnicians() {
     this.technicianService.technicians = new Array();
-    await this.technicianService.get();
+    await this.technicianService.getTechnicians();
     const modal = await this.modalController.create({
       component: TechnicianModalComponent,
       componentProps: { 

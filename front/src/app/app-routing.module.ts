@@ -57,7 +57,35 @@ const routes: Routes = [
     path: 'interventions',
     loadChildren: () => import('./pages/interventions/interventions.module').then( m => m.InterventionsPageModule)
   },
-
+  {
+    path: 'liste-velo',
+    loadChildren: () => import('./pages/user/bike/bike.module').then( m => m.BikePageModule)
+  },
+  {
+    path: 'velo/:id',
+    loadChildren: () => import('./pages/user/bike/bike.module').then( m => m.BikePageModule)
+  },
+  {
+    path: 'bikes-list',
+    loadChildren: () => import('./pages/user/bikes-list/bikes-list.module').then( m => m.BikesListPageModule)
+  },
+  {
+    path: 'mesinterventions',
+    loadChildren: () => import('./pages/mesinterventions/mesinterventions.module').then( m => m.MesinterventionsPageModule)
+  },
+  {
+    path: 'planning-models',
+    loadChildren: () => import('./pages/planning-models/planning-models.module').then( m => m.PlanningModelsPageModule)
+  },
+   {
+    path: 'planning-models/:id',
+    loadChildren: () => import('./pages/planning-models/planning-models.module').then( m => m.PlanningModelsPageModule)
+  },
+  {
+    path: 'planning-models-list',
+    loadChildren: () => import('./pages/planning-models-list/planning-models-list.module').then( m => m.PlanningModelsListPageModule)
+  },
+ 
  
 ];
 

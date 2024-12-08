@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>planningModelsList</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">planningModelsList</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-item>
+    <ion-label position="floating">Chercher par nom de modèle</ion-label>
+    <ion-input (ionInput)="applyFilter($event)"></ion-input>
+  </ion-item>
+
+  <ion-button class="rmvAction" routerLink="/planning-models" color="success">
+    Ajouter 
+  </ion-button>
+  <ion-button class="rmvAction" (click)="deleteSelected()" [disabled]="!selection.hasValue()" color="danger">
+    Supprimer
+  </ion-button>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" (matSortChange)="sortData($event)" matSort class="mat-elevation-z8">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        (click)="$event.stopPropagation()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"> 
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+      <ng-container matColumnDef="intervention_type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Type d'intervention </th>
+        <td mat-cell *matCellDef="let element"> {{element.intervention_type}} </td>
+      </ng-container>
+      <ng-container matColumnDef="time">
+        <th mat-header-cell *matHeaderCellDef> Heures </th>
+        <td mat-cell *matCellDef="let element"> 
+          {{element.start_time}} - {{element.end_time}}
+          <br>
+          @if (element.slot_duration.hours){
+            {{element.slot_duration.hours}} heures
+          }
+          @if (element.slot_duration.minutes){
+            {{element.slot_duration.minutes}} minutes
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="available_days">
+        <th mat-header-cell *matHeaderCellDef> Jours disponibles </th>
+        <td mat-cell *matCellDef="let element"> 
+          {{ getAvailableDays(element.available_days) }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element">
+          <ion-button color="primary" routerLink="/planning-models/{{element.id}}">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button color="danger" (click)="deleteSelected(element.id)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="pageSizes" showFirstLastButtons></mat-paginator>
+  </div>
+</ion-content>

@@ -88,7 +88,12 @@ export class AuthBaseService extends BaseService{
       .pipe(catchError(this.handleError.bind(this)))
       .subscribe({
         next : (res) => {
+          console.log("resresres",res)
           this.globalService.user.next(res.data);
+          this.globalService.userRole.next(res.data.role);
+          setTimeout(() => {
+            console.log("userRole",this.globalService.userRole.getValue())
+          }, 1000);
           resolve(res.data);
             this.isUserLoadedSubject.next(true);
         },
@@ -115,7 +120,7 @@ export class AuthBaseService extends BaseService{
 
   logout(){
     this.tokenObs = null;
-    this.globalService.user.next(null);
+    this.globalService.user.next(null);  
     localStorage.removeItem("access_token");
     this.router.navigateByUrl("login")
   }

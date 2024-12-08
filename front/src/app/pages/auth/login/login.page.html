@@ -144,9 +144,9 @@
                     <ion-item>
                       <input formControlName="address" class="addressInput" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)"/>
                     </ion-item>
-                    @if(f['address'].invalid && f['address'].touched){
+                    <!-- @if(f['address'].invalid && f['address'].touched){
                       <small class="invalid" *ngIf="f['address'].errors?.['required']">L'adresse est obligatoire.</small>
-                    }
+                    } -->
                   </div>
 
                   

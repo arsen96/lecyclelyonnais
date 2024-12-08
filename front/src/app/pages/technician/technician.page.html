@@ -19,9 +19,7 @@
     </ion-header>
     <div class="centered-form">
       <div>
-        @if(displayMsg){
           <app-message></app-message>
-        }
       </div>
       <form [formGroup]="technicianForm" (ngSubmit)="onSubmit()" >
         <ion-item>

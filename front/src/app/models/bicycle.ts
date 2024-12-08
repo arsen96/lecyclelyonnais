@@ -2,6 +2,7 @@ export class Bicycle {
     id: number;
     brand: string;
     model: string;
-    c_year: number;
+    year: number;
     type: string;
+    user_id: number;
 }

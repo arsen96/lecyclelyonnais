@@ -34,7 +34,7 @@ export class TechnicianListPage implements OnInit {
 
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
-    this.technicianService.get().then(res => {
+    this.technicianService.getTechnicians().then(res => {
       this.dataSource.data = res;
       this.loaderService.setLoading(false);
       this.cd.detectChanges();

@@ -4,12 +4,15 @@ import { AuthBaseService } from './auth-base.service';
 import { FormLoginModel, FormRegisterModel } from 'src/app/pages/auth/login/login.page';
 import { GlobalService } from '../global.service';
 import { User } from 'src/app/models/user';
+import { BicycleService } from '../bicycle.service';
+import { TechnicianService } from '../technician.service';
+import { InterventionService } from '../intervention.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StandardAuth extends AuthBaseService {
-  constructor() {
+  constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,private interventionService:InterventionService) {
     super();
    }
    loginStandard(loginCredentials:FormLoginModel): any{
@@ -17,8 +20,10 @@ export class StandardAuth extends AuthBaseService {
       return value.pipe(
         map((data:any) => {
           this.globalService.isAuthenticated.next(true)
-          console.log("datadatadata",data)
-          this.globalService.user.next(data.data.user);
+          this.bicycleService.userBicycles = [];
+          const user = data.data.user;
+          this.globalService.user.next(user);
+          this.globalService.userRole.next(user.role);
           return data.token;
         })
       )
@@ -32,7 +37,9 @@ export class StandardAuth extends AuthBaseService {
         .pipe(
           tap(res => {
             if (res) {
+              this.bicycleService.userBicycles = [];
               this.globalService.user.next(res.data.user);
+              this.globalService.userRole.next(res.data.user.role);
               this.setSession(res.token);
             } 
           }),
@@ -67,6 +74,12 @@ export class StandardAuth extends AuthBaseService {
 
   override logout(){
     super.logout();
-    this.globalService.isAuthenticated.next(false)
+    this.bicycleService.userBicycles = [];
+    this.bicycleService.resetBicyclesLoaded();
+    this.technicianService.resetTechniciansLoaded();
+    this.technicianService.technicians = [];
+    this.interventionService.allInterventions = [];
+    console.log("logout")
+    this.globalService.isAuthenticated.next(false);
   }
 }

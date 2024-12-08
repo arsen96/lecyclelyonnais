@@ -39,6 +39,14 @@
           <ng-template matStepLabel>Détails du cycle</ng-template>
           <div class="form-content">
             <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Sélectionnez un vélo</mat-label>
+              <mat-select (selectionChange)="onBicycleSelect($event.value)">
+                <mat-option *ngFor="let bicycle of userBicycles" [value]="bicycle">
+                  {{ bicycle.brand }} - {{ bicycle.model }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="full-width">
               <mat-label>Marque</mat-label>
               <input matInput placeholder="Saisissez la marque" formControlName="brand" required>
               <mat-error *ngIf="detailsFormGroup?.get('brand')?.hasError('required')">
@@ -54,7 +62,7 @@
             </mat-form-field>
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Année</mat-label>
-              <input matInput placeholder="Saisissez l'année" formControlName="year" required>
+              <input matInput placeholder="Saisissez l'année" formControlName="year" type="number" required>
               <mat-error *ngIf="detailsFormGroup?.get('year')?.hasError('required')">
                 L'année est requise.
               </mat-error>

@@ -42,9 +42,13 @@ const save = async (req, res) => {
     const { last_name, first_name, phone, address, password, email } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const geographical_zone_id = await getGeographicalZoneId(address);
-
     const query = 'INSERT INTO technician (last_name, first_name, phone, address, password, email, geographical_zone_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
     await pool.query(query, [last_name, first_name, phone, address, hashedPassword, email, geographical_zone_id]);
+    const isEmailUsed = await pool.query('SELECT EXISTS(SELECT 1 FROM client WHERE email = $1)', [email]);
+    if(isEmailUsed.rows[0].exists){
+      res.status(400).send({ success: false, message: "Cet email est déjà utilisé" });
+      return;
+    }
     res.status(201).send({ success: true, message: "Technicien créé avec succès" });
   } catch (error) {
     console.error(error);
@@ -111,6 +115,11 @@ const deleteSelected = async (req, res) => {
     let message = ids.length > 1 ? "Les techniciens ont été supprimés" : "Le technicien a été supprimé";
     res.status(200).json({ success: true, message});
   } catch (error) {
+
+    if(error.code === '23503'){
+      res.status(400).send({ success: false, message: "Ce technicien est lié à une intervention" });
+      return;
+    }
     console.error(error);
     res.status(500).send('Error deleting technicians');
   }

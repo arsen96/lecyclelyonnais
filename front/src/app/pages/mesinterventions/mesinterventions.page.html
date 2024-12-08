@@ -1,0 +1,215 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mes interventions</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="interventions-container">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">mesinterventions</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ng-template #interventionCard let-intervention let-status="status">
+      <ion-col size="4">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <ion-icon name="hammer-outline"></ion-icon> {{ intervention.type }} {{ intervention.id }}
+            </mat-panel-title>
+            <mat-panel-description>
+              <ion-icon name="calendar-outline"></ion-icon> {{ intervention.appointment_start | date:'d/M/yyyy' }} 
+
+              @if(intervention.status === 'canceled'){
+                  <ion-icon name="close-circle-outline" slot="end" class="canceled-icon"></ion-icon> 
+              }
+            </mat-panel-description>
+
+            
+          </mat-expansion-panel-header>
+          <ion-card color="primary">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="calendar-outline"></ion-icon> {{ intervention.type }}
+              </ion-card-title>
+              <ion-card-subtitle>
+                {{ intervention.appointment_start | date:'dd MMMM yyyy' }}
+              </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <div class="intervention-details">
+                <h3>Date</h3>
+                <p><strong>Heure : </strong>{{ intervention.appointment_start | date:'hh:mm' }} - {{ intervention.appointment_end| date:'hh:mm' }}</p>
+                <p><strong>Création : </strong>{{ intervention.created_at | date:'d/M/yyyy' }}</p>
+              </div>
+              <div class="bicycle-details">
+                <h3>Vélo</h3>
+                <p>{{ intervention.bicycle.brand }} - {{ intervention.bicycle.model }}</p>
+                <p>{{ intervention.bicycle.type }}</p>
+              </div>
+              <div class="client-details">
+                <h3>Client</h3>
+                <p><strong>Nom : </strong>{{ intervention.client_info.last_name }}</p>
+                <p><strong>Prénom : </strong>{{ intervention.client_info.first_name }}</p>
+                <p><strong>Email : </strong>{{ intervention.client_info.email }}</p>
+                <p><strong>Téléphone : </strong>{{ intervention.client_info.phone }}</p>
+                @if(intervention.description?.length > 0){
+                  <p><strong>Commentaires : </strong>{{ intervention.description }}</p>
+                }
+                <p><strong>Adresse : </strong>{{ intervention.client_info.address }}</p>
+              </div>
+
+              @if(status === 'ongoing'){
+              <div class="photo-upload">
+                <div class="uploadBtnContainer">
+                  <ion-button (click)="fileInput.click()">
+                    <ion-icon name="camera-outline"></ion-icon> Ajouter des photos
+                  </ion-button>
+                  <input type="file" #fileInput (change)="onFileSelected($event, intervention)" multiple accept="image/png, image/jpeg" style="display: none;">
+                </div>
+                <div class="uploaded-photos">
+                  <ng-container *ngFor="let photo of intervention.uploadedPhotos; let i = index">
+                    <div class="photo-container">
+                      <img [src]="photo" alt="Photo du travail réalisé" class="uploaded-photo" (click)="openImageModal(intervention.uploadedPhotos, i)">
+                      <ion-icon name="close-circle" class="delete-icon" (click)="removePhoto(intervention, i)"></ion-icon>
+                    </div>
+                  </ng-container>
+                </div>
+                <div class="comments-section">
+                  <ion-item>
+                    <ion-label position="stacked">Ajouter un commentaire</ion-label>
+                    <ion-textarea [(ngModel)]="newComment"></ion-textarea>
+                  </ion-item>
+                </div>
+              </div>
+              }
+              <div class="buttons-container">
+                <ion-button *ngIf="intervention.photos?.length > 0" (click)="openImageModal(intervention.photos, 0)">
+                  @if(intervention.photos?.length > 1){
+                  Les photos du modèle
+                } @else {
+                  La photo du modèle
+                  }
+                </ion-button>
+
+                <ion-button *ngIf="intervention.technician_photos?.length > 0" (click)="openImageModal(intervention.technician_photos, 0)">
+                  @if(intervention.technician_photos?.length > 1){
+                  Les photos de l'intervention
+                } @else {
+                  La photo de l'intervention
+                  }
+                </ion-button>
+
+
+                @if(status === 'ongoing'){
+                <ion-button color="success" (click)="markAsDone(intervention)">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon> Marquer comme fait
+                </ion-button>
+                }
+                @if(status === 'upcoming' || status === 'ongoing'){
+                <ion-button color="danger" (click)="confirmCancel(intervention)">
+                  <ion-icon name="close-circle-outline"></ion-icon> Annuler
+                  </ion-button>
+                }
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </mat-expansion-panel>
+      </ion-col>
+    </ng-template>
+
+    <mat-accordion>
+
+      @if(displayPastInterventions){
+      <div class="passedInterventions"> 
+        <h2>Interventions Passées</h2>
+        <div class="filter-container">
+            <ion-label>Type d'intervention</ion-label>
+            <ion-select [(ngModel)]="selectedTypePast" (ionChange)="filterInterventions(FilterType.PAST)">
+              <ion-select-option value="">Tous</ion-select-option>
+              <ion-select-option value="Maintenance">Maintenance</ion-select-option>
+              <ion-select-option value="Reparation">Réparation</ion-select-option>
+            </ion-select>
+        </div>
+        <ion-grid>
+        <ion-row>
+       @if(pastInterventions?.length > 0){  
+          <ng-container *ngFor="let intervention of pastInterventions; let i = index">
+            <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention, status: 'past' }"></ng-container>
+          </ng-container>
+      }
+
+        </ion-row>
+        </ion-grid>
+      </div>
+      }
+
+      @if(displayOngoingInterventions){
+      <div class="ongoingInterventions">
+        <h2>Interventions en Cours</h2>
+
+          <div class="filter-container">
+            <ion-item>
+              <ion-label>Type d'intervention</ion-label>
+              <ion-select [(ngModel)]="selectedTypeOngoing" (ionChange)="filterInterventions(FilterType.ONGOING)">
+                <ion-select-option value="">Tous</ion-select-option>
+                <ion-select-option value="Maintenance">Maintenance</ion-select-option>
+                <ion-select-option value="Reparation">Réparation</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+        <ion-grid>
+        <ion-row>
+          <ng-container *ngFor="let intervention of ongoingInterventions; let i = index">
+            <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention, status: 'ongoing' }"></ng-container>
+          </ng-container>
+        </ion-row>
+        </ion-grid>
+      </div>
+      }
+
+      @if(displayUpcomingInterventions){
+      <div class="upcomingInterventions">
+        <h2>Interventions à Venir</h2>
+        <div class="filter-container">
+          <ion-item>
+            <ion-label>Type d'intervention</ion-label>
+            <ion-select [(ngModel)]="selectedTypeUpcoming" (ionChange)="filterInterventions(FilterType.UPCOMING)">
+              <ion-select-option value="">Tous</ion-select-option>
+              <ion-select-option value="Maintenance">Maintenance</ion-select-option>
+              <ion-select-option value="Reparation">Réparation</ion-select-option>
+              <!-- Ajoutez d'autres types si nécessaire -->
+            </ion-select>
+          </ion-item>
+        </div>
+        <ion-grid>
+        <ion-row>
+          <ng-container *ngIf="upcomingInterventions?.length > 0">
+            <ng-container *ngFor="let intervention of upcomingInterventions; let i = index">
+              <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention, status: 'upcoming' }"></ng-container>
+            </ng-container>
+          </ng-container>
+        </ion-row>
+        </ion-grid>
+      </div>
+      }
+
+
+     
+     
+
+      @if(pastInterventions?.length === 0 && upcomingInterventions?.length === 0 && !isFilterApplied){
+        <ion-grid class="ion-justify-content-center ion-align-items-center no-interventions">
+          <ion-row class="ion-justify-content-center">
+            <ion-col size="12" size-md="12" class="ion-text-center">
+              <h1>Vous n'avez aucune intervention</h1>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      }
+
+    </mat-accordion>
+  </div>
+</ion-content>

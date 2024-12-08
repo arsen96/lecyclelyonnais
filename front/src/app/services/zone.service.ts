@@ -15,8 +15,8 @@ export class ZoneService extends BaseService {
     super();
   }
 
-  create(wkt: string, zoneName: string) {
-    return this.http.post(`${this.baseApi}/zones/save`, { wkt, zoneName });
+  create(wkt: string, data:{zoneTitle:string,zoneStartTime:string,zoneEndTime:string,zoneSlotDuration:number}) {
+    return this.http.post(`${this.baseApi}/zones/save`, { wkt, ...data });
   }
 
   get():Promise<Zones[]> {
@@ -75,4 +75,6 @@ export class ZoneService extends BaseService {
       catchError(this.handleError.bind(this))
     );
   } 
+
+
 }

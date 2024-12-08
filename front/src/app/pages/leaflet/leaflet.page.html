@@ -54,7 +54,7 @@
           (leafletMapReady)="onMapReady($event)"
           [leafletOptions]="options">
         </div>
-
+        @if(zoneSelected){
         <div class="sidenav-toggle">
           <ion-button (click)="filterTechnicians(); sidenav.toggle()">
             <ion-icon name="people-outline" class="sidenav-user-list-icon"></ion-icon>
@@ -64,6 +64,7 @@
             <ion-icon name="person-add-outline"></ion-icon>
           </ion-button>
         </div>
+        }
       }
     </mat-sidenav-content>
   </mat-sidenav-container>

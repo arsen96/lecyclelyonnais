@@ -38,14 +38,31 @@ ion-card-content {
     margin-right: 5px;
     vertical-align: middle;
   }
-
-  
 }
 
 .interventions-container {
-    margin:20px;
-  }
+  margin: 20px;
+}
 
-  .passedInterventions{
-    margin-bottom: 20px;
-  }
+.passedInterventions, .ongoingInterventions, .upcomingInterventions {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.passedInterventions {
+  background-color: #f8d7da; 
+}
+
+.ongoingInterventions {
+  background-color: #fff3cd; 
+}
+
+.upcomingInterventions {
+  background-color: #d4edda; 
+}
+
+.noInterventions {
+  display: flex;
+  justify-content: center;
+}

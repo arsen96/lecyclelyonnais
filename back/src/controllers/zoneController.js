@@ -2,13 +2,17 @@ const pool = require('../config/db');
 
 
 const save = async (req, res) => {
-  const { wkt, zoneName } = req.body;
+  const { wkt, zoneTitle, zoneStartTime, zoneEndTime, zoneSlotDuration } = req.body;
   console.log("wkt",wkt)
-  console.log("zoneName",zoneName)
+  console.log("zoneTitle",zoneTitle)
+  console.log("zoneStartTime",zoneStartTime)
+  console.log("zoneEndTime",zoneEndTime)
+  console.log("zoneSlotDuration",zoneSlotDuration)
+
   try {
     // Insérer le WKT dans la base de données PostgreSQL
-    const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name) VALUES (ST_GeomFromText($1, 4326), $2) RETURNING id';
-    const result = await pool.query(insertZoneQuery, [wkt, zoneName]);
+    const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name, zone_start_time, zone_end_time, zone_slot_duration) VALUES (ST_GeomFromText($1, 4326), $2, $3, $4, $5) RETURNING id';
+    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle, zoneStartTime, zoneEndTime, zoneSlotDuration]);
     console.log("result",result)
     res.status(201).json({
       success: true,
@@ -56,6 +60,9 @@ const get = async (req, res) => {
 const deleteSelected = async (req, res) => {
   const { ids } = req.body;
   try {
+    const dissociateTechniciansQuery = 'UPDATE technician SET geographical_zone_id = NULL, address = NULL WHERE geographical_zone_id = ANY($1::int[])';
+    await pool.query(dissociateTechniciansQuery, [ids]);
+    
     const deleteQuery = 'DELETE FROM geographical_zone WHERE id = ANY($1::int[])';
     await pool.query(deleteQuery, [ids]);
     let message = ids.length > 1 ? "Les zones ont été supprimées" : "La zone a été supprimée";
@@ -108,7 +115,7 @@ const addTechnicianToZone = async (req, res) => {
     res.status(200).send({ success: true, message: "Techniciens mis à jour avec succès" });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erreur lors de la mise à jour des techniciens');
+    res.status(500).send({success: false, message: 'Erreur lors de la mise à jour des techniciens'});
   }
 }
 

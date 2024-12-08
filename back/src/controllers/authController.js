@@ -59,25 +59,35 @@ const register = async (req, res) => {
  * @returns obtenir le token de session
  */
 const login = async (req, res) => {
-  const { email, password} = req.body;
+  const { email, password } = req.body;
   try {
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
-    const user = await pool.query(checkUserQuery, [email]);
+    let isUser = true;
+    let user = await pool.query(checkUserQuery, [email]);
+    console.log("useruseruser", user.rows.length);
     if (user.rows.length === 0) {
-      return res.status(400).json({ success: false, message: "Ce mail n'existe pas" });
+      const checkTechnicianQuery = 'SELECT * FROM technician WHERE email = $1';
+      user = await pool.query(checkTechnicianQuery, [email]);
+      if (user.rows.length === 0) {
+        return res.status(400).json({ success: false, message: "Ce mail n'existe pas" });
+      }
+      console.log("useruseruser", user.rows[0]);
+      isUser = false;
     }
 
     const currentUser = user.rows[0];
-    const passwordExist = await bcrypt.compare(password,currentUser.password);
-    if(!passwordExist){
+    const passwordExist = await bcrypt.compare(password, currentUser.password);
+    if (!passwordExist) {
       return res.status(400).json({ success: false, message: "Mot de passe incorrect" });
     }
     const token = generateToken(currentUser);
+
+    console.log("isUserisUser", isUser);
     res.status(201).json({
       success: true,
       token,
       data: {
-        user: currentUser  
+        user: { ...currentUser, role: isUser ? 'client' : 'technician' }
       }
     });
   } catch (error) {
@@ -194,12 +204,18 @@ const getConnectedUser = async (req, res) => {
 
     const userQuery = 'SELECT * FROM client WHERE id = $1';
     const userResult = await pool.query(userQuery, [userId]);
-
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+    if(userResult.rows.length > 0){
+      user = {...userResult.rows[0],role:"client"};
+    }else{
+      const technicianQuery = 'SELECT * FROM technician WHERE id = $1';
+      const technicianResult = await pool.query(technicianQuery, [userId]);
+      if (technicianResult.rows.length === 0) {
+        return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+      }
+      user = {...technicianResult.rows[0],role:"technician"};
     }
 
-    const user = userResult.rows[0];
+  
     res.status(200).json({ success: true, data: user });
   } catch (error) {
     console.error(error);

@@ -28,6 +28,7 @@ export class TechnicianPage implements OnInit{
 
   ionViewWillEnter() {
     this.displayMsg = false;
+
   }
 
 
@@ -36,7 +37,7 @@ export class TechnicianPage implements OnInit{
   }
 
   async manageForm(){
-    await this.technicianService.get();
+    await this.technicianService.getTechnicians();
     this.technicianForm = this.fb.group({
       last_name: ['Kubtyan', [Validators.required, Validators.minLength(2)]], 
       first_name: ['Kubtyan', [Validators.required, Validators.minLength(2)]], 
@@ -64,6 +65,9 @@ export class TechnicianPage implements OnInit{
         this.addressValidated = true;
       }
     }
+
+
+ 
   }
 
 
@@ -78,9 +82,7 @@ export class TechnicianPage implements OnInit{
       if (this.technicianForm.valid) {
         if (!this.addressValidated && this.technicianForm.value.address.length > 0) {
           this.messageService.showMessage('Veuillez sélectionner une adresse valide dans la liste des suggestions.', Message.danger);
-          this.displayMsg = true;
         }else{
-          this.displayMsg = false;
 
           const postFormData = (message:string) => {
             if(message) {
@@ -126,8 +128,12 @@ export class TechnicianPage implements OnInit{
     }
   }
 
+  ionViewWillLeave() {
+    this.messageService.hideMessage()
+  }
+
   resetForm() {
-    this.displayMsg = false;
+    this.messageService.hideMessage()
     this.technicianForm.reset();
     this.technicianForm.enable();
     this.addressValidated = false;

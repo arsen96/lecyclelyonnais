@@ -9,6 +9,9 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { InterventionService } from 'src/app/services/intervention.service';
 import { TechnicianService } from 'src/app/services/technician.service';
 import { Technician } from 'src/app/models/technicians';
+import { BicycleService } from 'src/app/services/bicycle.service';
+import { Bicycle } from 'src/app/models/bicycle';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-actions',
@@ -29,7 +32,9 @@ export class ActionsPage implements OnInit {
   addressValidated = false
   loginFormGroup: FormGroup;
   isAtConfirmationStep: boolean = false;
-  constructor(private _formBuilder: FormBuilder,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService) { }
+  userBicycles: Bicycle[] = [];
+  selectedBicycle: Bicycle;
+  constructor(private _formBuilder: FormBuilder,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService, private bicycleService: BicycleService) { }
   displayError = false
   concernedZone:number;
   availableTimeSlots: { time: string, available: boolean }[] = [];
@@ -52,9 +57,9 @@ export class ActionsPage implements OnInit {
       address: [adresse || '', Validators.required]
     });
     this.detailsFormGroup = this._formBuilder.group({
-      brand: ['BRAND', Validators.required],
-      model: ['sqs', Validators.required],
-      year: ['2024', [Validators.required, Validators.pattern('^[0-9]{4}$')]], 
+      brand: ['', Validators.required],
+      model: ['', Validators.required],
+      year: ['', [Validators.required, Validators.pattern('^[0-9]{4}$')]], 
       type: ['', Validators.required]
     });
     this.operationFormGroup = this._formBuilder.group({
@@ -83,6 +88,21 @@ export class ActionsPage implements OnInit {
     //     this.stepper.selectedIndex = 1;
     //   });
     // }
+    lastValueFrom(this.bicycleService.getUserBicycles()).then((res:any) => {
+      this.userBicycles = res;
+
+      console.log("this.userBicycles", this.userBicycles)
+    })
+  }
+
+  onBicycleSelect(bicycle: Bicycle) {
+    this.selectedBicycle = bicycle;
+    this.detailsFormGroup.patchValue({
+      brand: bicycle.brand,
+      model: bicycle.model,
+      year: bicycle.year,
+      type: bicycle.type
+    });
   }
 
   async onAddressSubmit() {
@@ -98,7 +118,7 @@ export class ActionsPage implements OnInit {
             this.addressFormCompleted = true;
             if (result.success) { 
               this.concernedZone = result.success;
-              this.technicianService.get().then((technicians: Technician[]) => {
+              this.technicianService.getTechnicians().then((technicians: Technician[]) => {
                 this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZone);
               })
               this.displayError = false;
@@ -231,7 +251,8 @@ export class ActionsPage implements OnInit {
     this.loadingService.showLoaderUntilCompleted(intervention$).subscribe({
     next: (res: any) => {
       this.interventionService.allInterventions = [];
-      this.interventionService.getAll();
+      this.technicianService.getTechniciansByZone(this.concernedZone);
+      this.interventionService.getAllInterventions();
       this.stepper.next();
     },
     error: (error: any) => {

@@ -15,12 +15,17 @@ export class MessageComponent{
   message:Observable<string[]>;
   constructor(public messageService:MessageService){
     this.messageService.message$.subscribe((data) => {
-      this.displayMessage = !!data
+      this.displayMessage = !!data;
+      console.log("datadata",data)
+      if (!data) {
+        this.message = null;
+      }
     })
   }
 
   close(){
     this.displayMessage = false;
+    this.messageService.hideMessage();
   }
 
 }

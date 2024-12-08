@@ -2,20 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { Technician } from '../models/technicians';
-import { BehaviorSubject, catchError, finalize, lastValueFrom, map, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, lastValueFrom, map, Observable, of, ReplaySubject, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TechnicianService extends BaseService {
-  techniciansLoaded = new BehaviorSubject<boolean>(false);
+  techniciansLoaded = new ReplaySubject<boolean>(0);
   technicians: Technician[] = [];
   constructor(private http: HttpClient) {
     super();
-    this.get();
+    this.getTechnicians();
    }
 
-  get(){
+  getTechnicians(){
     if (this.technicians.length > 0) {
       return lastValueFrom(of(this.technicians))
     }
@@ -23,7 +23,6 @@ export class TechnicianService extends BaseService {
     return lastValueFrom(this.http.get(`${this.baseApi}/technicians/get`).pipe(
       map((res: Technician[]) => {
         this.technicians = res
-        console.log("this.technicians", this.technicians)
         this.techniciansLoaded.next(true);
         return this.technicians;
       }),
@@ -74,6 +73,10 @@ export class TechnicianService extends BaseService {
 
   getTechniciansByZone(geographicalZoneId: number){
     return this.technicians.filter(technician => technician.geographical_zone_id === geographicalZoneId)
+  }
+
+  resetTechniciansLoaded() {
+    this.techniciansLoaded = new ReplaySubject<boolean>(0);
   }
 
 }

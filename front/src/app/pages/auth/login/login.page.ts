@@ -9,6 +9,9 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { Message, MessageService } from 'src/app/services/message.service';
 import { GlobalService } from 'src/app/services/global.service';
 import { CookieService } from 'ngx-cookie-service';
+import { InterventionService } from 'src/app/services/intervention.service';
+import { BicycleService } from 'src/app/services/bicycle.service';
+import { TechnicianService } from 'src/app/services/technician.service';
 
 export class FormRegisterModel {
   firstName: string = '';
@@ -46,11 +49,15 @@ export class LoginPage{
   public error = {
     type: 'login' || 'register'
   }
-
+  public interventionService = inject(InterventionService)  
   registrationForm: FormGroup;
   addressValidated = false;
   @Input() isStepper = false;
   @Output() stepperAuthentication = new EventEmitter<boolean>();
+
+  public bicycleService = inject(BicycleService)  
+
+  public technicianService = inject(TechnicianService)  
     
   constructor(public route: ActivatedRoute, public messageService: MessageService) {
     this.route.fragment.subscribe(async (fragment) => {
@@ -81,7 +88,7 @@ export class LoginPage{
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      address: ['', [Validators.required, Validators.minLength(2)]]
+      address: ['', Validators.minLength(2)]
     });
 
   }
@@ -101,6 +108,7 @@ export class LoginPage{
           if(this.isStepper){
             this.stepperAuthentication.emit(true)
           }else{
+            this.loadAllData();
             this.router.navigateByUrl("list-zones")
           }
         }, error: (err) => {
@@ -112,11 +120,17 @@ export class LoginPage{
 
   }
 
+  loadAllData(){
+    this.bicycleService.getBicycles().subscribe()
+    this.technicianService.getTechnicians();  
+    this.interventionService.getAllInterventions();
+  }
+
+
   displayError(err: string, type?: 'login' | 'register') {
     if (type) {
       this.error.type = type
     }
-    console.log("this.error",this.error)
     this.messageService.showMessage(err, Message.danger)
   }
 
@@ -124,7 +138,7 @@ export class LoginPage{
 
   async onSubmitRegister() {
     this.displayError('', 'register')
-    if (this.registrationForm.valid && this.addressValidated) {
+    if (this.registrationForm.valid && !(this.addressValidated && this.registrationForm.controls['address'].hasValidator(Validators.required))) {
       const register$ = this.standardAuthService.register(this.registrationForm.value);
       const result = this.loaderService.showLoaderUntilCompleted(register$);
       result.subscribe({
@@ -132,6 +146,7 @@ export class LoginPage{
           if(this.isStepper){
             this.stepperAuthentication.emit(true)
           }else{
+            this.loadAllData();
             this.router.navigateByUrl("list-zones")
           }
         }, error: (err) => {

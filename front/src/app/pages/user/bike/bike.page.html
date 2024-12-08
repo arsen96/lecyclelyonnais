@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/bikes-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ bikeSelected ? 'Edit Bike' : 'Add Bike' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ bikeSelected ? 'Edit Bike' : 'Add Bike' }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="centered-form">
+    <form [formGroup]="bikeForm" (ngSubmit)="onSubmit()">
+      <ion-item>
+        <ion-label position="floating">Marque</ion-label>
+        <ion-input formControlName="brand"></ion-input>
+      </ion-item>
+      <div *ngIf="bikeForm.get('brand').invalid && bikeForm.get('brand').touched">
+        Marque est requis.
+      </div>
+
+      <ion-item>
+        <ion-label position="floating">Modèle</ion-label>
+        <ion-input formControlName="model"></ion-input>
+      </ion-item>
+      <div *ngIf="bikeForm.get('model').invalid && bikeForm.get('model').touched">
+        Modèle est requis.
+      </div>
+
+      <ion-item>
+        <ion-label position="floating">Année</ion-label>
+        <ion-input formControlName="year" type="number"></ion-input>
+      </ion-item>
+      <div *ngIf="bikeForm.get('year').invalid && bikeForm.get('year').touched">
+        Année est requis et doit être un nombre à 4 chiffres.
+      </div>
+
+      <ion-item>
+        <ion-select formControlName="type" placeholder="Sélectionnez un type">
+          <ion-select-option value="Vélo classique">Vélo classique</ion-select-option>
+          <ion-select-option value="Vélo électrique (VAE)">Vélo électrique (VAE)</ion-select-option>
+          <ion-select-option value="VTT">VTT (Vélo tout-terrain)</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div *ngIf="bikeForm.get('type').invalid && bikeForm.get('type').touched">
+        Type est requis.
+      </div>
+
+      <div class="btnAddContainer">
+        <ion-button type="submit" [disabled]="bikeForm.invalid">{{ bikeSelected ? 'Update' : 'Add' }}</ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>
