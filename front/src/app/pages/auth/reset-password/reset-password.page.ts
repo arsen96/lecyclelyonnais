@@ -46,7 +46,7 @@ export class ResetPasswordPage implements OnInit {
 
 
   ionViewWillLeave() {
-    this.messageService.hideMessage()
+    this.messageService.clearMessage()
   }
 
 }

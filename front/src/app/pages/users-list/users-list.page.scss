@@ -1,0 +1,50 @@
+table ion-item {
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 10px;
+  color: black;
+}
+
+ion-list {
+  background-color: white;
+}
+
+.rmvAction {
+  margin: 10px;
+  width: auto;
+  height: auto;
+}
+
+ion-item ion-icon {
+  font-size: 1.8em;
+}
+
+ion-icon {
+  color: white;
+}
+
+ion-label {
+  font-size: 1.15em;
+}
+
+.mat-column-actions {
+  text-align: right;
+}
+
+th {
+  font-weight: bold;
+}
+
+.addTechnicianBtn {
+  --background: green;
+}
+
+ion-button {
+  width: auto;
+  height: auto;
+}
+
+table {
+  width: 100%;
+}

@@ -25,7 +25,7 @@ export class MessageComponent{
 
   close(){
     this.displayMessage = false;
-    this.messageService.hideMessage();
+    this.messageService.clearMessage();
   }
 
 }

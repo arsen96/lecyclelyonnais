@@ -15,6 +15,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import {MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatBadgeModule } from '@angular/material/badge';
+import { ZoneModalComponent } from './zone-modal/zone-modal.component';
 
 
 @NgModule({
@@ -33,7 +34,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatCheckboxModule,
     MatBadgeModule
   ],
-  declarations: [LeafletPage, TechnicianModalComponent],
+  declarations: [LeafletPage, TechnicianModalComponent, ZoneModalComponent],
   providers: [
     {
       provide: Loader,

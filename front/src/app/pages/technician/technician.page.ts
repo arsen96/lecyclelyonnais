@@ -129,11 +129,11 @@ export class TechnicianPage implements OnInit{
   }
 
   ionViewWillLeave() {
-    this.messageService.hideMessage()
+    this.messageService.clearMessage()
   }
 
   resetForm() {
-    this.messageService.hideMessage()
+    this.messageService.clearMessage()
     this.technicianForm.reset();
     this.technicianForm.enable();
     this.addressValidated = false;

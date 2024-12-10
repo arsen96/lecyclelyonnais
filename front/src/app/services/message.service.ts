@@ -28,7 +28,7 @@ export class MessageService {
     this.messageEmitter.next({message:messageSave,status});
   }
 
-  hideMessage(){
+  clearMessage(){
     this.messageEmitter.next({message:[],status:''});
   }
 

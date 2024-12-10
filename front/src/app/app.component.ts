@@ -5,6 +5,12 @@ import { OauthService } from './services/auth/oauth.service';
 import { GlobalService } from './services/global.service';
 import { combineLatest } from 'rxjs';
 
+export enum UserRole {
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  TECHNICIAN = 'technician',
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -20,17 +26,21 @@ export class AppComponent {
   public globalService = inject(GlobalService)
   public appPagesFix: any[] = [
     { title: 'Accueil', url: '/home', icon: 'home', condition: () => true },
-    { title: 'Zones', url: '/list-zones', icon: 'home', condition: () => true },
-    { title: 'Interventions', url: '/interventions', icon: 'home', condition: () => true },
-    { title: 'Liste des vélos', url: '/bikes-list', icon: 'home', condition: () => true },
-    { title: 'Techniciens', url: '/list-technicien', icon: 'home', condition: () => true },
-    { title: 'Actions', url: '/actions', icon: 'home', condition: () => true },
-    { title: 'Mes vélos', url: '/bikes-list', icon: 'home', condition: () => true },
+    { title: 'Zones', url: '/list-zones', icon: 'home', condition: () => this.manageAccess(UserRole.ADMIN) },
+    { title: 'Interventions', url: '/interventions', icon: 'home', condition: () => this.manageAccess(UserRole.CLIENT) || this.manageAccess(UserRole.ADMIN) },
+    { title: 'Mes vélos', url: '/bikes-list', icon: 'home', condition: () => this.manageAccess(UserRole.CLIENT) },
+    { title: 'Techniciens', url: '/list-technicien', icon: 'home', condition: () => this.manageAccess(UserRole.ADMIN) },
+    { title: 'Actions', url: '/actions', icon: 'home', condition: () => this.manageAccess(UserRole.CLIENT) },
+    { title: 'Mes interventions', url: '/mesinterventions', icon: 'log-in', condition: () => this.manageAccess(UserRole.TECHNICIAN) },
+    { title: 'Planning', url: '/planning-models', icon: 'log-in', condition: () => this.manageAccess(UserRole.ADMIN) },
+    { title: 'Liste des modèles de planning', url: '/planning-models-list', icon: 'log-in', condition: () => this.manageAccess(UserRole.ADMIN) },
+    { title: 'Créer un compte utilisateur', url: '/users', icon: 'log-in', condition: () => this.manageAccess(UserRole.ADMIN) },
+    { title: 'Liste des admins', url: '/admins-list', icon: 'log-in', condition: () => this.manageAccess(UserRole.ADMIN) },
+    { title: 'Liste des entreprises', url: '/company-list', icon: 'log-in', condition: () => true },
+    { title: 'Entreprise', url: '/company', icon: 'log-in', condition: () => true },
     { title: 'Login', url: '/login', icon: 'log-in', condition: () => !localStorage.getItem("access_token") },
-    { title: 'Mes interventions', url: '/mesinterventions', icon: 'log-in', condition: () => this.globalService.userRole.getValue() === "technician" },
-    { title: 'Planning', url: '/planning-models', icon: 'log-in', condition: () => true },
-    { title: 'Liste des modèles de planning', url: '/planning-models-list', icon: 'log-in', condition: () => true },
     { title: 'Déconnexion', url:'/login', icon: 'log-out', condition: () => localStorage.getItem("access_token"), func: () => this.logout() },
+
   ];
 
   constructor() {
@@ -39,6 +49,7 @@ export class AppComponent {
       this.globalService.userRole,
       this.globalService.isAuthenticated
     ]).subscribe(() => {
+      console.log("userRole",this.globalService.userRole.getValue())
       this.updateMenu();
     });
 
@@ -48,6 +59,10 @@ export class AppComponent {
      this.appPages.set(this.appPagesFix.filter((page) => page.condition()))
   }
 
+  manageAccess(role: string): boolean {
+    console.log("uuu",this.globalService.userRole.getValue())
+    return this.globalService.userRole.getValue() === role;
+  }
 
   logout() {
     this.standard.logout();

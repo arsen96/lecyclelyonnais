@@ -1,0 +1,49 @@
+<ion-content [fullscreen]="true">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button routerLink="/users-list">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title class="ion-text-center">{{selectedUser ? 'Modifier un utilisateur' : 'Créer un compte utilisateur'}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div class="centered-form">
+    <app-message class="ion-margin-top" *ngIf="error.type === 'register'"></app-message>
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmitRegister()">
+      <ion-item>
+        <ion-label position="floating">Prénom</ion-label>
+        <ion-input formControlName="firstName" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Nom</ion-label>
+        <ion-input formControlName="lastName" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" formControlName="email" required></ion-input>
+      </ion-item>
+      <ion-item *ngIf="!selectedUser">
+        <ion-label position="floating">Mot de passe</ion-label>
+        <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
+        <ion-button (click)="generatePassword()">Générer</ion-button>
+        <ion-button slot="end" (click)="showPassword = !showPassword">
+          <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Numéro de téléphone</ion-label>
+        <ion-input type="tel" formControlName="phone" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <input formControlName="address" class="addressInput" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)"/>
+      </ion-item>
+      <div class="ion-text-center">
+        <ion-button type="submit" [disabled]="registrationForm.invalid">
+          {{selectedUser ? 'Modifier' : 'Créer un compte'}}
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

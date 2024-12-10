@@ -64,8 +64,22 @@
             <ion-icon name="person-add-outline"></ion-icon>
           </ion-button>
         </div>
+
+          <div class="sidenav-toggle modelPlanificationContainer">
+            <ion-button (click)="setModelPlanification()"><ion-text size="small">Planification</ion-text></ion-button>
+          </div>
         }
       }
     </mat-sidenav-content>
   </mat-sidenav-container>
+
+  <!-- <ion-list>
+    <ion-item>
+      <ion-label>Type d'intervention</ion-label>
+      <ion-select [(ngModel)]="selectedInterventionType" placeholder="Choisissez le type d'intervention">
+        <ion-select-option value="maintenance">Maintenance</ion-select-option>
+        <ion-select-option value="repair">Réparation</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list> -->
 </ion-content>

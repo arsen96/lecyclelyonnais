@@ -65,6 +65,6 @@ export class BikePage implements OnInit {
   }
 
   ionViewWillLeave() {
-    this.messageService.hideMessage()
+    this.messageService.clearMessage()
   }
 }

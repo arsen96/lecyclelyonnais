@@ -85,7 +85,54 @@ const routes: Routes = [
     path: 'planning-models-list',
     loadChildren: () => import('./pages/planning-models-list/planning-models-list.module').then( m => m.PlanningModelsListPageModule)
   },
- 
+  {
+    path: 'users',
+    loadChildren: () => import('./pages/users/users.module').then( m => m.UsersPageModule)
+  },
+  {
+    path: 'users-list',
+    loadChildren: () => import('./pages/users-list/users-list.module').then( m => m.UsersListPageModule)
+  },
+  {
+    path: 'admins',
+    loadChildren: () => import('./pages/admins/admins.module').then( m => m.AdminsPageModule)
+  },
+  {
+    path: 'admins-list',
+    loadChildren: () => import('./pages/admins-list/admins-list.module').then( m => m.AdminsListPageModule)
+  },
+  {
+    path: 'users',
+    loadChildren: () => import('./pages/users/users.module').then( m => m.UsersPageModule)
+  },
+  {
+    path: 'user/:id',
+    loadChildren: () => import('./pages/users/users.module').then( m => m.UsersPageModule)
+  },
+  {
+    path: 'users-list',
+    loadChildren: () => import('./pages/users-list/users-list.module').then( m => m.UsersListPageModule)
+  },
+  {
+    path: 'admins/:id',
+    loadChildren: () => import('./pages/admins/admins.module').then( m => m.AdminsPageModule)
+  },
+  {
+    path: 'login-admin',
+    loadChildren: () => import('./pages/auth/login-admin/login-admin.module').then( m => m.LoginAdminPageModule)
+  },
+  {
+    path: 'company-list',
+    loadChildren: () => import('./pages/company-list/company-list.module').then( m => m.CompanyListPageModule)
+  },
+  {
+    path: 'company',
+    loadChildren: () => import('./pages/company/company.module').then( m => m.CompanyPageModule)
+  },
+  {
+    path: 'company/:id',
+    loadChildren: () => import('./pages/company/company.module').then( m => m.CompanyPageModule)
+  },
  
 ];
 

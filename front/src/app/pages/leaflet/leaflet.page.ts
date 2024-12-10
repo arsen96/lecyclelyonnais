@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, NgZone, OnInit, ViewEncapsulation, ElementRef, ViewChild, Input, AfterViewInit, provideExperimentalZonelessChangeDetection, inject } from '@angular/core';
-import { tileLayer, latLng, map, FeatureGroup, Control, Map, LatLng, circleMarker, Layer, Polygon,geoJSON } from 'leaflet';
+import { tileLayer, latLng, map, FeatureGroup, Control, Map, LatLng, circleMarker, Layer, Polygon, geoJSON } from 'leaflet';
 import 'leaflet-draw'; // Importer le plugin leaflet-draw
 import * as turf from '@turf/turf';  // Importer Turf.js
 import { HttpClient } from '@angular/common/http'; // Ajoutez cet import
@@ -14,6 +14,7 @@ import { TechnicianModalComponent } from './technician-modal/technician-modal.co
 import { Technician } from 'src/app/models/technicians';
 import { TechnicianService } from 'src/app/services/technician.service';
 import { LoadingService } from 'src/app/services/loading.service';
+import { ZoneModalComponent } from './zone-modal/zone-modal.component';
 
 declare var google: any;
 
@@ -23,9 +24,9 @@ declare var google: any;
   styleUrls: ['./leaflet.page.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class LeafletPage{
+export class LeafletPage {
   public newMapAdded = true;
-  zoneName:string;
+  zoneName: string;
   map;
 
   zoneSelected: Zones;
@@ -39,7 +40,7 @@ export class LeafletPage{
   };
   addressValidated = false;
 
-  zoneIdSelected:number;
+  zoneIdSelected: number;
   drawControl;
 
   mapReady: Promise<boolean>;
@@ -49,9 +50,9 @@ export class LeafletPage{
   filteredTechnicians = [];
   zoneAdded = false;
   public loaderService = inject(LoadingService);
-  
+  selectedInterventionType: string;
 
-  constructor(private cd: ChangeDetectorRef,private technicianService:TechnicianService, private route: ActivatedRoute,public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
+  constructor(private cd: ChangeDetectorRef, private technicianService: TechnicianService, private route: ActivatedRoute, public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
     this.zoneIdSelected = Number(this.route.snapshot.params['id']) ? Number(this.route.snapshot.params['id']) : null;
     this.mapReady = new Promise<boolean>((resolve) => {
       this.mapReadyResolver = resolve;
@@ -85,7 +86,7 @@ export class LeafletPage{
     });
   }
 
- async configLeafletDraw() {
+  async configLeafletDraw() {
     if (this.zoneIdSelected) {
       await this.editeMap();
     }
@@ -128,15 +129,15 @@ export class LeafletPage{
       } else {
         const wkt = this.convertToWKT(layer);
         try {
-          const alertData = await this.alertConfirm() as any;
-          if (wkt && alertData) {
+          const modalData = await this.openZoneModal();
+          if (wkt && modalData) {
             this.loaderService.setLoading(true);
-            this.zoneService.create(wkt, alertData).subscribe({
-              next: (res: {success: boolean, message: string, zoneId: number}) => {
-                  this.zoneService.allZones = new Array();
-                  console.log("res", res);
-                  this.zoneService.get().then(() => {
-                  this.zoneAdded = true
+            this.zoneService.create(wkt, modalData).subscribe({
+              next: (res: { success: boolean, message: string, zoneId: number }) => {
+                this.zoneService.allZones = new Array();
+                console.log("res", res);
+                this.zoneService.get().then(() => {
+                  this.zoneAdded = true;
                   this.zoneIdSelected = res.zoneId;
                   this.zoneSelected = this.zoneService.allZones.find(zone => zone.id === this.zoneIdSelected);
                   this.loaderService.setLoading(false);
@@ -150,7 +151,7 @@ export class LeafletPage{
           }
           this.detectChange();
         } catch (err) {
-          console.log("dismissed alert", err);
+          console.log("dismissed modal", err);
           this.resetDrawing();
         }
       }
@@ -158,21 +159,38 @@ export class LeafletPage{
     });
   }
 
- 
-  // https://gist.github.com/bmcbride/4248238
-  public convertToWKT(layer:Layer): string {
+  async openZoneModal(edition = false): Promise<any> {
+    const modal = await this.modalController.create({
+      component: ZoneModalComponent,
+      componentProps: {
+        zoneSelected: this.zoneSelected,
+        edition
+      }
+    });
+
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss();
+
+    if (role === 'cancel' || !data) {
+      this.resetDrawing();
+    }
+
+    return data;
+  }
+
+  public convertToWKT(layer: Layer): string {
     const coords = [];
     if (layer instanceof Polygon) {
-        var latlngs = layer.getLatLngs()[0] as any;
-        for (var i = 0; i < latlngs.length; i++) {
-	    	coords.push(latlngs[i].lng + " " + latlngs[i].lat);
-	    };
-       return "POLYGON((" + coords.join(",") + "," + latlngs[0].lng + " " + latlngs[0].lat + "))";
+      var latlngs = layer.getLatLngs()[0] as any;
+      for (var i = 0; i < latlngs.length; i++) {
+        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
+      };
+      return "POLYGON((" + coords.join(",") + "," + latlngs[0].lng + " " + latlngs[0].lat + "))";
     }
     return null;
   }
 
-  public detectChange(){
+  public detectChange() {
     this.cd.detectChanges();
   }
 
@@ -181,9 +199,7 @@ export class LeafletPage{
     this.zoneName = null;
   }
 
-
-
-  public handleAddressChange(place:any) {
+  public handleAddressChange(place: any) {
     if (place.geometry) {
       this.map.setView(new LatLng(place.geometry.location.lat(), place.geometry.location.lng()), 15);
       this.addressValidated = true; // Valider l'adresse
@@ -194,69 +210,10 @@ export class LeafletPage{
     console.log(`Dismissed with role: ${ev.detail.role}`);
   }
 
-  async alertConfirm(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.alertController.create({
-        header: !this.zoneSelected ? 'Choisissez le titre de la zone' : 'Etes vous sur de vouloir remplacer cette zone ?',
-        inputs: !this.zoneSelected ? [
-          {
-            name: 'zoneTitle',
-            type: 'text',
-            placeholder: 'Entrez le titre de la zone'
-          },
-          {
-            name: 'zoneStartTime',
-            type: 'number',
-            placeholder: "Saisissez l'heure du début de travail"
-          },
-          {
-            name: 'zoneEndTime',
-            type: 'number',
-            placeholder: "Saisissez l'heure de fin de travail"
-          },
-          {
-            name: 'zoneSlotDuration',
-            type: 'number',
-            placeholder: "Indiquez la durée du créneau"
-          }
-        ] : [],
-        buttons: [
-          {
-            text: 'Annuler',
-            role: 'cancel',
-            handler: () => {
-              this.onCancel();
-              reject();
-            }
-          },
-          {
-            text: 'Valider',
-            handler: (data) => {
-              if (!data.zoneStartTime || !data.zoneEndTime || !data.zoneSlotDuration) {
-                this.messageService.showToast("L'heure de début, l'heure de fin et la durée du créneau sont obligatoires.", Message.danger,'bottom',4500);
-                return false;
-              } else {
-                console.log("datadata", data);
-                console.log("Titre de la zone:", data.zoneTitle);
-                this.zoneName = data.zoneTitle;
-                resolve(data);
-              }
-              return true; 
-            }
-          }
-        ]
-      }).then(alert => alert.present());
-    });
-  }
-
-
   onCancel() {
     console.log("Ajout annulé !");
     this.resetDrawing();
   }
-
-
-
 
   async editeMap() {
     try {
@@ -273,9 +230,9 @@ export class LeafletPage{
         } as any;
 
         console.log("geoJsonData", geoJsonData);
-          await this.mapReady
-          const layer = geoJSON(geoJsonData).addTo(this.map);
-          this.map.fitBounds(layer.getBounds());
+        await this.mapReady;
+        const layer = geoJSON(geoJsonData).addTo(this.map);
+        this.map.fitBounds(layer.getBounds());
       }
     } catch (err) {
       console.log("err", err);
@@ -287,10 +244,10 @@ export class LeafletPage{
     await this.technicianService.getTechnicians();
     const modal = await this.modalController.create({
       component: TechnicianModalComponent,
-      componentProps: { 
+      componentProps: {
         zoneId: this.zoneIdSelected,
-        currentZone:this.zoneSelected,
-        technicians:this.technicianService.technicians.filter(t => !t.address)
+        currentZone: this.zoneSelected,
+        technicians: this.technicianService.technicians.filter(t => !t.address)
       }
     });
 
@@ -302,11 +259,11 @@ export class LeafletPage{
     return await modal.present();
   }
 
-  removeTechnician(technicianId:number) {
+  removeTechnician(technicianId: number) {
     this.zoneService.removeTechnicianFromZone(this.zoneIdSelected, technicianId).subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.zoneSelected.technicians = this.zoneSelected.technicians.filter(t => t.id !== technicianId);
-        this.filterTechnicians(); 
+        this.filterTechnicians();
         this.messageService.showToast(res.message, 'success');
       },
       error: (error) => {
@@ -319,4 +276,25 @@ export class LeafletPage{
     this.technicianService.technicians = new Array();
   }
 
+  async setModelPlanification(){
+    const { zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = await this.openZoneModal(true)
+    console.log("zoneTitle", zoneTitle);
+    console.log("zoneTypeInterventionMaintenance", zoneTypeInterventionMaintenance);
+    console.log("zoneTypeInterventionRepair", zoneTypeInterventionRepair);
+    if(zoneTitle && zoneTypeInterventionMaintenance && zoneTypeInterventionRepair){
+      this.zoneService.updateZone(this.zoneIdSelected, zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair).subscribe({
+        next: (res: any) => {
+          console.log("resresres", res);
+          this.zoneSelected.model_planification.maintenance.id = zoneTypeInterventionMaintenance;
+          this.zoneSelected.model_planification.repair.id = zoneTypeInterventionRepair;
+          this.zoneSelected.zone_name = zoneTitle;
+          this.messageService.showToast(res.message, 'success');
+        },
+        error: (error) => {
+          this.messageService.showToast(error.message, 'danger');
+        }
+      });
+    }
+  }
 }
+

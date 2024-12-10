@@ -12,6 +12,7 @@ import { Technician } from 'src/app/models/technicians';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { Bicycle } from 'src/app/models/bicycle';
 import { lastValueFrom } from 'rxjs';
+import { Zones } from 'src/app/models/zones';
 
 @Component({
   selector: 'app-actions',
@@ -36,14 +37,16 @@ export class ActionsPage implements OnInit {
   selectedBicycle: Bicycle;
   constructor(private _formBuilder: FormBuilder,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService, private bicycleService: BicycleService) { }
   displayError = false
-  concernedZone:number;
+  concernedZoneId:number;
+  concernedZone:Zones ;
   availableTimeSlots: { time: string, available: boolean }[] = [];
   previousTimeSlot: string;
   selectedTimeSlotDate: string;
   techniciansByZone:Technician[] = [];
   interventionFinalData:any;
+  availableDates: Date[] = [];
   ngOnInit() {
-    this.concernedZone = null;
+    this.concernedZoneId = null;
     this.addressValidated = false
     this.minDate = new Date().toISOString().split('T')[0]; 
     const currentDateTime = new Date().toISOString();
@@ -57,10 +60,10 @@ export class ActionsPage implements OnInit {
       address: [adresse || '', Validators.required]
     });
     this.detailsFormGroup = this._formBuilder.group({
-      brand: ['', Validators.required],
-      model: ['', Validators.required],
-      year: ['', [Validators.required, Validators.pattern('^[0-9]{4}$')]], 
-      type: ['', Validators.required]
+      brand: ['Default Brand', Validators.required],
+      model: ['Default Model', Validators.required],
+      year: ['2023', [Validators.required, Validators.pattern('^[0-9]{4}$')]],
+      type: ['Vélo classique', Validators.required]
     });
     this.operationFormGroup = this._formBuilder.group({
       operation: ['maintenance', Validators.required]
@@ -93,6 +96,40 @@ export class ActionsPage implements OnInit {
 
       console.log("this.userBicycles", this.userBicycles)
     })
+
+  }
+
+  updateAvailableDates() {
+    const operationType = this.operationFormGroup.value.operation;
+    const availableDays = JSON.parse(this.concernedZone.model_planification[operationType].available_days);
+    this.availableDates = this.getAvailableDates(availableDays);
+  }
+
+  getAvailableDates(availableDays: any): Date[] {
+    const dates: Date[] = [];
+    const today = new Date();
+    for (let i = 0; i < 30; i++) { // Check for the next 30 days
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        if (availableDays[dayName]) {
+            dates.push(date);
+        }
+    }
+    return dates;
+  }
+
+  isDateEnabled(dateIsoString: string): boolean {
+    if(!this.concernedZone || !this.operationFormGroup.value.operation){
+      return false
+    }
+    const date = new Date(dateIsoString);
+    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
+    const operationType = this.operationFormGroup.value.operation === 'maintenance' ? 'maintenance' : 'repair';
+    const operationPlanification = this.concernedZone.model_planification[operationType]
+    const availableDays = JSON.parse(operationPlanification.available_days);
+    return availableDays[dayName]
   }
 
   onBicycleSelect(bicycle: Bicycle) {
@@ -117,9 +154,13 @@ export class ActionsPage implements OnInit {
             console.log("result",result)
             this.addressFormCompleted = true;
             if (result.success) { 
-              this.concernedZone = result.success;
+              this.concernedZoneId = result.success;
+              this.zoneService.get().then(() => {     
+                this.concernedZone = this.zoneService.getZoneById(this.concernedZoneId);
+                this.updateAvailableDates();
+              })
               this.technicianService.getTechnicians().then((technicians: Technician[]) => {
-                this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZone);
+                this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
               })
               this.displayError = false;
               this.stepper.next();
@@ -223,7 +264,7 @@ export class ActionsPage implements OnInit {
     
     
     const allData = {
-      address: {zone:this.concernedZone,...this.addressFormGroup.value},
+      address: {zone:this.concernedZoneId,...this.addressFormGroup.value},
       details: this.detailsFormGroup.value,
       operation: this.operationFormGroup.value,
       maintenance: this.maintenanceFormGroup.value,
@@ -251,7 +292,7 @@ export class ActionsPage implements OnInit {
     this.loadingService.showLoaderUntilCompleted(intervention$).subscribe({
     next: (res: any) => {
       this.interventionService.allInterventions = [];
-      this.technicianService.getTechniciansByZone(this.concernedZone);
+      this.technicianService.getTechniciansByZone(this.concernedZoneId);
       this.interventionService.getAllInterventions();
       this.stepper.next();
     },
@@ -296,14 +337,8 @@ export class ActionsPage implements OnInit {
 
   onDateChange(event: any) {
     const selectedDate = new Date(event.detail.value);
-    const operationType = this.operationFormGroup.value.operation;
-    // 
-    console.log("operationType", operationType)
-    console.log("selectedDate", selectedDate)
+    const operationType = this.operationFormGroup.value.operation === 'maintenance' ? 'maintenance' : 'repair';
     this.availableTimeSlots = this.generateTimeSlots(selectedDate, operationType);
-    console.log("this.availableTimeSlots", this.availableTimeSlots);
-
-    // Check if any time slot is available
     const isAnySlotAvailable = this.availableTimeSlots.some(slot => slot.available);
     if (!isAnySlotAvailable) {
         this.msgService.showToast('Aucun créneau horaire disponible pour la date sélectionnée.', 'danger');
@@ -311,42 +346,39 @@ export class ActionsPage implements OnInit {
   }
 
   generateTimeSlots(date: Date, operationType: string): { time: string, available: boolean }[] {
-    const startHour = 9;
-    const endHour = 17.5;
-    let interval = 1.5; 
-
-    if (operationType === 'reparation') {
-      interval = 3; 
-    }
-
+    const planification = this.concernedZone.model_planification[operationType];
+    const [startHour, startMinute] = planification.start_time.split(':').map(Number);
+    const [endHour, endMinute] = planification.end_time.split(':').map(Number);
+    const [intervalHours, intervalMinutes] = planification.slot_duration.split(':').map(Number);
+    const interval = intervalHours + intervalMinutes / 60;
+    
     const slots: { time: string, available: boolean }[] = [];
 
-    for (let hour = startHour; hour < endHour; hour += interval) {
-      const slotStart = new Date(date);
-      slotStart.setHours(Math.floor(hour), (hour % 1) * 60, 0);
-      const slotEnd = new Date(slotStart);
-      slotEnd.setMinutes(slotEnd.getMinutes() + interval * 60);
+    let currentHour = startHour;
+    let currentMinute = startMinute;
 
-      const timeString = `${slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-      const isAvailable = this.isDateAvailable(slotStart, slotEnd);
-      if(timeString.startsWith("16:30")){
-        console.log("slotStart", slotStart)
-        console.log("slotStart", slotStart)
-        console.log("timeString", timeString)
-        console.log("isAvailable", isAvailable)
-        console.log("this.interventionService.allInterventions", this.interventionService.allInterventions)
-      }
-      // console.log("slotStart", slotStart)
-      // console.log("slotEnd", slotEnd)
-      slots.push({ time: timeString, available: isAvailable });
+    while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
+        const slotStart = new Date(date);
+        slotStart.setHours(currentHour, currentMinute, 0);
+        const slotEnd = new Date(slotStart);
+        slotEnd.setMinutes(slotEnd.getMinutes() + interval * 60);
+
+        if (slotEnd.getHours() > endHour || (slotEnd.getHours() === endHour && slotEnd.getMinutes() > endMinute)) {
+            break;
+        }
+
+        const timeString = `${slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        const isAvailable = this.isDateAvailable(slotStart, slotEnd);
+        slots.push({ time: timeString, available: isAvailable });
+
+        currentHour = slotEnd.getHours();
+        currentMinute = slotEnd.getMinutes();
     }
 
     return slots;
   }
 
   isDateAvailable(slotStart: Date, slotEnd: Date): boolean {
-    console.log("this.interventionService.allInterventions", this.interventionService.allInterventions)
-    console.log("this.techniciansByZone", this.techniciansByZone)
     let isAvailable = true;
     const interventions = this.interventionService.allInterventions.filter(intervention => {
         const appointmentStart = new Date(intervention.appointment_start);
@@ -418,7 +450,7 @@ export class ActionsPage implements OnInit {
     this.detailsFormCompleted = false;
     this.operationFormCompleted = false;
     this.addressValidated = false;
-    this.concernedZone = null;
+    this.concernedZoneId = null;
     this.techniciansByZone = [];
     this.availableTimeSlots = [];
     this.previousTimeSlot = '';

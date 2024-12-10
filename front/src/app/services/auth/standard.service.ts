@@ -12,11 +12,12 @@ import { InterventionService } from '../intervention.service';
   providedIn: 'root',
 })
 export class StandardAuth extends AuthBaseService {
+  currentRoute:string = 'auth';
   constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,private interventionService:InterventionService) {
     super();
    }
    loginStandard(loginCredentials:FormLoginModel): any{
-      const value = super.login(loginCredentials,`${this.baseApi}/auth/login`);
+      const value = super.login(loginCredentials,`${this.baseApi}/${this.currentRoute}/login`);
       return value.pipe(
         map((data:any) => {
           this.globalService.isAuthenticated.next(true)
@@ -30,7 +31,7 @@ export class StandardAuth extends AuthBaseService {
     }
 
     register(form:FormRegisterModel){
-        return this.http.post<any>(`${this.baseApi}/auth/register`,form)
+        return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/register`,form)
         .pipe(
           catchError(this.handleError)
         )
@@ -51,7 +52,7 @@ export class StandardAuth extends AuthBaseService {
   }
 
   resetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.baseApi}/auth/forgot-password`,data).pipe(
+    return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/forgot-password`,data).pipe(
       catchError(this.handleError)
     ).pipe(
       map(data => {
@@ -62,7 +63,7 @@ export class StandardAuth extends AuthBaseService {
   }
 
   confirmResetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.baseApi}/auth/reset-password`,data).pipe(
+    return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/reset-password`,data).pipe(
       catchError(this.handleError)
     ).pipe(
       map(data => {
@@ -79,7 +80,6 @@ export class StandardAuth extends AuthBaseService {
     this.technicianService.resetTechniciansLoaded();
     this.technicianService.technicians = [];
     this.interventionService.allInterventions = [];
-    console.log("logout")
     this.globalService.isAuthenticated.next(false);
   }
 }

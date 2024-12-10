@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ zoneSelected ? 'Modifier la zone' : 'Nouvelle zone' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Fermer</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <div class="zoneContainer">
+  <ion-list>
+    <ion-item>
+      <ion-input label="Titre de la zone" labelPlacement="stacked" [(ngModel)]="zoneTitle" placeholder="Entrez le titre de la zone"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-select label="Modèle de planification pour Maintenance" labelPlacement="stacked" [(ngModel)]="zoneTypeInterventionMaintenance" placeholder="Choisissez le type d'intervention">
+        <ion-select-option *ngFor="let model of planningModels" [value]="model.id">
+            {{ model.name }} {{model.start_time}} / {{model.end_time}}
+          </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+        <ion-select label="Modèle de planification pour Réparation" labelPlacement="stacked" [(ngModel)]="zoneTypeInterventionRepair" placeholder="Choisissez le type d'intervention">
+            <ion-select-option *ngFor="let model of planningModels" [value]="model.id">
+                {{ model.name }} {{model.start_time}} / {{model.end_time}} 
+              </ion-select-option>
+        </ion-select>
+      </ion-item>
+  </ion-list>
+  <ion-footer>
+    <ion-button expand="full" (click)="validate()">{{edition ? 'Modifier' : 'Valider'}}</ion-button>
+  </ion-footer>
+</div>
+</ion-content> 

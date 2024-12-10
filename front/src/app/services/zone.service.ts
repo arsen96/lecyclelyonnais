@@ -9,6 +9,8 @@ import { Zones } from '../models/zones';
   providedIn: 'root'
 })
 export class ZoneService extends BaseService {
+
+  currentRoute: string = 'zones';
   public allZones: Zones[] = new Array<Zones>(); 
 
   constructor(private http: HttpClient) { 
@@ -16,7 +18,7 @@ export class ZoneService extends BaseService {
   }
 
   create(wkt: string, data:{zoneTitle:string,zoneStartTime:string,zoneEndTime:string,zoneSlotDuration:number}) {
-    return this.http.post(`${this.baseApi}/zones/save`, { wkt, ...data });
+    return this.http.post(`${this.baseApi}/${this.currentRoute}/save`, { wkt, ...data });
   }
 
   get():Promise<Zones[]> {
@@ -24,7 +26,7 @@ export class ZoneService extends BaseService {
       return lastValueFrom(of(this.allZones))
     }
 
-    return lastValueFrom(this.http.get(`${this.baseApi}/zones/get`).pipe(
+    return lastValueFrom(this.http.get(`${this.baseApi}/${this.currentRoute}/get`).pipe(
       tap((res: any) => {
         res.data.forEach((zone: any) => {
           zone.geojson = JSON.parse(zone.geojson);
@@ -32,7 +34,7 @@ export class ZoneService extends BaseService {
 
       }),
       map((res: any) => {
-        this.allZones = res.data; // Cache the data
+        this.allZones = res.data; 
 
         console.log("res.data", res.data)
         return res.data;
@@ -41,19 +43,26 @@ export class ZoneService extends BaseService {
     ))
   }
 
+
+  updateZone(zoneId:number, zoneTitle:string, zoneTypeInterventionMaintenance:number, zoneTypeInterventionRepair:number) {
+    return this.http.post(`${this.baseApi}/${this.currentRoute}/update`, { zoneId, zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   delete(ids: number[]): Observable<void> {
-    return this.http.post(`${this.baseApi}/zones/delete`, { ids }).pipe(
+    return this.http.post(`${this.baseApi}/${this.currentRoute}/delete`, { ids }).pipe(
       catchError(this.handleError.bind(this))
     );
   }
 
   removeTechnicianFromZone(zoneId:number, technicianId:number): Observable<void> {
-    return this.http.post(`${this.baseApi}/zones/removeTechnicianFromZone`, { zoneId, technicianId }).pipe(
+    return this.http.post(`${this.baseApi}/${this.currentRoute}/removeTechnicianFromZone`, { zoneId, technicianId }).pipe(
       catchError(this.handleError.bind(this))
     );
   }
   addTechnicianToZone(zoneId:number, technicianIds:number[]) {
-    return this.http.post(`${this.baseApi}/zones/addTechnicianToZone`, { technician_ids: technicianIds, zone_id: zoneId }).pipe(
+    return this.http.post(`${this.baseApi}/${this.currentRoute}/addTechnicianToZone`, { technician_ids: technicianIds, zone_id: zoneId }).pipe(
       map((res: any) => {
         this.allZones.forEach(zone => {
           if(zone.id === zoneId){  
@@ -71,10 +80,14 @@ export class ZoneService extends BaseService {
   }
 
   isAddressInZone(address: string): Observable<boolean> {
-    return this.http.post(`${this.baseApi}/zones/isAddressInZone`, { address }).pipe(
+    return this.http.post(`${this.baseApi}/${this.currentRoute}/isAddressInZone`, { address }).pipe(
       catchError(this.handleError.bind(this))
     );
   } 
+
+  getZoneById(zoneId:number):Zones {
+    return this.allZones.find(zone => zone.id === zoneId);
+  }
 
 
 }

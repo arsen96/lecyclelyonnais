@@ -108,7 +108,7 @@ export class LoginPage{
           if(this.isStepper){
             this.stepperAuthentication.emit(true)
           }else{
-            this.loadAllData();
+            this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
             this.router.navigateByUrl("list-zones")
           }
         }, error: (err) => {
@@ -120,11 +120,7 @@ export class LoginPage{
 
   }
 
-  loadAllData(){
-    this.bicycleService.getBicycles().subscribe()
-    this.technicianService.getTechnicians();  
-    this.interventionService.getAllInterventions();
-  }
+
 
 
   displayError(err: string, type?: 'login' | 'register') {
@@ -146,7 +142,7 @@ export class LoginPage{
           if(this.isStepper){
             this.stepperAuthentication.emit(true)
           }else{
-            this.loadAllData();
+            this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
             this.router.navigateByUrl("list-zones")
           }
         }, error: (err) => {
@@ -166,7 +162,7 @@ export class LoginPage{
 
 
   ionViewWillLeave() {
-    this.messageService.hideMessage()
+    this.messageService.clearMessage()
   }
 
   handleAddressChange(place: any) {

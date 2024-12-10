@@ -23,12 +23,13 @@ export class AuthBaseService extends BaseService{
   public globalService = inject(GlobalService)
   private isUserLoadedSubject = new BehaviorSubject<boolean>(false);
   isUserLoaded$ = this.isUserLoadedSubject.asObservable();
+  private wasAuthenticated = false;
 
   constructor(){
     super();
-    const isAuthenticated = !!this.checkIsAuthenicated();
-    this.globalService.isAuthenticated.next(isAuthenticated);
-    if (!isAuthenticated) {
+    this.wasAuthenticated = !!this.checkIsAuthenicated();
+    this.globalService.isAuthenticated.next(this.wasAuthenticated);
+    if (!this.wasAuthenticated) {
       localStorage.removeItem("access_token");
     }
 
@@ -120,14 +121,25 @@ export class AuthBaseService extends BaseService{
 
   logout(){
     this.tokenObs = null;
-    this.globalService.user.next(null);  
+
+    const role = this.globalService.userRole.getValue();
     localStorage.removeItem("access_token");
-    this.router.navigateByUrl("login")
+    console.log("role",role)
+    if(role === 'admin' || role === 'superadmin'){
+      this.router.navigateByUrl("login-admin")
+    }else{
+      this.router.navigateByUrl("login")
+    }
+    this.globalService.user.next(null);  
+    this.globalService.userRole.next(null);
   }
 
 
   public override unauthenticated(): void {
+    if (this.wasAuthenticated) {
       this.logout();
+      this.router.navigateByUrl("login");
+    }
   }
 
   test(){

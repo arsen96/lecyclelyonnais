@@ -36,7 +36,7 @@ export class ResetPage {
 
 
   ionViewWillLeave() {
-    this.messageService.hideMessage()
+    this.messageService.clearMessage()
   }
 
 }
