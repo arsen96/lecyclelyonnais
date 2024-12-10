@@ -60,9 +60,31 @@ const deleteModel = async (req, res) => {
     res.status(200).json({success:true,message:"Modèle de planning supprimé avec succès"});
 }
 
+
+const addPlanningModel = async (req, res) => {
+    const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
+
+    console.log("zoneId",zoneId)
+    console.log("zoneTypeInterventionMaintenance",zoneTypeInterventionMaintenance)
+    console.log("zoneTypeInterventionRepair",zoneTypeInterventionRepair)
+    const query = 'INSERT INTO planning_model_zones (zone_id, planning_model_id_maintenance,planning_model_id_repair) VALUES ($1, $2, $3)';
+    return await pool.query(query, [zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair]);
+  }
+
+
+
+  const updateZonePlanningModel = async (req, res) => {
+    const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
+
+    const query = 'UPDATE planning_model_zones SET planning_model_id_maintenance = $1, planning_model_id_repair = $2 WHERE zone_id = $3';
+    return await pool.query(query, [zoneTypeInterventionMaintenance, zoneTypeInterventionRepair, zoneId]);
+  }
+
 module.exports = {
     save,
     get,
     update,
-    deleteModel
+    deleteModel,
+    managePlanningModel: addPlanningModel,
+    updateZonePlanningModel
 }

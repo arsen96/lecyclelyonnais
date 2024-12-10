@@ -1,23 +1,28 @@
 const pool = require('../config/db');
+const planningModelService = require('./planningModelController');
 
 
 const save = async (req, res) => {
-  const { wkt, zoneTitle, zoneStartTime, zoneEndTime, zoneSlotDuration } = req.body;
-  console.log("wkt",wkt)
-  console.log("zoneTitle",zoneTitle)
-  console.log("zoneStartTime",zoneStartTime)
-  console.log("zoneEndTime",zoneEndTime)
-  console.log("zoneSlotDuration",zoneSlotDuration)
-
+  const { wkt, zoneTitle } = req.body;
   try {
     // Insérer le WKT dans la base de données PostgreSQL
-    const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name, zone_start_time, zone_end_time, zone_slot_duration) VALUES (ST_GeomFromText($1, 4326), $2, $3, $4, $5) RETURNING id';
-    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle, zoneStartTime, zoneEndTime, zoneSlotDuration]);
-    console.log("result",result)
+    const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name) VALUES (ST_GeomFromText($1, 4326), $2) RETURNING id';
+    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle]);
+    const zoneId = result.rows[0].id;
+
+    // Transmettre l'ID de la zone à managePlanningModel
+
+    try{
+      await planningModelService.managePlanningModel({ ...req, body: { ...req.body, zoneId } }, res);
+    }catch(error){
+      console.error(error);
+      res.status(500).json({ success: false, message: "Erreur lors de la gestion du modèle de planning" });
+    }
+    
     res.status(201).json({
       success: true,
       message: "Zone sauvegardée",
-      zoneId: result.rows[0].id
+      zoneId: zoneId
     });
   } catch (error) {
     console.error(error);
@@ -28,19 +33,45 @@ const save = async (req, res) => {
 // https://postgis.net/docs/manual-1.5/ch08.html
 const get = async (req, res) => {
   try {
-    const query = `SELECT gz.id,
-    gz.zone_name, 
-    to_char(gz.created_at, 'YYYY-MM-DD') as created_at,
-    ST_AsGeoJSON(gz.coordinates) AS geojson,
-    json_agg(
-      CASE 
-        WHEN tz.id IS NOT NULL THEN json_build_object('id', tz.id, 'first_name', tz.first_name, 'last_name', tz.last_name)
-        ELSE NULL
-      END
-    ) AS technicians
-    FROM geographical_zone gz
-    LEFT JOIN technician tz ON tz.geographical_zone_id = gz.id
-    GROUP BY gz.id`;
+    const query = `
+      SELECT gz.id,
+             gz.zone_name, 
+             to_char(gz.created_at, 'YYYY-MM-DD') as created_at,
+             ST_AsGeoJSON(gz.coordinates) AS geojson,
+             json_agg(
+               CASE 
+                 WHEN tz.id IS NOT NULL THEN json_build_object('id', tz.id, 'first_name', tz.first_name, 'last_name', tz.last_name)
+                 ELSE NULL
+               END
+             ) AS technicians,
+             json_build_object(
+               'maintenance', json_build_object(
+                 'id', pm_maintenance.id,
+                 'type', pm_maintenance.intervention_type,
+                 'available_days', pm_maintenance.available_days,
+                 'slot_duration', pm_maintenance.slot_duration,
+                 'start_time', pm_maintenance.start_time,
+                 'end_time', pm_maintenance.end_time
+               ),
+               'repair', json_build_object(
+                 'id', pm_repair.id,
+                 'type', pm_repair.intervention_type,
+                 'available_days', pm_repair.available_days,
+                 'slot_duration', pm_repair.slot_duration,
+                 'start_time', pm_repair.start_time,
+                 'end_time', pm_repair.end_time
+               )
+             ) as model_planification
+      FROM geographical_zone gz
+      LEFT JOIN technician tz ON tz.geographical_zone_id = gz.id
+      LEFT JOIN planning_model_zones pmz ON pmz.zone_id = gz.id
+      LEFT JOIN planning_models pm_maintenance ON pmz.planning_model_id_maintenance = pm_maintenance.id
+      LEFT JOIN planning_models pm_repair ON pmz.planning_model_id_repair = pm_repair.id
+      GROUP BY gz.id, pm_maintenance.id, pm_maintenance.intervention_type, pm_maintenance.available_days, 
+      pm_maintenance.slot_duration, pm_maintenance.start_time, pm_maintenance.end_time, 
+      pm_repair.id, pm_repair.intervention_type, pm_repair.available_days, pm_repair.slot_duration, 
+      pm_repair.start_time, pm_repair.end_time
+    `;
     const result = await pool.query(query);
 
     const data = result.rows.map(row => {
@@ -56,6 +87,23 @@ const get = async (req, res) => {
     res.status(500).json({ success: false, message: "Erreur lors de la récupération des zones" });
   }
 };
+
+
+const updateZone = async (req, res) => {
+  const { zoneId, zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
+  const query = 'UPDATE geographical_zone SET zone_name = $1 WHERE id = $2';
+  try { 
+    await pool.query(query, [zoneTitle, zoneId]);
+    await planningModelService.updateZonePlanningModel({ ...req, body: { ...req.body, zoneId } }, res);
+    res.status(200).json({ success: true, message: "La zone a été mise à jour" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de la zone" });
+  }
+} 
+
+
+
 
 const deleteSelected = async (req, res) => {
   const { ids } = req.body;
@@ -133,11 +181,12 @@ const isAddressInZone = async (req, res) => {
 
   const { lat, lon } = data[0];
   const point = `POINT(${lon} ${lat})`;
-  const query = `SELECT id FROM geographical_zone WHERE ST_Contains(coordinates, ST_GeomFromText($1, 4326)) LIMIT 1`;
+  const query = `SELECT id, zone_name FROM geographical_zone 
+  WHERE ST_Contains(coordinates, ST_GeomFromText($1, 4326)) LIMIT 1`;
   const result = await pool.query(query, [point]);
   const zoneConcerned = result.rows[0]?.id;
   console.log("zoneConcerned",zoneConcerned)
   res.status(200).json({ success: zoneConcerned, message: !zoneConcerned ? notFoundMessage : "" });
 }
 
-module.exports = { save,get,deleteSelected,removeTechnicianFromZone,addTechnicianToZone,isAddressInZone }
+module.exports = { save,get,deleteSelected,removeTechnicianFromZone,addTechnicianToZone,isAddressInZone,updateZone }

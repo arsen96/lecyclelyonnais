@@ -6,6 +6,8 @@ const nodemailer = require("nodemailer");
 
 // Fonction pour générer un token JWT
 const generateToken = (user) => {
+
+  console.log("useruser", user);
   return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
@@ -159,7 +161,7 @@ const passwordForgot = async (req, res) => {
       from: 'kubatarsen@gmail.com',
       to: email,
       subject: 'Réinitialisation du mot de passe',
-      text: `Cliquer sur le lien pour réinitialiser votre mot de passe: http://localhost:8100/reset-password/${token}`,
+      text: `Cliquer sur le lien pour réinitialiser votre mot de passe: http://localhost:8200/reset-password/${token}`,
     };
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -226,4 +228,4 @@ const getConnectedUser = async (req, res) => {
 
 
 
-module.exports = { register,login, oauth, passwordForgot,resetPassword,getConnectedUser };
+module.exports = { register,generateToken,login, oauth, passwordForgot,resetPassword,getConnectedUser };
