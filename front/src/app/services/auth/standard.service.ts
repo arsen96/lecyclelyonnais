@@ -1,22 +1,24 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, lastValueFrom, map, shareReplay, tap, throwError } from 'rxjs';
+import {  catchError,  map,  tap} from 'rxjs';
 import { AuthBaseService } from './auth-base.service';
 import { FormLoginModel, FormRegisterModel } from 'src/app/pages/auth/login/login.page';
-import { GlobalService } from '../global.service';
-import { User } from 'src/app/models/user';
 import { BicycleService } from '../bicycle.service';
 import { TechnicianService } from '../technician.service';
 import { InterventionService } from '../intervention.service';
+import { CompanyService } from '../company.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StandardAuth extends AuthBaseService {
   currentRoute:string = 'auth';
-  constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,private interventionService:InterventionService) {
+  public companyService = inject(CompanyService)
+  constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,private company:CompanyService,private interventionService:InterventionService) {
     super();
    }
+
    loginStandard(loginCredentials:FormLoginModel): any{
+      console.log("loginCredentialsloginCredentials",loginCredentials)
       const value = super.login(loginCredentials,`${this.baseApi}/${this.currentRoute}/login`);
       return value.pipe(
         map((data:any) => {
@@ -31,7 +33,7 @@ export class StandardAuth extends AuthBaseService {
     }
 
     register(form:FormRegisterModel){
-        return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/register`,form)
+        return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/register`,{...form,...this.company.subdomainREQ})
         .pipe(
           catchError(this.handleError)
         )
@@ -39,6 +41,8 @@ export class StandardAuth extends AuthBaseService {
           tap(res => {
             if (res) {
               this.bicycleService.userBicycles = [];
+
+              console.log("res.datares.datares.data",res.data)
               this.globalService.user.next(res.data.user);
               this.globalService.userRole.next(res.data.user.role);
               this.setSession(res.token);
@@ -52,7 +56,7 @@ export class StandardAuth extends AuthBaseService {
   }
 
   resetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/forgot-password`,data).pipe(
+    return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/forgot-password`,{...data,...this.companyService.subdomainREQ}).pipe(
       catchError(this.handleError)
     ).pipe(
       map(data => {

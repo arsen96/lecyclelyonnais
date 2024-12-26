@@ -12,6 +12,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { InterventionService } from 'src/app/services/intervention.service';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { TechnicianService } from 'src/app/services/technician.service';
+import { CompanyService } from 'src/app/services/company.service';
 
 export class FormRegisterModel {
   firstName: string = '';
@@ -58,6 +59,7 @@ export class LoginPage{
   public bicycleService = inject(BicycleService)  
 
   public technicianService = inject(TechnicianService)  
+  public companyService = inject(CompanyService)
     
   constructor(public route: ActivatedRoute, public messageService: MessageService) {
     this.route.fragment.subscribe(async (fragment) => {
@@ -98,9 +100,9 @@ export class LoginPage{
   }
 
 
-
   async onSubmitLogin() {
-    const login$ = this.standardAuthService.loginStandard(this.modelLogin);
+    console.log("this.companyService.this.modelLogin",this.modelLogin)
+    const login$ = this.standardAuthService.loginStandard({...this.modelLogin,...this.companyService.subdomainREQ});
     const result = this.loaderService.showLoaderUntilCompleted(login$);
     result.subscribe(
       {
@@ -133,7 +135,6 @@ export class LoginPage{
 
 
   async onSubmitRegister() {
-    this.displayError('', 'register')
     if (this.registrationForm.valid && !(this.addressValidated && this.registrationForm.controls['address'].hasValidator(Validators.required))) {
       const register$ = this.standardAuthService.register(this.registrationForm.value);
       const result = this.loaderService.showLoaderUntilCompleted(register$);

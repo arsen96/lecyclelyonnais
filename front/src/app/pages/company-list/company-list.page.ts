@@ -6,6 +6,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from 'src/app/services/message.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { GlobalService, UserRole } from 'src/app/services/global.service';
 
 @Component({
   selector: 'app-company-list',
@@ -25,11 +26,16 @@ export class CompanyListPage implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   pageSizes = [3, 6, 10, 15];
   companiesLoaded: Promise<boolean>;
+  public globalService = inject(GlobalService)
   companiesLoadedResolver: (value: boolean) => void;
   constructor(public cd:ChangeDetectorRef) {
     this.companiesLoaded = new Promise((resolve) => {
       this.companiesLoadedResolver = resolve;
     }); 
+  }
+
+  public get UserRole(){
+    return UserRole
   }
 
   ionViewWillEnter() {

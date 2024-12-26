@@ -15,6 +15,7 @@ import { Technician } from 'src/app/models/technicians';
 import { TechnicianService } from 'src/app/services/technician.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ZoneModalComponent } from './zone-modal/zone-modal.component';
+import { CompanyService } from 'src/app/services/company.service';
 
 declare var google: any;
 
@@ -51,6 +52,7 @@ export class LeafletPage {
   zoneAdded = false;
   public loaderService = inject(LoadingService);
   selectedInterventionType: string;
+  public companyService = inject(CompanyService)
 
   constructor(private cd: ChangeDetectorRef, private technicianService: TechnicianService, private route: ActivatedRoute, public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
     this.zoneIdSelected = Number(this.route.snapshot.params['id']) ? Number(this.route.snapshot.params['id']) : null;
@@ -132,7 +134,7 @@ export class LeafletPage {
           const modalData = await this.openZoneModal();
           if (wkt && modalData) {
             this.loaderService.setLoading(true);
-            this.zoneService.create(wkt, modalData).subscribe({
+            this.zoneService.create(wkt, {...modalData,...this.companyService.subdomainREQ}).subscribe({
               next: (res: { success: boolean, message: string, zoneId: number }) => {
                 this.zoneService.allZones = new Array();
                 console.log("res", res);
@@ -277,17 +279,15 @@ export class LeafletPage {
   }
 
   async setModelPlanification(){
-    const { zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = await this.openZoneModal(true)
-    console.log("zoneTitle", zoneTitle);
-    console.log("zoneTypeInterventionMaintenance", zoneTypeInterventionMaintenance);
-    console.log("zoneTypeInterventionRepair", zoneTypeInterventionRepair);
-    if(zoneTitle && zoneTypeInterventionMaintenance && zoneTypeInterventionRepair){
-      this.zoneService.updateZone(this.zoneIdSelected, zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair).subscribe({
+    const modalData = await this.openZoneModal(true)
+    console.log("modalData", modalData);
+    if(modalData){
+      this.zoneService.updateZone(this.zoneIdSelected, modalData.zoneTitle, modalData.zoneTypeInterventionMaintenance, modalData.zoneTypeInterventionRepair).subscribe({
         next: (res: any) => {
           console.log("resresres", res);
-          this.zoneSelected.model_planification.maintenance.id = zoneTypeInterventionMaintenance;
-          this.zoneSelected.model_planification.repair.id = zoneTypeInterventionRepair;
-          this.zoneSelected.zone_name = zoneTitle;
+          this.zoneSelected.model_planification.maintenance.id = modalData.zoneTypeInterventionMaintenance;
+          this.zoneSelected.model_planification.repair.id = modalData.zoneTypeInterventionRepair;
+          this.zoneSelected.zone_name = modalData.zoneTitle;
           this.messageService.showToast(res.message, 'success');
         },
         error: (error) => {

@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const bcrypt = require('bcrypt');
 
 const getClients = async (req, res) => {
   const query = "SELECT * FROM client";
@@ -12,25 +13,33 @@ const getClients = async (req, res) => {
 
 const updateClient = async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, email, phone, address } = req.body;
+    const { firstName, lastName, email, phone, address, password } = req.body;
 
-    console.log(firstName);
-    console.log(lastName);
-    console.log(email);
-    console.log(phone);
-    console.log(address);
-    const query = "UPDATE client SET first_name = $1, last_name = $2, email = $3, phone = $4, address = $5 WHERE id = $6";
-    try{
-        await pool.query(query, [firstName, lastName, email, phone, address, id]);
-        res.status(200).json({ success: true, message: "Client mis à jour avec succès" });
-    }catch(error){
-      if (error.code === '23505') { // PostgreSQL error code for unique violation
-        res.status(400).send({ success: false, message: "Un client avec cette adresse email existe déjà" });
-      } else {
-        res.status(500).send({ success: false, message: "Erreur lors de la mise à jour du client" });
-      }
+    let query = "UPDATE client SET first_name = $1, last_name = $2, email = $3, phone = $4, address = $5";
+    const values = [firstName, lastName, email, phone, address];
+    if (password?.length > 0) {
+        const hashedPassword = await bcrypt.hash(password, 12);
+        query += ", password = $6";
+        values.push(hashedPassword);
+    }
+
+    query += " WHERE id = $" + (values.length + 1) + " RETURNING *";
+    values.push(id);
+
+    try {
+        const result = await pool.query(query, values);
+        res.status(200).json({ success: true, message: "Client mis à jour avec succès", data: result.rows[0] });
+    } catch (error) {
+        console.log("errorerrorerror", error);
+        if (error.code === '23505') { // PostgreSQL error code for unique violation
+            res.status(400).send({ success: false, message: "Un client avec cette adresse email existe déjà" });
+        } else {
+            res.status(500).send({ success: false, message: "Erreur lors de la mise à jour du client" });
+        }
     }
 }
+
+
 
 const deleteClient = async (req, res) => {
   const { ids } = req.body;

@@ -11,12 +11,10 @@ const verifyToken = (req,res,next) => {
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("decoded", decoded);
         req.user = decoded;
         next()
       } catch(err) {
 
-        console.log("errerrerr", err);
         if (err.name === 'TokenExpiredError') {
           // Gère l'erreur d'expiration de token
           return res.status(401).json({

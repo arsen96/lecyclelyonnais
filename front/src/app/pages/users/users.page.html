@@ -1,12 +1,24 @@
 <ion-content [fullscreen]="true">
   <ion-header>
     <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button routerLink="/users-list">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-      <ion-title class="ion-text-center">{{selectedUser ? 'Modifier un utilisateur' : 'Créer un compte utilisateur'}}</ion-title>
+      @if(globalService.userRole.getValue() === UserRole.ADMIN){
+        <ion-buttons slot="start">
+          <ion-button routerLink="/users-list">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      }
+      <ion-title class="ion-text-center">
+        @if(globalService.userRole.getValue() === UserRole.ADMIN){
+        @if(selectedUser){
+          Modifier un utilisateur
+        }@else{
+          Créer un compte utilisateur
+        }
+      }@else{
+        Mon profil
+      }
+      </ion-title>
     </ion-toolbar>
   </ion-header>
   <div class="centered-form">
@@ -24,7 +36,11 @@
         <ion-label position="floating">Email</ion-label>
         <ion-input type="email" formControlName="email" required></ion-input>
       </ion-item>
-      <ion-item *ngIf="!selectedUser">
+      
+      <ion-item *ngIf="selectedUser && !resetPasswordMode">
+        <ion-button (click)="enablePasswordReset()">Réinitialiser le mot de passe</ion-button>
+      </ion-item>
+      <ion-item *ngIf="resetPasswordMode || !selectedUser">
         <ion-label position="floating">Mot de passe</ion-label>
         <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
         <ion-button (click)="generatePassword()">Générer</ion-button>

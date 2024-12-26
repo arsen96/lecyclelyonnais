@@ -129,6 +129,9 @@ export class ActionsPage implements OnInit {
     const operationType = this.operationFormGroup.value.operation === 'maintenance' ? 'maintenance' : 'repair';
     const operationPlanification = this.concernedZone.model_planification[operationType]
     const availableDays = JSON.parse(operationPlanification.available_days);
+    if(!availableDays){
+      return false;
+    }
     return availableDays[dayName]
   }
 
@@ -150,27 +153,33 @@ export class ActionsPage implements OnInit {
           try {
           const inZone$ = this.zoneService.isAddressInZone(addressData.address);
           const result = this.loadingService.showLoaderUntilCompleted(inZone$);
-          result.subscribe((result: any) => {
-            console.log("result",result)
-            this.addressFormCompleted = true;
-            if (result.success) { 
-              this.concernedZoneId = result.success;
-              this.zoneService.get().then(() => {     
-                this.concernedZone = this.zoneService.getZoneById(this.concernedZoneId);
-                this.updateAvailableDates();
-              })
-              this.technicianService.getTechnicians().then((technicians: Technician[]) => {
-                this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
-              })
-              this.displayError = false;
-              this.stepper.next();
-            } else {
+          result.subscribe({
+            next: (result: any) => {
+              console.log("result", result);
+              this.addressFormCompleted = true;
+              if (result.success) {
+                this.concernedZoneId = result.success;
+                this.zoneService.get().then(() => {
+                  this.concernedZone = this.zoneService.getZoneById(this.concernedZoneId);
+                  this.updateAvailableDates();
+                });
+                console.log(" this.concernedZone", this.concernedZone)
+                this.technicianService.getTechnicians().then((technicians: Technician[]) => {
+                  this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
+                });
+                this.displayError = false;
+                this.stepper.next();
+              } else {
+                this.displayError = true;
+                this.msgService.showMessage(result.message, Message.danger);
+              }
+            },
+            error: (error: any) => {
               this.displayError = true;
-              this.msgService.showMessage(result.message, Message.danger);
+              this.msgService.showMessage(error, Message.danger);
             }
           });
         } catch (error) {
-          console.log("error", error);
         }
       }else {
         this.displayError = true;
@@ -272,7 +281,6 @@ export class ActionsPage implements OnInit {
       userId:this.globalService.user.getValue()?.id
     }
 
-    console.log("allData", allData)
 
     this.interventionFinalData = allData
     if(this.globalService.isAuthenticated.getValue() === true){

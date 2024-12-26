@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
 const pool = require("../config/db");
 const jwt = require('jsonwebtoken');
-const generateToken = (user) => {
+const { subdomainInfo } = require("../controllers/companyController");
 
-  console.log("useruser", user);
-  return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+const generateToken = (user,role) => {
+  return jwt.sign({ id: user.id, email: user.email,role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
@@ -21,7 +21,8 @@ const getAdmins = async (req, res) => {
 }
 
 const createAdmin = async (req, res) => {
-    const { first_name, last_name, email, password, role } = req.body;
+    const { first_name, last_name, email, password, role,domain } = req.body;
+    const companyId = await subdomainInfo(domain);
     try {
         // Vérifier si l'email existe déjà dans les tables administrator, technician, ou client
         const checkEmailQuery = `
@@ -42,8 +43,8 @@ const createAdmin = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const query = "INSERT INTO administrator (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5)";
-        await pool.query(query, [first_name, last_name, email, hashedPassword, 'admin']);
+        const query = "INSERT INTO administrator (first_name, last_name, email, password, role,company_id) VALUES ($1, $2, $3, $4, $5,$6)";
+        await pool.query(query, [first_name, last_name, email, hashedPassword, 'admin',companyId]);
         res.status(200).json({ success: true, message: "Admin créé avec succès" });
     } catch (error) {
         console.log("error", error);
@@ -97,10 +98,17 @@ const deleteAdmin = async (req, res) => {
 }
 
 const loginAdmin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, domain } = req.body;
+
+  console.log("domaindomain",domain)
+  const companyId = await subdomainInfo(domain);
+  console.log("companyIdcompanyId",companyId)
   try {
-    const query = "SELECT * FROM administrator WHERE email = $1";
-    const result = await pool.query(query, [email]);
+    const query = "SELECT * FROM administrator WHERE email = $1 AND company_id = $2";
+    const result = await pool.query(query, [email, companyId]);
+    const query2 = "SELECT * FROM administrator";
+    const result2 = await pool.query(query2);
+    console.log("result2result2",result2.rows)
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
     }
@@ -109,10 +117,12 @@ const loginAdmin = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ success: false, message: "Mot de passe incorrect" });
     }
-    const token = generateToken(admin);
+
+    console.log("admin.roleadmin.roleadmin.role",admin.role)
+    const token = generateToken(admin, admin.role );
     console.log("token", token);
     res.status(200).json(
-        { success: true, message: "Connexion réussie", token, data: {  user: { ...admin, role: admin.role ? 'admin' : 'superadmin' } } });
+        { success: true, message: "Connexion réussie", token, data: {  user: { ...admin, role: admin.role } } });
   } catch (error) {
     console.log("error", error);
     res.status(500).json({ success: false, message: "Erreur lors de la connexion" });

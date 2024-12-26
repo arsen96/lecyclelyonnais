@@ -16,7 +16,6 @@ export class MessageComponent{
   constructor(public messageService:MessageService){
     this.messageService.message$.subscribe((data) => {
       this.displayMessage = !!data;
-      console.log("datadata",data)
       if (!data) {
         this.message = null;
       }

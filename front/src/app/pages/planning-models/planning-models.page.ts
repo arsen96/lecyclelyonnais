@@ -111,7 +111,7 @@ export class PlanningModelsPage implements OnInit {
             console.log("Model updated:", result);
             this.messageService.showToast(result.message, Message.success);
             this.planningService.allPlanningModels = [];
-            this.selectedModel = null;
+            // this.selectedModel = null;
           },
           error: (err) => {
             console.log("Error updating model:", err);

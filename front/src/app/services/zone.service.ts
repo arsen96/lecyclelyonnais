@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal, Signal } from '@angular/core';
+import { inject, Injectable, signal, Signal } from '@angular/core';
 import { catchError, map, tap} from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { lastValueFrom, Observable, of } from 'rxjs';
 import { Zones } from '../models/zones';
+import { CompanyService } from './company.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { Zones } from '../models/zones';
 export class ZoneService extends BaseService {
 
   currentRoute: string = 'zones';
+  public companyService = inject(CompanyService)
   public allZones: Zones[] = new Array<Zones>(); 
 
   constructor(private http: HttpClient) { 
@@ -21,26 +23,27 @@ export class ZoneService extends BaseService {
     return this.http.post(`${this.baseApi}/${this.currentRoute}/save`, { wkt, ...data });
   }
 
-  get():Promise<Zones[]> {
+  get(): Promise<Zones[]> {
     if (this.allZones.length > 0) {
-      return lastValueFrom(of(this.allZones))
+      return lastValueFrom(of(this.allZones));
     }
 
-    return lastValueFrom(this.http.get(`${this.baseApi}/${this.currentRoute}/get`).pipe(
+    return lastValueFrom(this.http.get(`${this.baseApi}/${this.currentRoute}/get`, {
+      params: { ...this.companyService.subdomainREQ }
+    }).pipe(
       tap((res: any) => {
         res.data.forEach((zone: any) => {
           zone.geojson = JSON.parse(zone.geojson);
         });
-
       }),
       map((res: any) => {
-        this.allZones = res.data; 
+        this.allZones = res.data;
 
-        console.log("res.data", res.data)
+        console.log("allZonesallZonesallZones",this.allZones)
         return res.data;
       }),
       catchError(this.handleError.bind(this))
-    ))
+    ));
   }
 
 

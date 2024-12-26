@@ -55,9 +55,12 @@
           <ion-button color="primary" routerLink="/company/{{element.id}}">
             <ion-icon name="create-outline"></ion-icon>
           </ion-button>
-          <ion-button color="danger" (click)="deleteSelected(element.id)">
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-button>
+          @if(globalService.userRole?.getValue() !== UserRole.ADMIN){
+            <ion-button color="danger" (click)="deleteSelected(element.id)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          }
+          
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>

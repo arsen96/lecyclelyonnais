@@ -1,13 +1,17 @@
 const pool = require('../config/db');
+const { subdomainInfo } = require("../controllers/companyController");
+
 const save = async (req, res) => {
-    const query = 'INSERT INTO planning_models (name, intervention_type, slot_duration, start_time, end_time, available_days) VALUES ($1, $2, $3, $4, $5, $6)';
+    const {domain} = req.body;
+    const companyId = await subdomainInfo(domain);
+    const query = 'INSERT INTO planning_models (name, intervention_type, slot_duration, start_time, end_time, available_days, company_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
     
     // Ensure start_time and end_time are in the correct format
     const startTime = formatTime(req.body.start_time);
 
     console.log("startTime", startTime);
     const endTime = formatTime(req.body.end_time);
-    const values = [req.body.name, req.body.intervention_type, req.body.slot_duration, startTime, endTime, req.body.available_days];
+    const values = [req.body.name, req.body.intervention_type, req.body.slot_duration, startTime, endTime, req.body.available_days, companyId];
     
     try {
         await pool.query(query, values);
@@ -35,10 +39,15 @@ function formatTime(time) {
 
 
 const get = async (req, res) => {
-    const query = 'SELECT * FROM planning_models';
-    const result = await pool.query(query);
+    const {domain} = req.query;
+    const companyId = await subdomainInfo(domain);
+    const query = 'SELECT * FROM planning_models WHERE company_id = $1';
+    const result = await pool.query(query,[companyId]);
+
+    console.log('roowwsss',result.rows)
     res.status(200).json({success:true,data:result.rows});
 }
+
 
 const update = async (req, res) => {
     try{
@@ -55,9 +64,24 @@ const update = async (req, res) => {
 }
 
 const deleteModel = async (req, res) => {
-    const query = 'DELETE FROM planning_models WHERE id = ANY($1)';
-    await pool.query(query, [req.body.ids]);
-    res.status(200).json({success:true,message:"Modèle de planning supprimé avec succès"});
+    try {
+        const {domain} = req.body;
+        const companyId = await subdomainInfo(domain);
+        // Delete from planning_model_zones first
+        const deleteZonesQuery = 'DELETE FROM planning_model_zones WHERE planning_model_id_maintenance = ANY($1) OR planning_model_id_repair = ANY($1)';
+        await pool.query(deleteZonesQuery, [req.body.ids]);
+
+        // Then delete from planning_models
+        const deleteModelsQuery = 'DELETE FROM planning_models WHERE id = ANY($1) AND company_id = $2';
+        console.log("companyIdcompanyIdcompanyId",companyId)
+        console.log("domaindomaindomain",domain)
+        
+        await pool.query(deleteModelsQuery, [req.body.ids, companyId]);
+        res.status(200).json({ success: true, message: "Modèle de planning et zones associés supprimés avec succès" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Erreur lors de la suppression du modèle de planning et des zones associées" });
+    }
 }
 
 
@@ -76,8 +100,27 @@ const addPlanningModel = async (req, res) => {
   const updateZonePlanningModel = async (req, res) => {
     const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
 
-    const query = 'UPDATE planning_model_zones SET planning_model_id_maintenance = $1, planning_model_id_repair = $2 WHERE zone_id = $3';
-    return await pool.query(query, [zoneTypeInterventionMaintenance, zoneTypeInterventionRepair, zoneId]);
+    try {
+      // Check if the planning model zone already exists
+      const checkQuery = 'SELECT COUNT(*) FROM planning_model_zones WHERE zone_id = $1';
+      const checkResult = await pool.query(checkQuery, [zoneId]);
+      const exists = parseInt(checkResult.rows[0].count) > 0;
+
+      if (!exists) {
+        // If it doesn't exist, insert a new record
+        const insertQuery = 'INSERT INTO planning_model_zones (zone_id, planning_model_id_maintenance, planning_model_id_repair) VALUES ($1, $2, $3)';
+        await pool.query(insertQuery, [zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair]);
+      } else {
+        // If it exists, update the existing record
+        const updateQuery = 'UPDATE planning_model_zones SET planning_model_id_maintenance = $1, planning_model_id_repair = $2 WHERE zone_id = $3';
+        await pool.query(updateQuery, [zoneTypeInterventionMaintenance, zoneTypeInterventionRepair, zoneId]);
+      }
+
+      res.status(200).json({ success: true, message: "Modèle de planning mis à jour avec succès" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Erreur lors de la mise à jour du modèle de planning" });
+    }
   }
 
 module.exports = {

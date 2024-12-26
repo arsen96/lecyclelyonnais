@@ -1,6 +1,7 @@
-const pool = require('../config/db'); // Connexion à PostgreSQL via le pool
+const pool = require('../config/db');
 const bcrypt = require('bcrypt');
-const fetch = require('node-fetch'); // Assurez-vous d'installer node-fetch
+const fetch = require('node-fetch'); 
+const {subdomainInfo} = require("../controllers/companyController")
 /**
  * Convertir une adresse en coordonnées géographiques et trouver l'ID de la zone géographique
  * @param {string} address - L'adresse à convertir
@@ -39,11 +40,13 @@ const getGeographicalZoneId = async (address) => {
 
 const save = async (req, res) => {
   try {
-    const { last_name, first_name, phone, address, password, email } = req.body;
+    const { last_name, first_name, phone, address, password, email,domain } = req.body;
+    console.log("domaindomaindomaindomain",domain)
     const hashedPassword = await bcrypt.hash(password, 10);
     const geographical_zone_id = await getGeographicalZoneId(address);
-    const query = 'INSERT INTO technician (last_name, first_name, phone, address, password, email, geographical_zone_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
-    await pool.query(query, [last_name, first_name, phone, address, hashedPassword, email, geographical_zone_id]);
+    const companyId = await subdomainInfo(domain);
+    const query = 'INSERT INTO technician (last_name, first_name, phone, address, password, email, geographical_zone_id,company_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+    await pool.query(query, [last_name, first_name, phone, address, hashedPassword, email, geographical_zone_id, companyId]);
     const isEmailUsed = await pool.query('SELECT EXISTS(SELECT 1 FROM client WHERE email = $1)', [email]);
     if(isEmailUsed.rows[0].exists){
       res.status(400).send({ success: false, message: "Cet email est déjà utilisé" });

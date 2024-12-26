@@ -1,8 +1,18 @@
 const pool = require('../config/db');
 
 const getCompanies = async (req, res) => {
-  const query = 'SELECT * FROM company';
-  const result = await pool.query(query);
+  const {domain} = req.query;
+  console.log("domaiaiinn",domain)
+  let result;
+  if(domain){
+    const companyId = await subdomainInfo(domain);
+    const query = 'SELECT * FROM company WHERE id = $1';
+    result = await pool.query(query,[companyId]);
+  }else{
+    const query = 'SELECT * FROM company';
+    result = await pool.query(query);
+  }
+    
   try{
     res.status(200).send({ success: true, data: result.rows });
   }catch(error){
@@ -27,6 +37,18 @@ const createCompany = async (req, res) => {
     res.status(500).send({ success: false, message: "Erreur lors de la création de l'entreprise" });
   }
 };
+
+const subdomainInfo = async (subdomain) => {
+  let result;
+  if(!subdomain){
+    const query = "SELECT id FROM company WHERE subdomain IS NULL";
+    result = await pool.query(query);
+  }else{
+    const query = "SELECT id FROM company WHERE subdomain = $1";
+    result = await pool.query(query, [subdomain]);
+  }
+  return result.rows[0]?.id ?? null;
+}
 
 const updateCompany = async (req, res) => {
   try {
@@ -60,4 +82,4 @@ const deleteCompanies = async (req, res) => {
   }
 };
 
-module.exports = { getCompanies, createCompany, updateCompany, deleteCompanies };
+module.exports = { getCompanies, createCompany, updateCompany, deleteCompanies,subdomainInfo };

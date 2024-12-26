@@ -5,6 +5,7 @@ import { StandardAuth } from 'src/app/services/auth/standard.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { Message, MessageService } from 'src/app/services/message.service';
 import { ClientService } from 'src/app/services/client.service';
+import { GlobalService, UserRole } from 'src/app/services/global.service';
 
 @Component({
   selector: 'app-users',
@@ -23,6 +24,9 @@ export class UsersPage implements OnInit {
   clientService = inject(ClientService);
   error = { type: 'register' };
   selectedUser: any = null;
+  globalService = inject(GlobalService);
+  resetPasswordMode = false;
+  
 
   constructor(private fb: FormBuilder, private route: ActivatedRoute) {
     this.registrationForm = this.fb.group({
@@ -33,6 +37,11 @@ export class UsersPage implements OnInit {
       phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       address: ['', Validators.minLength(2)]
     });
+  }
+
+
+  get UserRole() {
+    return UserRole
   }
 
   ngOnInit() {
@@ -76,19 +85,27 @@ export class UsersPage implements OnInit {
   updateUser() {
     if (this.registrationForm.valid) {
       const updatedUser = { id: this.selectedUser.id, ...this.registrationForm.value };
-      this.clientService.updateClient(updatedUser).subscribe({
-        next: (data) => {
-          this.messageService.showToast(data.message, 'success');
-          this.clientService.allClients = [];
-          this.router.navigateByUrl("users-list").then(() => {
-            this.selectedUser = null;
-          });
-        },
-        error: (err) => {
-          this.messageService.showToast(err, 'danger');
-          console.error(err);
-        }
-      });
+      if (!this.resetPasswordMode || this.registrationForm.get('password').value) {
+        this.clientService.updateClient(updatedUser).subscribe({
+          next: (result) => {
+            this.messageService.showToast(result.message, Message.success);
+            this.clientService.allClients = [];
+            // this.globalService.user
+            this.globalService.user.next(result.data);
+            const link = this.globalService.userRole.getValue() === UserRole.CLIENT ? 'actions' : 'users-list';
+
+            this.router.navigateByUrl(link).then(() => {
+              this.selectedUser = null;
+            });
+          },
+          error: (err) => {
+            this.messageService.showToast(err, Message.danger);
+            console.error(err);
+          }
+        });
+      } else {
+        this.messageService.showMessage('Veuillez entrer un nouveau mot de passe.', Message.danger);
+      }
     }
   }
 
@@ -134,5 +151,12 @@ export class UsersPage implements OnInit {
 
   ionViewWillLeave() {
     this.messageService.clearMessage();
+  }
+
+  enablePasswordReset() {
+    this.resetPasswordMode = true;
+    this.registrationForm.patchValue({ password: '' });
+    this.registrationForm.get('password').setValidators([Validators.required, Validators.minLength(6)]);
+    this.registrationForm.get('password').updateValueAndValidity();
   }
 }

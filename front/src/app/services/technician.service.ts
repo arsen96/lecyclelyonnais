@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { Technician } from '../models/technicians';
-import { BehaviorSubject, catchError, finalize, lastValueFrom, map, Observable, of, ReplaySubject, tap } from 'rxjs';
+import {catchError, finalize, lastValueFrom, map, Observable, of, ReplaySubject, tap } from 'rxjs';
+import { CompanyService } from './company.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import { BehaviorSubject, catchError, finalize, lastValueFrom, map, Observable, 
 export class TechnicianService extends BaseService {
   techniciansLoaded = new ReplaySubject<boolean>(0);
   technicians: Technician[] = [];
+  public companyService = inject(CompanyService)
   constructor(private http: HttpClient) {
     super();
     this.getTechnicians();
@@ -36,8 +38,9 @@ export class TechnicianService extends BaseService {
     ))
   }
 
+
   create(technician: Technician){
-    return lastValueFrom(this.http.post(`${this.baseApi}/technicians/save`, technician).pipe(
+    return lastValueFrom(this.http.post(`${this.baseApi}/technicians/save`, { ...technician, ...this.companyService.subdomainREQ }).pipe(
       map((res: Technician) => {
         this.technicians.push(res);
         return res;
@@ -48,7 +51,7 @@ export class TechnicianService extends BaseService {
 
   update(technician: Technician){
     console.log("technician", technician)
-    return lastValueFrom(this.http.post(`${this.baseApi}/technicians/update`, technician).pipe(
+    return lastValueFrom(this.http.post(`${this.baseApi}/technicians/update`, {...technician,...this.companyService.subdomainREQ}).pipe(
       catchError(this.handleError.bind(this))
     ))
   }

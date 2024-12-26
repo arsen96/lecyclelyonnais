@@ -24,8 +24,6 @@ const save = async (req, res) => {
         }
 
 
-
-
         const { repair, maintenance, operation, address } = JSON.parse(req.body.intervention);
         const userId = req.user.id;
         console.log("userId", userId)
@@ -105,7 +103,6 @@ const get = async (req, res) => {
 const uploadUserOperationPhotos = async (files,interventionId) => {
     return new Promise(async (resolve, reject) => {
         const query = 'INSERT INTO intervention_bicycle_photos (intervention_id, file_path) VALUES ($1, $2)';
-        
         try {
             for (const file of files) {
                 const filePath = filePathOperation + file.filename;

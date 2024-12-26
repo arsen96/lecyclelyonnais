@@ -6,9 +6,17 @@ import { InterventionService } from './intervention.service';
 import { TechnicianService } from './technician.service';
 import { BicycleService } from './bicycle.service';
 
+export enum UserRole {
+  SUPERADMIN = 'superadmin',
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  TECHNICIAN = 'technician',
+}
+
 @Injectable({
   providedIn: 'root'
 })
+
 export class GlobalService {
 
   isAuthenticated = new BehaviorSubject<boolean>(false)

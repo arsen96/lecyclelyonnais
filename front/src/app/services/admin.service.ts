@@ -6,6 +6,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { Admin } from '../models/admin';
 import { AuthBaseService } from './auth/auth-base.service';
 import { GlobalService } from './global.service';
+import { CompanyService } from './company.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class AdminService extends BaseService {
   allAdmins: Admin[] = []
   public authService = inject(AuthBaseService);   
   public globalService = inject(GlobalService); 
+  public companyService = inject(CompanyService)
   constructor(public http: HttpClient ) { 
     super();
   }
@@ -27,7 +29,7 @@ export class AdminService extends BaseService {
       } else {
         this.http.get<any>(`${this.baseApi}/${this.currentUrl}/get`).pipe(
           map((res: {success: boolean, data: Admin[]}) => { 
-            this.allAdmins = res.data
+            this.allAdmins = res.data.filter((user) => user.id !== this.globalService.user.getValue()?.id)
             console.log("allAdmins", res)
             resolve(res.data)
           }),
@@ -38,7 +40,7 @@ export class AdminService extends BaseService {
   }
 
   createAdmin(admin: Admin):Observable<void>{
-    return this.http.post(`${this.baseApi}/${this.currentUrl}/create`, admin).pipe(
+    return this.http.post(`${this.baseApi}/${this.currentUrl}/create`, {...admin,...this.companyService.subdomainREQ}).pipe(
       catchError(this.handleError.bind(this))
     )
   }
@@ -64,10 +66,12 @@ export class AdminService extends BaseService {
   }
 
   login(email: string, password: string): Observable<Admin> {
-    return this.http.post(`${this.baseApi}/${this.currentUrl}/login`, { email, password }).pipe(
+    return this.http.post(`${this.baseApi}/${this.currentUrl}/login`, { email, password,...this.companyService.subdomainREQ }).pipe(
       map((data:any) => {
         this.globalService.isAuthenticated.next(true)
         const user = data.data.user;
+
+        console.log("daaaaaaaaaaaaaaaaa",data)
         this.globalService.user.next(user);
         this.globalService.userRole.next(user.role);
         this.authService.setSession(data.token);

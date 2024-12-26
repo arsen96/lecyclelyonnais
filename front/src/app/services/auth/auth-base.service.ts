@@ -7,6 +7,7 @@ import { BaseService } from 'src/app/services/base.service';
 import { jwtDecode } from "jwt-decode";
 import { GlobalService } from '../global.service';
 import { User } from 'src/app/models/user';
+import { LoadingService } from '../loading.service';
 
 export interface BearerToken {
 	token: string;
@@ -21,6 +22,7 @@ export class AuthBaseService extends BaseService{
   http = inject(HttpClient) 
   router = inject(Router);
   public globalService = inject(GlobalService)
+  public loadingService = inject(LoadingService)
   private isUserLoadedSubject = new BehaviorSubject<boolean>(false);
   isUserLoaded$ = this.isUserLoadedSubject.asObservable();
   private wasAuthenticated = false;
@@ -29,8 +31,10 @@ export class AuthBaseService extends BaseService{
     super();
     this.wasAuthenticated = !!this.checkIsAuthenicated();
     this.globalService.isAuthenticated.next(this.wasAuthenticated);
+    console.log("apeeeeeeeeeeeeeeee")
     if (!this.wasAuthenticated) {
       localStorage.removeItem("access_token");
+      // this.router.navigateByUrl('login')
     }
 
     this.getUser();
@@ -41,6 +45,7 @@ export class AuthBaseService extends BaseService{
   }
 
   setSession(token:string){
+    console.log("tokentokentoken",token)
     localStorage.setItem("access_token", token);
   }
 
@@ -52,10 +57,12 @@ export class AuthBaseService extends BaseService{
       const tokenValid =  typeof decodedToken.exp !== 'undefined' && decodedToken.exp > now;
       if (!tokenValid) {
         this.globalService.user.next(null);
+        this.globalService.userRole.next(null);
       }
       return tokenValid
     }
     this.globalService.user.next(null);
+    this.globalService.userRole.next(null);
     return false;
   }
 
@@ -66,7 +73,6 @@ export class AuthBaseService extends BaseService{
       .pipe(
         tap(res => {
           if (res) {
-            console.log("resresres",res)
             // this.getUserSubject.next(res.data.user);
             this.setSession(res.token);
             this.isUserLoadedSubject.next(true);
@@ -89,12 +95,9 @@ export class AuthBaseService extends BaseService{
       .pipe(catchError(this.handleError.bind(this)))
       .subscribe({
         next : (res) => {
-          console.log("resresres",res)
+          console.log("resresresresres",res)
           this.globalService.user.next(res.data);
           this.globalService.userRole.next(res.data.role);
-          setTimeout(() => {
-            console.log("userRole",this.globalService.userRole.getValue())
-          }, 1000);
           resolve(res.data);
             this.isUserLoadedSubject.next(true);
         },
@@ -121,10 +124,8 @@ export class AuthBaseService extends BaseService{
 
   logout(){
     this.tokenObs = null;
-
     const role = this.globalService.userRole.getValue();
     localStorage.removeItem("access_token");
-    console.log("role",role)
     if(role === 'admin' || role === 'superadmin'){
       this.router.navigateByUrl("login-admin")
     }else{
@@ -132,11 +133,12 @@ export class AuthBaseService extends BaseService{
     }
     this.globalService.user.next(null);  
     this.globalService.userRole.next(null);
+    this.loadingService.setLoading(false);
   }
 
 
-  public override unauthenticated(): void {
-    if (this.wasAuthenticated) {
+  public override unauthenticated(force = false): void {
+    if (this.wasAuthenticated || force) {
       this.logout();
       this.router.navigateByUrl("login");
     }
@@ -147,7 +149,6 @@ export class AuthBaseService extends BaseService{
     .pipe(catchError(this.handleError.bind(this)))
     .subscribe({
       next : (res) => {
-        console.log("resresres",res)
       },error : (err) => {
         console.log("erroraxperrr",err)
       }

@@ -3,12 +3,11 @@ const pool = require('../config/db'); // Connexion à PostgreSQL via le pool
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require("nodemailer");
+const {subdomainInfo} = require("../controllers/companyController")
 
 // Fonction pour générer un token JWT
-const generateToken = (user) => {
-
-  console.log("useruser", user);
-  return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+const generateToken = (user, role) => {
+  return jwt.sign({ id: user.id, email: user.email, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
@@ -21,28 +20,32 @@ const generateToken = (user) => {
  * @returns obtenir le token de session
  */
 const register = async (req, res) => {
-  const { email, password,firstName,lastName,phone,address } = req.body;
+  const { email, password,firstName,lastName,phone,address,domain } = req.body;
   try {
+
     // Vérifier si l'utilisateur existe déjà dans la base de données
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
     const result = await pool.query(checkUserQuery, [email]);
-
     if (result.rows.length > 0) {
       return res.status(400).json({ success: false, message: "L'adresse e-mail existe déjà" });
     }
-    
     // Hasher le mot de passe avant de le sauvegarder
+    let companyId;
     const hashedPassword = await bcrypt.hash(password, 12);
-    console.log("hashedPassword",hashedPassword)
-    const insertUserQuery = 'INSERT INTO client (first_name,last_name,email, password, phone, address) VALUES ($1, $2,$3, $4, $5, $6 ) RETURNING *';
-    const newUser = await pool.query(insertUserQuery, [firstName,lastName,email, hashedPassword,phone,address]);
-    console.log("newUser",newUser)
-    const token = generateToken(newUser.rows[0]);
+    companyId = await subdomainInfo(domain);
+    if(!companyId){
+      return res.status(400).json({ success: false, message: "Aucune entreprise n'a été reconnue" });
+    }
+    
+    const insertUserQuery = 'INSERT INTO client (first_name,last_name,email, password, phone, address,company_id) VALUES ($1, $2,$3, $4, $5, $6,$7 ) RETURNING *';
+    const newUser = await pool.query(insertUserQuery, [firstName,lastName,email, hashedPassword,phone,address,companyId]);
+
+    const token = generateToken(newUser.rows[0], 'client');
     res.status(201).json({
       success: true,
       token,
       data: {
-        user: newUser.rows[0]  
+        user: {...newUser.rows[0],role:'client' } 
       }
     });
   } catch (error) {
@@ -61,19 +64,32 @@ const register = async (req, res) => {
  * @returns obtenir le token de session
  */
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, domain } = req.body;
   try {
-    const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
+    let companyId = await subdomainInfo(domain);
+  
+
+    const checkUserQuery = 'SELECT * FROM client WHERE email = $1 AND company_id = $2';
+    let user = await pool.query(checkUserQuery, [email,companyId]);
+    console.log("useruser",user.rows)
+    console.log("emailemailemail",email)
+    console.log("companyIdcompanyId",companyId)
     let isUser = true;
-    let user = await pool.query(checkUserQuery, [email]);
-    console.log("useruseruser", user.rows.length);
+    // let user = await pool.query(checkUserQuery, [email]);
+
+    // const checkUserQuery2 = `SELECT * FROM 
+    //                           (
+    //                               SELECT email FROM FROM administrator,
+    //                               UNION
+    //                               SELECT email FROM client
+    //                            ) AS email_result WHERE email = $1`;
+
     if (user.rows.length === 0) {
-      const checkTechnicianQuery = 'SELECT * FROM technician WHERE email = $1';
-      user = await pool.query(checkTechnicianQuery, [email]);
+      const checkTechnicianQuery = 'SELECT * FROM technician WHERE email = $1 AND company_id = $2';
+      user = await pool.query(checkTechnicianQuery, [email,companyId]);
       if (user.rows.length === 0) {
-        return res.status(400).json({ success: false, message: "Ce mail n'existe pas" });
+        return res.status(400).json({ success: false, message: "Le mail est incorrect" });
       }
-      console.log("useruseruser", user.rows[0]);
       isUser = false;
     }
 
@@ -82,9 +98,8 @@ const login = async (req, res) => {
     if (!passwordExist) {
       return res.status(400).json({ success: false, message: "Mot de passe incorrect" });
     }
-    const token = generateToken(currentUser);
+    const token = generateToken(currentUser, isUser ? 'client' : 'technician');
 
-    console.log("isUserisUser", isUser);
     res.status(201).json({
       success: true,
       token,
@@ -118,7 +133,7 @@ const oauth = async (req, res) => {
 
     const currentUser = user.rows[0];
 
-    const token = generateToken(currentUser);
+    const token = generateToken(currentUser, 'client');
     // Retourner le token et l'utilisateur enregistré
     res.status(201).json({
       success: true,
@@ -139,7 +154,7 @@ const oauth = async (req, res) => {
  */
 
 const passwordForgot = async (req, res) => {
-  const { email } = req.body;
+  const { email,domain } = req.body;
   const checkUserQuery = 'SELECT email,password FROM client WHERE email = $1';
   const user = await pool.query(checkUserQuery, [email]);
   if (user.rows.length > 0) {
@@ -157,11 +172,13 @@ const passwordForgot = async (req, res) => {
         pass: 'qhoe nawk aecu dody',
       },
     });
+
+    const currentdomain = domain !== "localhost" ? `${domain}.localhost` : 'localhost'
     const mailOptions = {
       from: 'kubatarsen@gmail.com',
       to: email,
       subject: 'Réinitialisation du mot de passe',
-      text: `Cliquer sur le lien pour réinitialiser votre mot de passe: http://localhost:8200/reset-password/${token}`,
+      text: `Cliquer sur le lien pour réinitialiser votre mot de passe: http://${currentdomain}:8100/reset-password/${token}`,
     };
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -201,23 +218,11 @@ const getConnectedUser = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-    const userId = decoded.id;
-
-    const userQuery = 'SELECT * FROM client WHERE id = $1';
-    const userResult = await pool.query(userQuery, [userId]);
-    if(userResult.rows.length > 0){
-      user = {...userResult.rows[0],role:"client"};
-    }else{
-      const technicianQuery = 'SELECT * FROM technician WHERE id = $1';
-      const technicianResult = await pool.query(technicianQuery, [userId]);
-      if (technicianResult.rows.length === 0) {
-        return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
-      }
-      user = {...technicianResult.rows[0],role:"technician"};
-    }
-
-  
+    const {id,role} = jwt.verify(token, process.env.JWT_SECRET); 
+    let bddTableSearch = (role === "admin" || role === "superadmin") ? 'administrator' : (role === "client") ? "client" : "technician";
+    const userQuery = `SELECT * FROM ${bddTableSearch} WHERE id = $1`;
+    const userResult = await pool.query(userQuery, [id]);
+    user = {...userResult.rows[0],role};
     res.status(200).json({ success: true, data: user });
   } catch (error) {
     console.error(error);

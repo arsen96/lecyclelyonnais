@@ -1,13 +1,16 @@
 const pool = require('../config/db');
 const planningModelService = require('./planningModelController');
-
+const {subdomainInfo} = require("../controllers/companyController")
 
 const save = async (req, res) => {
-  const { wkt, zoneTitle } = req.body;
+  const { wkt, zoneTitle,domain } = req.body;
+  const companyId = await subdomainInfo(domain);
+  console.log("domaindomaindomain",domain)
+
   try {
     // Insérer le WKT dans la base de données PostgreSQL
-    const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name) VALUES (ST_GeomFromText($1, 4326), $2) RETURNING id';
-    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle]);
+    const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name,company_id) VALUES (ST_GeomFromText($1, 4326), $2, $3) RETURNING id';
+    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle,companyId]);
     const zoneId = result.rows[0].id;
 
     // Transmettre l'ID de la zone à managePlanningModel
@@ -32,6 +35,8 @@ const save = async (req, res) => {
 
 // https://postgis.net/docs/manual-1.5/ch08.html
 const get = async (req, res) => {
+  const { domain } = req.query;
+  console.log("req.query", req.query);
   try {
     const query = `
       SELECT gz.id,
@@ -67,13 +72,16 @@ const get = async (req, res) => {
       LEFT JOIN planning_model_zones pmz ON pmz.zone_id = gz.id
       LEFT JOIN planning_models pm_maintenance ON pmz.planning_model_id_maintenance = pm_maintenance.id
       LEFT JOIN planning_models pm_repair ON pmz.planning_model_id_repair = pm_repair.id
+      WHERE gz.company_id = $1
       GROUP BY gz.id, pm_maintenance.id, pm_maintenance.intervention_type, pm_maintenance.available_days, 
       pm_maintenance.slot_duration, pm_maintenance.start_time, pm_maintenance.end_time, 
       pm_repair.id, pm_repair.intervention_type, pm_repair.available_days, pm_repair.slot_duration, 
       pm_repair.start_time, pm_repair.end_time
     `;
-    const result = await pool.query(query);
-
+    const companyId = await subdomainInfo(domain);
+    console.log("domaindomaindomain", domain);
+    const result = await pool.query(query, [companyId]);
+    console.log("resultresult", result.rows);
     const data = result.rows.map(row => {
       return {
         ...row,
@@ -169,24 +177,42 @@ const addTechnicianToZone = async (req, res) => {
 
 
 const isAddressInZone = async (req, res) => {
-  const { address } = req.body;
-  console.log("address", address);
-  const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-  const response = await fetch(nominatimUrl);
-  const data = await response.json();
-  let notFoundMessage = "Nous n'avons pas de technicien dans votre zone";
-  if (data.length === 0) {
-    return res.status(404).json({ success: false, message: notFoundMessage });
-  }
+  try {
+    const { address } = req.body;
+    console.log("address", address);
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    const response = await fetch(nominatimUrl);
+    const data = await response.json();
+    let notFoundMessage = "Nous n'avons pas de technicien dans votre zone";
+    if (data.length === 0) {
+      throw new Error(notFoundMessage);
+    }
 
-  const { lat, lon } = data[0];
-  const point = `POINT(${lon} ${lat})`;
-  const query = `SELECT id, zone_name FROM geographical_zone 
-  WHERE ST_Contains(coordinates, ST_GeomFromText($1, 4326)) LIMIT 1`;
-  const result = await pool.query(query, [point]);
-  const zoneConcerned = result.rows[0]?.id;
-  console.log("zoneConcerned",zoneConcerned)
-  res.status(200).json({ success: zoneConcerned, message: !zoneConcerned ? notFoundMessage : "" });
+    const { lat, lon } = data[0];
+    const point = `POINT(${lon} ${lat})`;
+    const query = `SELECT id, zone_name FROM geographical_zone 
+    WHERE ST_Contains(coordinates, ST_GeomFromText($1, 4326)) LIMIT 1`;
+    const result = await pool.query(query, [point]);
+    const zoneConcerned = result.rows[0]?.id;
+
+    if (!zoneConcerned) {
+      throw new Error(notFoundMessage);
+    } else {
+      // Check if any technician is in that zone
+      const technicianQuery = `SELECT COUNT(*) FROM technician WHERE geographical_zone_id = $1`;
+      const technicianResult = await pool.query(technicianQuery, [zoneConcerned]);
+      const technicianCount = parseInt(technicianResult.rows[0].count, 10);
+
+      if (technicianCount === 0) {
+        throw new Error(notFoundMessage);
+      }
+
+      res.status(200).json({ success: zoneConcerned, message: "" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message || "Erreur lors de la vérification de l'adresse" });
+  }
 }
 
 module.exports = { save,get,deleteSelected,removeTechnicianFromZone,addTechnicianToZone,isAddressInZone,updateZone }
