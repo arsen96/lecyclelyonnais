@@ -65,6 +65,7 @@ HomeCycl’Home est une application d'entretien et de réparation de vélos à d
 
 ### Configuration
 
+## API
 - Copiez le fichier .env.exemple à la racine du projet, renommez-le en .env, puis configurez les variables d'environnement suivantes avec vos propres valeurs :
     - PORT
     - JWT_SECRET
@@ -75,6 +76,12 @@ HomeCycl’Home est une application d'entretien et de réparation de vélos à d
     - DB_HOST
     - DB_HOST_LOCAL
     - DB_NAME
+      
+ ## Front
+  ### Angular
+  - Modifier le fichier .environment avec vos propres valeurs :
+    - GOOGLE_MAP_API
+  
 
 ## Contribution
 
