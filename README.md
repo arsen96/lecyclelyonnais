@@ -39,13 +39,6 @@ HomeCycl’Home est une application d'entretien et de réparation de vélos à d
 - **Nginx** : Serveur pour le frontend.
 - **Docker Compose** : Orchestration des services (backend, frontend, base de données).
 
-## Installation
-
-### Prérequis
-- **Node.js** : Version 16+.
-- **PostgreSQL** : Version 13+.
-- **Docker et Docker Compose** : Version récente.
-
 ### Démarrage local
 
 1. Clonez le dépôt :
