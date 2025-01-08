@@ -56,7 +56,7 @@ HomeCycl’Home est une application d'entretien et de réparation de vélos à d
    - Frontend : [http://localhost:4200](http://localhost:4200)
    - Backend API : [http://localhost:3000](http://localhost:3000)
 
-### Configuration
+# Configuration
 
 ## API
 - Copiez le fichier .env.exemple à la racine du projet, renommez-le en .env, puis configurez les variables d'environnement suivantes avec vos propres valeurs :
