@@ -20,7 +20,6 @@ export class StandardAuth extends AuthBaseService {
    }
 
    loginStandard(loginCredentials:FormLoginModel): any{
-      console.log("loginCredentialsloginCredentials",loginCredentials)
       const value = super.login(loginCredentials,`${BaseService.baseApi}/${this.currentRoute}/login`);
       return value.pipe(
         map((data:any) => {
@@ -44,7 +43,6 @@ export class StandardAuth extends AuthBaseService {
             if (res) {
               this.bicycleService.userBicycles = [];
 
-              console.log("res.datares.datares.data",res.data)
               this.globalService.user.next(res.data.user);
               this.globalService.userRole.next(res.data.user.role);
               this.setSession(res.token);
@@ -62,7 +60,6 @@ export class StandardAuth extends AuthBaseService {
       catchError(BaseService.handleError)
     ).pipe(
       map(data => {
-        console.log("datadata",data)
         return data.message
       })
     );
@@ -73,7 +70,6 @@ export class StandardAuth extends AuthBaseService {
       catchError(BaseService.handleError)
     ).pipe(
       map(data => {
-        console.log("datadata",data)
         return data.message
       })
     );

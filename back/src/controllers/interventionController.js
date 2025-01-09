@@ -25,11 +25,7 @@ const save = async (req, res) => {
 
         const { repair, maintenance, operation, address } = JSON.parse(req.body.intervention);
         const userId = req.user.id;
-        // const { photos2 } = JSON.parse(req.body.photos);
         const photos = req.files;
-        // console.log("repair", repair);
-        // console.log("req.body", req.body);
-        // console.log("photos", photos);
 
         const isMaintenance = operation.operation === "maintenance";
         try {
@@ -81,7 +77,6 @@ const get = async (req, res) => {
   `;
     const result = await pool.query(query);
 
-    console.log("resultresultresult", result.rows)
     const data = result.rows.map(row => {
         return {
           ...row,
@@ -91,8 +86,6 @@ const get = async (req, res) => {
         };
       });
     const id = result.rows.filter(row => row.photos?.length > 0 && row.photos[0] !== null);
-    // console.log("result", result.rows)
-    // console.log("id", id)
     res.status(200).send({ success: true, message: "Interventions récupérées avec succès", data});
 }
 
@@ -157,7 +150,7 @@ const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
  * Mettre à jour une intervention
  */
 const manageEnd = async (req, res) => {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(401).send({ success: false, message: "Token manquant" });
     }

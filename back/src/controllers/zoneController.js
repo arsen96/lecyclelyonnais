@@ -34,7 +34,6 @@ const save = async (req, res) => {
 // https://postgis.net/docs/manual-1.5/ch08.html
 const get = async (req, res) => {
   const { domain } = req.query;
-  console.log("req.query", req.query);
   try {
     const query = `
       SELECT gz.id,
@@ -150,8 +149,6 @@ const addTechnicianToZone = async (req, res) => {
     `;
     const centerResult = await pool.query(centerQuery, [zone_id]);
     const centerPoint = centerResult.rows[0].center;
-    console.log("centerPoint",centerPoint)
-    console.log("centerResult.rows[0]", centerResult.rows[0]);
     // Extraire les coordonnées du centre
     const [lon, lat] = centerPoint.match(/POINT\(([^ ]+) ([^ ]+)\)/).slice(1, 3);
     // Utiliser une API de géocodage inversé pour obtenir l'adresse
@@ -159,7 +156,6 @@ const addTechnicianToZone = async (req, res) => {
     const response = await fetch(reverseGeocodeUrl);
     const data = await response.json();
     const address = data.display_name;
-    console.log("address",address)
     // Mettre à jour les techniciens avec la zone et l'adresse
     const query = 'UPDATE technician SET geographical_zone_id = $1, address = $2 WHERE id = ANY($3::int[])';
     await pool.query(query, [zone_id, address, technician_ids]);

@@ -38,6 +38,8 @@
         <form [formGroup]="detailsFormGroup" (ngSubmit)="onDetailsSubmit()">
           <ng-template matStepLabel>Détails du cycle</ng-template>
           <div class="form-content">
+
+            @if(this.globalService.isAuthenticated.getValue() !== false){
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Sélectionnez un vélo</mat-label>
               <mat-select (selectionChange)="onBicycleSelect($event.value)">
@@ -46,6 +48,7 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
+          }
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Marque</mat-label>
               <input matInput placeholder="Saisissez la marque" formControlName="brand" required>

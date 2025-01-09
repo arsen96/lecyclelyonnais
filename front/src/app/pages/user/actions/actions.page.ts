@@ -54,7 +54,6 @@ export class ActionsPage implements OnInit {
     if(adresse){
       this.addressValidated = true
     }
-    console.log(" this.addressValidated", this.addressValidated)
     
     this.addressFormGroup = this._formBuilder.group({
       address: [adresse || '', Validators.required]
@@ -94,7 +93,6 @@ export class ActionsPage implements OnInit {
     lastValueFrom(this.bicycleService.getUserBicycles()).then((res:any) => {
       this.userBicycles = res;
 
-      console.log("this.userBicycles", this.userBicycles)
     })
 
   }
@@ -149,13 +147,11 @@ export class ActionsPage implements OnInit {
       if (this.addressFormGroup.valid) {
         if (this.addressValidated) {
           const addressData = this.addressFormGroup.value;
-          console.log('Address Data:', addressData);
           try {
           const inZone$ = this.zoneService.isAddressInZone(addressData.address);
           const result = this.loadingService.showLoaderUntilCompleted(inZone$);
           result.subscribe({
             next: (result: any) => {
-              console.log("result", result);
               this.addressFormCompleted = true;
               if (result.success) {
                 this.concernedZoneId = result.success;
@@ -163,7 +159,6 @@ export class ActionsPage implements OnInit {
                   this.concernedZone = this.zoneService.getZoneById(this.concernedZoneId);
                   this.updateAvailableDates();
                 });
-                console.log(" this.concernedZone", this.concernedZone)
                 this.technicianService.get().then((technicians: Technician[]) => {
                   this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
                 });
@@ -192,7 +187,6 @@ export class ActionsPage implements OnInit {
   onDetailsSubmit() {
     if (this.detailsFormGroup.valid) {
       const detailsData = this.detailsFormGroup.value;
-      console.log('Details Data:', detailsData);
       this.detailsFormCompleted = true;
       this.stepper.next();
     }
@@ -201,7 +195,6 @@ export class ActionsPage implements OnInit {
   onOperationSubmit() {
     if (this.operationFormGroup.valid) {
       const operationData = this.operationFormGroup.value;
-      console.log('Operation Data:', operationData);
       this.operationFormCompleted = true;
       this.stepper.next();
     }
@@ -253,12 +246,7 @@ export class ActionsPage implements OnInit {
 }
 
   onSubmit() {
-    console.log('Maintenance Form Valid:', this.maintenanceFormGroup.valid);
-    console.log('Repair Form Valid:', this.repairFormGroup.valid);
-    console.log('Maintenance Form Errors:', this.maintenanceFormGroup.errors);
-    console.log('Repair Form Errors:', this.repairFormGroup.errors);
     
-    console.log("isValid", !this.maintenanceFormGroup.valid)
     if ((this.operationFormGroup.get('operation').value === 'maintenance' && !this.maintenanceFormGroup.valid) || (this.operationFormGroup.get('operation').value === 'reparation' && !this.repairFormGroup.valid)) {
       console.error('Form is invalid');
       return;
@@ -339,12 +327,10 @@ export class ActionsPage implements OnInit {
     }
 
     this.isAtConfirmationStep = event.selectedIndex === this.stepper.steps.length - 1;
-    console.log("this.isAtConfirmationStep", this.isAtConfirmationStep)
   }
 
   changeAddressValidated(){
     this.addressValidated = false
-    console.log("this.addressValidated",this.addressValidated)
   }
 
   onDateChange(event: any) {
@@ -409,10 +395,8 @@ export class ActionsPage implements OnInit {
     const selectedTimeSlot = event.detail.value;
     
     const [startTime, endTime] = selectedTimeSlot.split(' - ');
-    console.log("selectedTimeSlot", selectedTimeSlot)
     // Get the selected date from the form control
     const selectedDate = new Date(this.maintenanceFormGroup.value.scheduleDate);
-    console.log("selectedDate", selectedDate)
     // Combine the selected date with the start time
     const startDateTime = new Date(selectedDate);
     const [startHour, startMinute] = startTime.split(':').map(Number);
@@ -423,8 +407,6 @@ export class ActionsPage implements OnInit {
     const [endHour, endMinute] = endTime.split(':').map(Number);
     endDateTime.setHours(endHour, endMinute);
 
-    console.log("startDateTime", startDateTime.toString());
-    console.log("endDateTime", endDateTime.toString());
 
     if (!this.isDateAvailable(startDateTime, endDateTime)) {
         this.msgService.showToast('Le créneau horaire sélectionné est déjà pris.', 'danger');
@@ -442,7 +424,6 @@ export class ActionsPage implements OnInit {
   onLoginSubmit() {
     if (this.loginFormGroup.valid) {
       const loginData = this.loginFormGroup.value;
-      console.log('Login Data:', loginData);
       this.stepper.next();
     }
   }

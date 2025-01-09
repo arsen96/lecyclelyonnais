@@ -40,7 +40,6 @@ export class InterventionService  {
       // const techniciansLoaded = await lastValueFrom(this.technicianService.techniciansLoaded);
 
       const buildInterventions = (interventions:Intervention[]) => {
-        console.log("this.bicycleService.allBicycles",this.bicycleService.allBicycles)
         interventions = interventions.sort((a, b) => new Date(a.appointment_start).getTime() - new Date(b.appointment_start).getTime()).reverse();
       interventions.forEach((intervention:Intervention) => {
         if(bicycleLoaded){  
@@ -55,7 +54,6 @@ export class InterventionService  {
 
       }
 
-      console.log("this.allInterventionsthis.allInterventions",this.allInterventions)
       if (this.allInterventions.length > 0) {
         buildInterventions(this.allInterventions);
       return lastValueFrom(of(this.allInterventions));
@@ -64,7 +62,6 @@ export class InterventionService  {
     return lastValueFrom(this.http.get<any>(`${BaseService.baseApi}/interventions/all`).pipe(
       tap((res: any) => {
         this.allInterventions = res.data;
-        console.log("allInterventions", this.allInterventions);
         buildInterventions(this.allInterventions);
         this.interventionsLoadedResolver(true);
       }),

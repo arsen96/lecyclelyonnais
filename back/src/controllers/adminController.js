@@ -40,7 +40,6 @@ const createAdmin = async (req, res) => {
 
 
         const emailResult = await pool.query(checkEmailQuery, [email]);
-        console.log("emailResult", emailResult.rows);
         if (emailResult.rows.length > 0) {
             return res.status(400).json({ success: false, message: "Un utilisateur avec cet email existe déjà" });
         }
@@ -106,15 +105,12 @@ const deleteAdmin = async (req, res) => {
 const loginAdmin = async (req, res) => {
   const { email, password, domain } = req.body;
 
-  console.log("domaindomain",domain)
   const companyId = await subdomainInfo(domain);
-  console.log("companyIdcompanyId",companyId)
   try {
     const query = "SELECT * FROM administrator WHERE email = $1 AND company_id = $2";
     const result = await pool.query(query, [email, companyId]);
     const query2 = "SELECT * FROM administrator";
     const result2 = await pool.query(query2);
-    console.log("result2result2",result2.rows)
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
     }
@@ -124,9 +120,7 @@ const loginAdmin = async (req, res) => {
       return res.status(401).json({ success: false, message: "Mot de passe incorrect" });
     }
 
-    console.log("admin.roleadmin.roleadmin.role",admin.role)
     const token = generateToken(admin, admin.role );
-    console.log("token", token);
     res.status(200).json(
         { success: true, message: "Connexion réussie", token, data: {  user: { ...admin, role: admin.role } } });
   } catch (error) {

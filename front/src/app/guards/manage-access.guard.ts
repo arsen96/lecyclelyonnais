@@ -26,12 +26,12 @@ export const manageAccessGuard: CanActivateFn = (route, state) => {
   const canAccess = requiredRoles ? requiredRoles.includes(userRole) : true;
   
   console.log("userRoleuserRole",userRole)
-  // if (!canAccess && userRole) {
-  //   const currentUrl = routeRedirectionRole(userRole);
-  //   console.log("currentUrlcurrentUrlcurrentUrlcurrentUrl",currentUrl)
-  //   console.log("userRoleuserRoleuserRole",userRole)
-  //   router.navigateByUrl(currentUrl);
-  // }
+  if (!canAccess && userRole) {
+    const currentUrl = routeRedirectionRole(userRole);
+    console.log("currentUrlcurrentUrlcurrentUrlcurrentUrl",currentUrl)
+    console.log("userRoleuserRoleuserRole",userRole)
+    router.navigateByUrl(currentUrl);
+  }
 
   return true;
 };
@@ -42,9 +42,9 @@ export const isConnected: CanActivateFn = (route, state) => {
   const globalService = inject(GlobalService);
   const userRole = globalService.userRole.getValue();
   const canAccess = userRole ? false : true;
-  // if (!canAccess && userRole) {
-  //   const currentUrl = routeRedirectionRole(userRole);
-  //   router.navigateByUrl(currentUrl);
-  // }
+  if (!canAccess && userRole) {
+    const currentUrl = routeRedirectionRole(userRole);
+    router.navigateByUrl(currentUrl);
+  }
   return true;
 };

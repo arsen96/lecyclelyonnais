@@ -43,7 +43,6 @@ export class ZoneService extends BaseService{
       map((res: any) => {
         this.allZones = res.data;
 
-        console.log("allZonesallZonesallZones",this.allZones)
         return res.data;
       }),
       catchError(BaseService.handleError.bind(this))

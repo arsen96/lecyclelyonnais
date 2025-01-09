@@ -71,9 +71,6 @@ const login = async (req, res) => {
 
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1 AND company_id = $2';
     let user = await pool.query(checkUserQuery, [email,companyId]);
-    console.log("useruser",user.rows)
-    console.log("emailemailemail",email)
-    console.log("companyIdcompanyId",companyId)
     let isUser = true;
     // let user = await pool.query(checkUserQuery, [email]);
 
@@ -211,7 +208,7 @@ const resetPassword = async (req, res) => {
 
 
 const getConnectedUser = async (req, res) => {
-  const token = req.headers.authorization
+  const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ success: false, message: "Token manquant" });
   }

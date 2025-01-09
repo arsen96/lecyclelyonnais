@@ -9,7 +9,6 @@ const save = async (req, res) => {
     // Ensure start_time and end_time are in the correct format
     const startTime = formatTime(req.body.start_time);
 
-    console.log("startTime", startTime);
     const endTime = formatTime(req.body.end_time);
     const values = [req.body.name, req.body.intervention_type, req.body.slot_duration, startTime, endTime, req.body.available_days, companyId];
     
@@ -17,8 +16,7 @@ const save = async (req, res) => {
         await pool.query(query, values);
         res.status(200).json({ success: true, message: "Modèle de planning enregistré avec succès" });
     } catch (error) {
-        console.log(error);
-        console.log("req.body.start_time", req.body.start_time);
+        console.error(error);
         res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement du modèle de planning" });
     }
 }
@@ -40,13 +38,9 @@ function formatTime(time) {
 
 const get = async (req, res) => {
     const {domain} = req.query;
-    console.log("domaindomaindomain",domain)
     const companyId = await subdomainInfo(domain);
-    console.log("companyIdcompanyIdcompanyId",companyId)
     const query = 'SELECT * FROM planning_models WHERE company_id = $1';
     const result = await pool.query(query,[companyId]);
-
-    console.log('roowwsss',result.rows)
     res.status(200).json({success:true,data:result.rows});
 }
 
@@ -75,8 +69,6 @@ const deleteModel = async (req, res) => {
 
         // Then delete from planning_models
         const deleteModelsQuery = 'DELETE FROM planning_models WHERE id = ANY($1) AND company_id = $2';
-        console.log("companyIdcompanyIdcompanyId",companyId)
-        console.log("domaindomaindomain",domain)
         
         await pool.query(deleteModelsQuery, [req.body.ids, companyId]);
         res.status(200).json({ success: true, message: "Modèle de planning et zones associés supprimés avec succès" });

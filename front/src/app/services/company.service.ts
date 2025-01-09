@@ -26,13 +26,10 @@ export class CompanyService extends BaseService {
     this.router.events.subscribe(async x => {
       if (x instanceof NavigationEnd) {
         this.currentSubdomain = this.getSubdomain();
-        console.log("his.currentSubdomain",this.currentSubdomain)
         const allowedSubdomain = await this.isAllowedSubdomain();
         
 
-        console.log("allowedSubdomainallowedSubdomain",allowedSubdomain)
         if(!allowedSubdomain){
-          console.error("CompanyServiceCompanyServiceCompanyService")
           this.authService.logout();
         }
       }
@@ -50,18 +47,14 @@ export class CompanyService extends BaseService {
     if(this.globalService.userRole.getValue() === UserRole.ADMIN){
       param = this.subdomainREQ
     }
-    console.log("isAdminisAdmin",this.globalService.userRole.getValue())
     
     return lastValueFrom(this.http.get<{}>(`${BaseService.baseApi}/${this.currentRoute}/get`,{
       params: param
     }).pipe(
       map((res:{success:boolean,data:Company[]}) => {
         this.companies = res.data;
-        console.log("this.companiesthis.companies",this.companies)
         this.companiesLoaded.next(true);
-        console.log("this.currentSubdomain",this.currentSubdomain)
         this.currentCompany = this.companies.find((currentComp) => currentComp.subdomain === this.currentSubdomain);
-        console.log("this.currentCompany",this.currentCompany)
         this.setToolbarBackgroundColor();
         return this.companies;
       }),
@@ -133,8 +126,6 @@ export class CompanyService extends BaseService {
         await this.get();
       }
       const subdomains = this.companies.map(result => result.subdomain);
-      console.log("subdomainssubdomains",subdomains)
-      console.log("this.companiesthis.companies",this.companies)
       return subdomains;
     }catch(err){
       console.error("error while recovering companies")
@@ -144,7 +135,6 @@ export class CompanyService extends BaseService {
 
   async isAllowedSubdomain() {
     const allowedSubdomains = await this.allowedSubdomains();
-    console.log("allowedSubdomainsallowedSubdomains",allowedSubdomains)
     if(!allowedSubdomains){
       return false;
     }

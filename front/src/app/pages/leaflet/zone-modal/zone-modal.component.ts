@@ -27,12 +27,9 @@ export class ZoneModalComponent {
 
         if(this.edition){
           this.zoneTitle = this.zoneSelected.zone_name;
-          console.log("this.zoneSelected", this.zoneSelected);
           this.zoneTypeInterventionMaintenance = this.zoneSelected.model_planification.maintenance.id;
           this.zoneTypeInterventionRepair = this.zoneSelected.model_planification.repair.id;
 
-          console.log("this.zoneTypeInterventionMaintenance", this.zoneTypeInterventionMaintenance);
-          console.log("this.zoneTypeInterventionRepair", this.zoneTypeInterventionRepair);
         }
     });
   }

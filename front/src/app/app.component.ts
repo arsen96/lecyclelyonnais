@@ -46,9 +46,9 @@ export class AppComponent {
       this.globalService.isAuthenticated,
       this.globalService.user
     ]).subscribe(() => {
+
       this.updateMenu();
     });
-
   }
 
   updateMenu() {

@@ -2,7 +2,6 @@ const pool = require('../config/db');
 
 const getCompanies = async (req, res) => {
   const {domain} = req.query;
-  console.log("domaiaiinn",domain)
   let result;
   if(domain){
     const companyId = await subdomainInfo(domain);

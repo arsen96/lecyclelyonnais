@@ -65,7 +65,6 @@ export class UsersPage implements OnInit {
   loadUserDetails(userId: number) {
     this.clientService.get().then((res: any) => {
       this.selectedUser = this.clientService.allClients.find(user => user.id === userId);
-      console.log("selectedUser", this.selectedUser);
       if (this.selectedUser) {
         this.registrationForm.patchValue({
           firstName: this.selectedUser.first_name,

@@ -56,7 +56,6 @@ export class TechnicianService extends BaseService {
   }
 
   override delete(techniciansIds: number[]):Observable<void>{
-    console.log("techniciansIds", techniciansIds)
     return this.http.post(`${BaseService.baseApi}/technicians/delete`, { ids: techniciansIds }).pipe(map((res: any) => {
       this.technicians.forEach(technician => {
         if(techniciansIds.includes(technician.id)){  

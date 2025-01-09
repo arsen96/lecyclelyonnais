@@ -41,7 +41,6 @@ const getGeographicalZoneId = async (address) => {
 const save = async (req, res) => {
   try {
     const { last_name, first_name, phone, address, password, email,domain } = req.body;
-    console.log("domaindomaindomaindomain",domain)
     const hashedPassword = await bcrypt.hash(password, 10);
     const geographical_zone_id = await getGeographicalZoneId(address);
     const companyId = await subdomainInfo(domain);
@@ -68,8 +67,6 @@ const get = async (req, res) => {
   try {
     const query = 'SELECT *, to_char(created_at, \'YYYY-MM-DD\') as created_at FROM technician';
     const result = await pool.query(query);
-
-    console.log("resultresult",result.rows)
     res.json(result.rows);
   } catch (error) {
     console.error(error);

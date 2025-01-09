@@ -49,12 +49,6 @@ const deleteBicycles = async (req, res) => {
 const updateBicycle = async (req, res) => {
     const { id, brand, model, year, type } = req.body;
 
-    console.log("id", id);
-    console.log("brand", brand);
-    console.log("model", model);
-    console.log("year", year);
-    console.log("type", type);
-
     const query = 'UPDATE bicycle SET brand = $2, model = $3, c_year = $4, type = $5 WHERE id = $1';
     const result = await pool.query(query, [id, brand, model, year, type]);
     res.status(200).send({ success: true, message: "Vélo mis à jour avec succès", data: result.rows[0] });

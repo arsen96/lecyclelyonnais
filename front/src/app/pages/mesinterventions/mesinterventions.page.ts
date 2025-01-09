@@ -172,7 +172,6 @@ export class MesinterventionsPage implements OnInit {
   }
 
   async getSelectedPhotos(intervention: Intervention): Promise<File[]> {
-    console.log("intervention.uploadedPhotos", intervention.uploadedPhotos);
     const photoPromises = intervention.uploadedPhotos.map(async (photoUrl) => {
         const response = await fetch(photoUrl);
         const blob = await response.blob();

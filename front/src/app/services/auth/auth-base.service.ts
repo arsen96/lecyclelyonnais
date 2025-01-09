@@ -43,7 +43,6 @@ export class AuthBaseService{
   }
 
   setSession(token:string){
-    console.log("tokentokentoken",token)
     localStorage.setItem("access_token", token);
   }
 
@@ -120,7 +119,6 @@ export class AuthBaseService{
 
 
   logout(){
-    console.log("apeee")
     this.tokenObs = null;
     const role = this.globalService.userRole.getValue();
     localStorage.removeItem("access_token");
@@ -137,7 +135,6 @@ export class AuthBaseService{
 
   public unauthenticated(): void {
     BaseService.$disconnect.subscribe((result) => {
-      console.log("resultresult",result)
       if(result){
         // if (this.wasAuthenticated || force) {
           // this.logout();
