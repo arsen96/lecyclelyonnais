@@ -63,7 +63,7 @@ export class UsersPage implements OnInit {
   }
 
   loadUserDetails(userId: number) {
-    this.clientService.getClients().then((res: any) => {
+    this.clientService.get().then((res: any) => {
       this.selectedUser = this.clientService.allClients.find(user => user.id === userId);
       console.log("selectedUser", this.selectedUser);
       if (this.selectedUser) {
@@ -86,7 +86,7 @@ export class UsersPage implements OnInit {
     if (this.registrationForm.valid) {
       const updatedUser = { id: this.selectedUser.id, ...this.registrationForm.value };
       if (!this.resetPasswordMode || this.registrationForm.get('password').value) {
-        this.clientService.updateClient(updatedUser).subscribe({
+        this.clientService.update(updatedUser).subscribe({
           next: (result) => {
             this.messageService.showToast(result.message, Message.success);
             this.clientService.allClients = [];

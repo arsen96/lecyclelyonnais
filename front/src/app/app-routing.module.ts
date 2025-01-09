@@ -6,7 +6,7 @@ import { UserRole } from './services/global.service';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'actions',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -144,7 +144,7 @@ const routes: Routes = [
     path: 'user/:id',
     loadChildren: () => import('./pages/users/users.module').then( m => m.UsersPageModule),
     canActivate: [manageAccessGuard],
-    data: { roles: [UserRole.ADMIN] }
+    data: { roles: [UserRole.ADMIN,UserRole.CLIENT] }
   },
   {
     path: 'users-list',

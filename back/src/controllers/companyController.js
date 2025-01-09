@@ -40,7 +40,7 @@ const createCompany = async (req, res) => {
 
 const subdomainInfo = async (subdomain) => {
   let result;
-  if(!subdomain){
+  if(!subdomain || subdomain == 'null'){
     const query = "SELECT id FROM company WHERE subdomain IS NULL";
     result = await pool.query(query);
   }else{

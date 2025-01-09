@@ -28,12 +28,12 @@ export class AppComponent {
     { title: 'Mes interventions', url: '/interventions', icon: 'home', condition: () => this.manageAccess([UserRole.CLIENT])},
     { title: 'Mes vélos', url: '/bikes-list', icon: 'home', condition: () => this.manageAccess([UserRole.CLIENT])},
     { title: 'Gestion des techniciens', url: '/list-technicien', icon: 'home', condition: () => this.manageAccess([UserRole.ADMIN]) },
-    { title: 'Planifier une intervention', url: '/actions', icon: 'home', condition: () =>  this.manageAccess([UserRole.CLIENT]) },
+    { title: 'Planifier une intervention', url: '/actions', icon: 'home', condition: () => true},
     { title: 'Mes interventions', url: '/mesinterventions', icon: 'log-in', condition: () => this.manageAccess([UserRole.TECHNICIAN]) },
     { title: 'Gestion du planning', url: '/planning-models-list', icon: 'log-in', condition: () => this.manageAccess([UserRole.ADMIN]) },
     { title: 'Gestion des comptes utilisateurs', url: '/users', icon: 'log-in', condition: () => this.manageAccess([UserRole.ADMIN]) },
     { title: 'Mon profil', url: this.userProfileUrl, icon: 'log-in', tag:"profile", condition: () => this.manageAccess([UserRole.CLIENT]) },
-    { title: 'Gestion des administrateur', url: '/admins-list', icon: 'log-in', condition: () => this.manageAccess([UserRole.ADMIN,UserRole.SUPERADMIN]) },
+    { title: 'Gestion des administrateurs', url: '/admins-list', icon: 'log-in', condition: () => this.manageAccess([UserRole.ADMIN,UserRole.SUPERADMIN]) },
     { title: 'Gestion des entreprises', url: '/company-list',tag:"company", icon: 'log-in', condition: () => this.manageAccess([UserRole.ADMIN]) },
     { title: 'Connexion', url: '/login', icon: 'log-in', condition: () => !localStorage.getItem("access_token") },
     { title: 'Déconnexion', url: '/login', icon: 'log-out', condition: () => localStorage.getItem("access_token"), func: () => this.logout() },
@@ -69,6 +69,7 @@ export class AppComponent {
   }
 
   logout() {
+    console.log("testtt")
     this.standard.logout();
   }
 

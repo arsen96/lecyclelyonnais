@@ -3,25 +3,26 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, finalize, tap,map } from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { Bicycle } from '../models/bicycle';
-import { BehaviorSubject, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, of, ReplaySubject } from 'rxjs';
 import { GlobalService } from './global.service';
+import { CRUD } from '../models/crud';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BicycleService extends BaseService {
+export class BicycleService extends BaseService{
   allBicycles:Bicycle[] = [];
   userBicycles:Bicycle[] = [];
   public globalService: GlobalService = inject(GlobalService);
   bicyclesLoaded:ReplaySubject<boolean> = new ReplaySubject<boolean>(0); 
 
-  constructor(private http: HttpClient) { 
+  constructor() { 
     super();
-    this.getBicycles().subscribe();
+    this.get().subscribe();
   }
 
-  getBicycles() {
-    return this.http.get<any>(`${this.baseApi}/bicycles/get`).pipe(
+  override get():Observable<Bicycle> {
+    return this.http.get<any>(`${BaseService.baseApi}/bicycles/get`).pipe(
       tap((res: any) => { 
         this.allBicycles = res.data;
         console.log('allBicycles',this.allBicycles);
@@ -29,15 +30,15 @@ export class BicycleService extends BaseService {
       }),
       catchError((err) => {
         this.bicyclesLoaded.next(false);
-        return this.handleError(err);
+        return BaseService.handleError(err);
       }),
       finalize(() => this.bicyclesLoaded.complete())
     );
   }
 
-  addNew(bicycle: Bicycle) {
-    return this.http.post<any>(`${this.baseApi}/bicycles/addNew`, bicycle).pipe(
-      catchError((err) => this.handleError(err))
+  override create(bicycle: Bicycle) {
+    return this.http.post<any>(`${BaseService.baseApi}/bicycles/addNew`, bicycle).pipe(
+      catchError((err) => BaseService.handleError(err))
     );
   }
 
@@ -46,7 +47,7 @@ export class BicycleService extends BaseService {
       return of(this.userBicycles);
     }
 
-    return this.http.get<any>(`${this.baseApi}/bicycles/getUserBicycles`).pipe(
+    return this.http.get<any>(`${BaseService.baseApi}/bicycles/getUserBicycles`).pipe(
       map((res: any) => {
         res.data.forEach((bicycle: any) => {
           bicycle.year = bicycle.c_year;
@@ -55,19 +56,19 @@ export class BicycleService extends BaseService {
         this.userBicycles = res.data;
         return this.userBicycles
       }),
-      catchError((err) => this.handleError(err))
+      catchError((err) => BaseService.handleError(err))
     );
   }
 
-  deleteBicycles(ids: number[]) {
-    return this.http.post<any>(`${this.baseApi}/bicycles/deleteBicycles`, { ids }).pipe(
-      catchError((err) => this.handleError(err))
+  override delete(ids: number[]) {
+    return this.http.post<any>(`${BaseService.baseApi}/bicycles/deleteBicycles`, { ids }).pipe(
+      catchError((err) => BaseService.handleError(err))
     );  
   }
 
-  updateBicycle(id: number, bicycle: Bicycle) {
-    return this.http.post<any>(`${this.baseApi}/bicycles/updateBicycle`, { id, ...bicycle }).pipe(
-      catchError((err) => this.handleError(err))
+  override update(id: number, bicycle: Bicycle) {
+    return this.http.post<any>(`${BaseService.baseApi}/bicycles/updateBicycle`, { id, ...bicycle }).pipe(
+      catchError((err) => BaseService.handleError(err))
     );
   }
 

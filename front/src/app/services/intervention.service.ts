@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { Intervention } from '../models/intervention';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
@@ -11,29 +11,27 @@ import { GlobalService } from './global.service';
 @Injectable({
   providedIn: 'root'
 })
-export class InterventionService extends BaseService  {
+export class InterventionService  {
 
   allInterventions:Intervention[] = [];
   interventionsLoaded: Promise<boolean>;
   interventionsLoadedResolver: (value: boolean) => void;
+  public http = inject(HttpClient)
 
-  constructor(private http: HttpClient,private bicycleService:BicycleService,private technicianService:TechnicianService,public globalService:GlobalService) { 
-    super();
+  constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,public globalService:GlobalService) { 
     this.interventionsLoaded = new Promise((resolve) => {
       this.interventionsLoadedResolver = resolve;
     });
-    this.getAllInterventions();
+    this.get();
   } 
 
-  save(form:FormData) {
-
-    console.log("formformform", form);
-    return this.http.post<any>(`${this.baseApi}/interventions/save`, form).pipe(
-      catchError(this.handleError)
+  create(form:FormData) {
+    return this.http.post<any>(`${BaseService.baseApi}/interventions/save`, form).pipe(
+      catchError(BaseService.handleError)
     );
   } 
 
-  async getAllInterventions() {
+  async get() {
     const [bicycleLoaded, techniciansLoaded] = await Promise.all([
       lastValueFrom(this.bicycleService.bicyclesLoaded),
       lastValueFrom(this.technicianService.techniciansLoaded),
@@ -42,6 +40,7 @@ export class InterventionService extends BaseService  {
       // const techniciansLoaded = await lastValueFrom(this.technicianService.techniciansLoaded);
 
       const buildInterventions = (interventions:Intervention[]) => {
+        console.log("this.bicycleService.allBicycles",this.bicycleService.allBicycles)
         interventions = interventions.sort((a, b) => new Date(a.appointment_start).getTime() - new Date(b.appointment_start).getTime()).reverse();
       interventions.forEach((intervention:Intervention) => {
         if(bicycleLoaded){  
@@ -53,15 +52,16 @@ export class InterventionService extends BaseService  {
 
         intervention.type = intervention.type.charAt(0).toUpperCase() + intervention.type.slice(1);
         })
+
       }
+
+      console.log("this.allInterventionsthis.allInterventions",this.allInterventions)
       if (this.allInterventions.length > 0) {
         buildInterventions(this.allInterventions);
-
-        console.log("allInterventions", this.allInterventions);
       return lastValueFrom(of(this.allInterventions));
     }
  
-    return lastValueFrom(this.http.get<any>(`${this.baseApi}/interventions/all`).pipe(
+    return lastValueFrom(this.http.get<any>(`${BaseService.baseApi}/interventions/all`).pipe(
       tap((res: any) => {
         this.allInterventions = res.data;
         console.log("allInterventions", this.allInterventions);
@@ -70,7 +70,7 @@ export class InterventionService extends BaseService  {
       }),
       catchError((err) => {
         this.interventionsLoadedResolver(false);
-        return this.handleError(err);
+        return BaseService.handleError(err);
       }),
       finalize(() => {
         this.interventionsLoadedResolver(false);
@@ -87,13 +87,12 @@ export class InterventionService extends BaseService  {
   }
 
   uploadPhotos(formData: FormData) {
-    return this.http.post(`${this.baseApi}/bicycles/upload-photos`, formData);
+    return this.http.post(`${BaseService.baseApi}/bicycles/upload-photos`, formData);
   }
 
   manageEndIntervention(interventionId: number, isCanceled: boolean, comment: string, photos?: File[]) {
     const formData = new FormData();
 
-    console.log("interventionId", interventionId);
     formData.append('intervention_id', interventionId.toString());
     formData.append('is_canceled', isCanceled.toString());
     formData.append('comment', comment);
@@ -102,7 +101,7 @@ export class InterventionService extends BaseService  {
         photos.forEach(photo => formData.append('interventionPhotos', photo));
     }
 
-    return this.http.post(`${this.baseApi}/interventions/manage-end`, formData);
+    return this.http.post(`${BaseService.baseApi}/interventions/manage-end`, formData);
   }
 
 

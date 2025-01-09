@@ -6,6 +6,7 @@ import { Message, MessageService } from 'src/app/services/message.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { ImageModalComponent } from 'src/app/components/image-modal/image-modal.component';
 import { LoadingService } from 'src/app/services/loading.service';
+import { BaseService } from 'src/app/services/base.service';
 
 
 export enum FilterType {
@@ -66,7 +67,11 @@ export class MesinterventionsPage implements OnInit {
         return isOngoing;
       });
 
-      this.upcomingInterventions = this.technicianInterventions.filter(intervention => new Date(intervention.appointment_start) > now && intervention.status !== 'canceled');
+      this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
+        const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';
+        const isNotInPast = !this.pastInterventions.some(pastIntervention => pastIntervention.id === intervention.id);
+        return isUpcoming && isNotInPast;
+      });
     
       
       this.displayPastInterventions = this.pastInterventions.length > 0;
@@ -81,7 +86,7 @@ export class MesinterventionsPage implements OnInit {
   }
 
   async openImageModal(photos: string[], index: number) {
-    photos = photos.map(photo => this.interventionService.baseApi + '/'+ photo);
+    photos = photos.map(photo => BaseService.baseApi + '/'+ photo);
     const modal = await this.modalController.create({
       component: ImageModalComponent,
       componentProps: {
@@ -189,8 +194,11 @@ export class MesinterventionsPage implements OnInit {
         const isOngoing = start <= now && end >= now && intervention.status !== 'completed';
         return isOngoing;
     });
-    this.upcomingInterventions = this.technicianInterventions.filter(intervention => new Date(intervention.appointment_start) > now && intervention.status !== 'canceled');
-    
+    this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
+      const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';
+      const isNotInPast = !this.pastInterventions.some(pastIntervention => pastIntervention.id === intervention.id);
+      return isUpcoming && isNotInPast;
+    });
     this.displayPastInterventions = this.pastInterventions.length > 0;
     this.displayOngoingInterventions = this.ongoingInterventions.length > 0;
     this.displayUpcomingInterventions = this.upcomingInterventions.length > 0;

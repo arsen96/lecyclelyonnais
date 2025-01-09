@@ -1,0 +1,50 @@
+services:
+  backend:
+    build:
+      context: ./back
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app_network
+
+  #frontend:
+  #  build:
+  #    context: ./front
+  #  ports:
+  #    - "8200:80"
+  #  networks:
+  #    - app_network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8200:80"
+    volumes:
+      - ./front/www:/usr/share/nginx/html
+      - ./front/nginx.conf:/etc/nginx/nginx.conf
+    #depends_on:
+    #  - frontend
+    networks:
+      - app_network
+
+  db:
+    image: postgis/postgis:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lecyclelyonnais
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./back/db2.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    name: app_network
+    driver: bridge

@@ -1,7 +1,7 @@
 const pool = require('../config/db');
 const bicycleController = require('./bicycleController');
 const multer = require('multer');
-
+const jwt = require('jsonwebtoken');
 
 const filePathOperation = 'uploads/bicycles/';
 
@@ -23,11 +23,8 @@ const save = async (req, res) => {
             return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
         }
 
-
         const { repair, maintenance, operation, address } = JSON.parse(req.body.intervention);
         const userId = req.user.id;
-        console.log("userId", userId)
-
         // const { photos2 } = JSON.parse(req.body.photos);
         const photos = req.files;
         // console.log("repair", repair);
@@ -84,7 +81,7 @@ const get = async (req, res) => {
   `;
     const result = await pool.query(query);
 
-    console.log("result", result.rows)
+    console.log("resultresultresult", result.rows)
     const data = result.rows.map(row => {
         return {
           ...row,
@@ -156,33 +153,47 @@ const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
     });
 };
 
-// Annuler une intervention 
+/**
+ * Mettre à jour une intervention
+ */
 const manageEnd = async (req, res) => {
-    uploadInterventionPhotos(req, res, async (err) => {
-        if (err) {
-            return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
-        }
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(401).send({ success: false, message: "Token manquant" });
+    }
 
-        const { intervention_id, is_canceled, comment } = req.body;
-        const isCanceled = is_canceled === 'true';
-        console.log("intervention_id", intervention_id);
-        console.log("is_canceled", is_canceled);
-        console.log("comment", comment);
+    try {
+        // const { role } = jwt.verify(token, process.env.JWT_SECRET);
 
-        const photos = req.files['interventionPhotos'];
-        console.log(" req.files",  req.files);
-        try {
-            const currentStatus = isCanceled ? "canceled" : "completed"
-            console.log("currentStatus", currentStatus);
-            await pool.query('UPDATE intervention SET status = $1, comment = $2 WHERE id = $3', [currentStatus, comment, intervention_id]);
-            if (photos && photos.length > 0) {
-                await uploadTechnicianInterventionPhotos(photos, intervention_id);
+        uploadInterventionPhotos(req, res, async (err) => {
+            if (err) {
+                return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
             }
-            res.status(200).send({ success: true, message: is_canceled ? "Intervention annulée" : "Intervention a été complétée" });
-        } catch (error) {
-            res.status(500).send({ success: false, message: "Erreur lors de l'annulation de l'intervention" });
-        }
-    });
+
+            const { intervention_id, is_canceled, comment } = req.body;
+            const isCanceled = is_canceled === 'true';
+
+            const photos = req.files['interventionPhotos'];
+            try {
+                const currentStatus = isCanceled ? "canceled" : "completed";
+                console.log("currentStatus", currentStatus);
+                // if(role === 'client'){
+                //     await pool.query('DELETE FROM intervention WHERE id = $1',[intervention_id]);
+                // }else{
+                    await pool.query('UPDATE intervention SET status = $1, comment = $2 WHERE id = $3', [currentStatus, comment, intervention_id]);
+                // }
+                if (photos && photos.length > 0) {
+                    await uploadTechnicianInterventionPhotos(photos, intervention_id);
+                }
+                res.status(200).send({ success: true, message: is_canceled ? "Intervention annulée" : "Intervention a été complétée" });
+            } catch (error) {
+                res.status(500).send({ success: false, message: "Erreur lors de l'annulation de l'intervention" });
+            }
+        });
+    } catch (error) {
+        console.error("Token verification error:", error);
+        res.status(401).send({ success: false, message: "Token invalide" });
+    }
 }
 
 module.exports = {

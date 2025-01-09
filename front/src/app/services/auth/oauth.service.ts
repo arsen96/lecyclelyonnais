@@ -3,6 +3,7 @@ import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import {Subject,lastValueFrom,} from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthBaseService } from './auth-base.service';
+import { BaseService } from '../base.service';
 
 
 export interface UserInfo {
@@ -57,10 +58,11 @@ export class OauthService extends AuthBaseService{
 
   async loginOauthApi(email:string): Promise<string | null>{
     const oauthValue = { email }
-    return await lastValueFrom(super.login(oauthValue,`${this.baseApi}/auth/oauth`));
+    return await lastValueFrom(super.login(oauthValue,`${BaseService.baseApi}/auth/oauth`));
   }
   
    override logout(){
+    console.error("oauthoauthoauthoauth")
     this.oAuthService.logOut();
     super.logout();
     this.globalService.isAuthenticated.next(false)

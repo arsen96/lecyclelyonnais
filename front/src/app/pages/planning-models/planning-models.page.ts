@@ -48,13 +48,13 @@ export class PlanningModelsPage implements OnInit {
       }, { validators: this.atLeastOneDaySelected })
     });
 
-    this.planningService.getPlanningModels().then(models => {
+    this.planningService.get().then(models => {
       this.dataSource.data = models;
     });
 
     const modelId = this.route.snapshot.params['id'];
     if (modelId) {
-      this.planningService.getPlanningModels().then(models => {
+      this.planningService.get().then(models => {
         const model = models.find(m => m.id === +modelId);
         if (model) {
           this.loadModelForEdit(model);
@@ -104,7 +104,7 @@ export class PlanningModelsPage implements OnInit {
         // Update existing model
         let modelData = this.planningForm.value;
         modelData.slot_duration = modelData.slot_duration + ' hours';
-        const $resultObs = this.planningService.updatePlanningModel({ id: this.selectedModel.id, ...modelData });
+        const $resultObs = this.planningService.update({ id: this.selectedModel.id, ...modelData });
         const finalR = this.loaderService.showLoaderUntilCompleted($resultObs);
         finalR.subscribe({
           next: (result: any) => {
@@ -121,7 +121,7 @@ export class PlanningModelsPage implements OnInit {
       } else {
         const slot_duration = this.planningForm.value.slot_duration + ' hours';
         this.planningForm.patchValue({ slot_duration });
-        const resultObs$ = this.planningService.savePlanningModel(this.planningForm.value);
+        const resultObs$ = this.planningService.create(this.planningForm.value);
         const finalR = this.loaderService.showLoaderUntilCompleted(resultObs$);
         finalR.subscribe({
           next: (result: any) => {

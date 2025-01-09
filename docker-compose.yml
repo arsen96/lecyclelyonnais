@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./back
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./back:/usr/src/app
+    depends_on:
+      - db
+    networks:
+      - app_network
+    environment:
+      - ENVIRONMENT=docker
+    command: npm run start
+
+  frontend:
+    build:
+      context: ./front
+    command: npx ionic serve --host 0.0.0.0 --port 8100
+    ports:
+      - "8100:8100"
+    volumes:
+      - ./front:/usr/src/app
+    networks:
+      - app_network
+
+  db:
+    image: postgis/postgis:15-3.3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lecyclelyonnais
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./back/database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    name: app_network
+    driver: bridge

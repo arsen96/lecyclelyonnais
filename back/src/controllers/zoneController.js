@@ -5,7 +5,6 @@ const {subdomainInfo} = require("../controllers/companyController")
 const save = async (req, res) => {
   const { wkt, zoneTitle,domain } = req.body;
   const companyId = await subdomainInfo(domain);
-  console.log("domaindomaindomain",domain)
 
   try {
     // Insérer le WKT dans la base de données PostgreSQL
@@ -14,7 +13,6 @@ const save = async (req, res) => {
     const zoneId = result.rows[0].id;
 
     // Transmettre l'ID de la zone à managePlanningModel
-
     try{
       await planningModelService.managePlanningModel({ ...req, body: { ...req.body, zoneId } }, res);
     }catch(error){
@@ -79,9 +77,7 @@ const get = async (req, res) => {
       pm_repair.start_time, pm_repair.end_time
     `;
     const companyId = await subdomainInfo(domain);
-    console.log("domaindomaindomain", domain);
     const result = await pool.query(query, [companyId]);
-    console.log("resultresult", result.rows);
     const data = result.rows.map(row => {
       return {
         ...row,

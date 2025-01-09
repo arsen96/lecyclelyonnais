@@ -16,6 +16,7 @@ import {MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatBadgeModule } from '@angular/material/badge';
 import { ZoneModalComponent } from './zone-modal/zone-modal.component';
+import { environment } from 'src/environments/environment';
 
 
 @NgModule({
@@ -39,7 +40,7 @@ import { ZoneModalComponent } from './zone-modal/zone-modal.component';
     {
       provide: Loader,
       useValue: new Loader({
-        apiKey: 'AIzaSyBkR-iE9z0QmKidHCvMiTEB7Z36rKwxXpQ',
+        apiKey: environment.GOOGLE_MAP_API,
         libraries: ['places']
       })
     },

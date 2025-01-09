@@ -164,7 +164,7 @@ export class ActionsPage implements OnInit {
                   this.updateAvailableDates();
                 });
                 console.log(" this.concernedZone", this.concernedZone)
-                this.technicianService.getTechnicians().then((technicians: Technician[]) => {
+                this.technicianService.get().then((technicians: Technician[]) => {
                   this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
                 });
                 this.displayError = false;
@@ -296,12 +296,16 @@ export class ActionsPage implements OnInit {
     this.maintenanceFormGroup.get('photos').value.forEach(photo => {
       formData.append('photos', photo);
     });
-    const intervention$ = this.interventionService.save(formData);
+    const intervention$ = this.interventionService.create(formData);
     this.loadingService.showLoaderUntilCompleted(intervention$).subscribe({
     next: (res: any) => {
       this.interventionService.allInterventions = [];
       this.technicianService.getTechniciansByZone(this.concernedZoneId);
-      this.interventionService.getAllInterventions();
+      this.bicycleService.resetBicyclesLoaded();
+      this.bicycleService.get().subscribe();
+      this.interventionService.get();
+
+      this.technicianService.resetTechniciansLoaded();
       this.stepper.next();
     },
     error: (error: any) => {

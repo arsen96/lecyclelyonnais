@@ -68,6 +68,8 @@ const get = async (req, res) => {
   try {
     const query = 'SELECT *, to_char(created_at, \'YYYY-MM-DD\') as created_at FROM technician';
     const result = await pool.query(query);
+
+    console.log("resultresult",result.rows)
     res.json(result.rows);
   } catch (error) {
     console.error(error);
@@ -79,12 +81,6 @@ const update = async (req, res) => {
   try {
     const { id, last_name, first_name, phone, address, password, email } = req.body;
     let query, values;
-    console.log("address", address)
-    console.log("id", id)
-    console.log("last_name", last_name)
-    console.log("first_name", first_name)
-    console.log("phone", phone)
-    console.log("email", email)
     const geographical_zone_id = await getGeographicalZoneId(address);
 
     if (password) {

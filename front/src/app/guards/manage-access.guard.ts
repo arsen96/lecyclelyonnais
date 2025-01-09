@@ -8,7 +8,7 @@ export const routeRedirectionRole = (role:string):string => {
   if (role === UserRole.CLIENT) {
     redirectionRoute = '/interventions';
   } else if (role === UserRole.ADMIN) {
-    redirectionRoute = '/company-list';
+    redirectionRoute = '/users';
   } else if(role === UserRole.TECHNICIAN){
     redirectionRoute = '/mesinterventions';
   }else{
@@ -24,9 +24,12 @@ export const manageAccessGuard: CanActivateFn = (route, state) => {
   const userRole = globalService.userRole.getValue();
   const requiredRoles = (route.data as any)?.roles as string[];
   const canAccess = requiredRoles ? requiredRoles.includes(userRole) : true;
-
-  // if (!canAccess) {
+  
+  console.log("userRoleuserRole",userRole)
+  // if (!canAccess && userRole) {
   //   const currentUrl = routeRedirectionRole(userRole);
+  //   console.log("currentUrlcurrentUrlcurrentUrlcurrentUrl",currentUrl)
+  //   console.log("userRoleuserRoleuserRole",userRole)
   //   router.navigateByUrl(currentUrl);
   // }
 
@@ -39,11 +42,9 @@ export const isConnected: CanActivateFn = (route, state) => {
   const globalService = inject(GlobalService);
   const userRole = globalService.userRole.getValue();
   const canAccess = userRole ? false : true;
-  console.log("canAccesscanAccesscanAccess",canAccess)
-  // if (!canAccess) {
+  // if (!canAccess && userRole) {
   //   const currentUrl = routeRedirectionRole(userRole);
   //   router.navigateByUrl(currentUrl);
   // }
-  // return canAccess;
   return true;
 };

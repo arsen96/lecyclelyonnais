@@ -5,39 +5,41 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { PlanningModel } from '../models/planningModel';
 import { CompanyService } from './company.service';
+import { CRUD } from '../models/crud';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlanningModelService extends BaseService{
-  currentRoute = '/planning-models';
   allPlanningModels:PlanningModel[] = [];
   planningModelsLoaded: Promise<boolean>;
   planningModelsLoadedResolver: (value: boolean) => void;
   public companyService = inject(CompanyService)
-
-  constructor(private http: HttpClient) { 
+  currentRoute = '/planning-models';
+  
+  constructor() { 
     super();
     this.planningModelsLoaded = new Promise((resolve) => {
       this.planningModelsLoadedResolver = resolve;
     });
   }
 
-  savePlanningModel(data:any): Observable<void> {
-    return this.http.post(`${this.baseApi}${this.currentRoute}/save`, {...data,...this.companyService.subdomainREQ}).pipe(
-      catchError(this.handleError.bind(this))
+  override create(data:any): Observable<any> {
+    return this.http.post(`${BaseService.baseApi}${this.currentRoute}/save`, {...data,...this.companyService.subdomainREQ}).pipe(
+      catchError(BaseService.handleError.bind(this))
     );
   } 
 
-  getPlanningModels(): Promise<PlanningModel[]> {
+  override get(): Promise<PlanningModel[]> {
     return new Promise<PlanningModel[]>((resolve,reject)=>{
       if(this.allPlanningModels.length > 0){
         resolve(this.allPlanningModels);
       }
-      this.http.get(`${this.baseApi}${this.currentRoute}/get`,{
+      console.log("this.companyService.subdomainREQ",this.companyService.subdomainREQ)
+      this.http.get(`${BaseService.baseApi}${this.currentRoute}/get`,{
         params: {...this.companyService.subdomainREQ}
       }).pipe(
-        catchError(this.handleError.bind(this)),
+        catchError(BaseService.handleError.bind(this)),
         tap((res:any)=>{
           res.data.forEach((model:PlanningModel)=>{
             model.available_days = JSON.parse(model.available_days);
@@ -59,19 +61,19 @@ export class PlanningModelService extends BaseService{
     });
   }
 
-  updatePlanningModel(data: any): Observable<void> {
-    return this.http.put(`${this.baseApi}${this.currentRoute}/update/${data.id}`, data).pipe(
-      catchError(this.handleError.bind(this))
+  override update(data: any): Observable<any> {
+    return this.http.put(`${BaseService.baseApi}${this.currentRoute}/update/${data.id}`, data).pipe(
+      catchError(BaseService.handleError.bind(this))
     );
   }
 
-  deletePlanningModel(ids: number[]): Observable<void> {
-    return this.http.post(`${this.baseApi}${this.currentRoute}/delete`, { ids,...this.companyService.subdomainREQ }).pipe(
+  override delete(ids: number[]): Observable<any> {
+    return this.http.post(`${BaseService.baseApi}${this.currentRoute}/delete`, { ids,...this.companyService.subdomainREQ }).pipe(
       map((res: any) => {
         this.allPlanningModels = this.allPlanningModels.filter(model => !ids.includes(model.id));
         return res;
       }),
-      catchError(this.handleError.bind(this))
+      catchError(BaseService.handleError.bind(this))
     )
   }
 }

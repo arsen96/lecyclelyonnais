@@ -37,7 +37,7 @@ export class TechnicianPage implements OnInit{
   }
 
   async manageForm(){
-    await this.technicianService.getTechnicians();
+    await this.technicianService.get();
     this.technicianForm = this.fb.group({
       last_name: ['Kubtyan', [Validators.required, Validators.minLength(2)]], 
       first_name: ['Kubtyan', [Validators.required, Validators.minLength(2)]], 

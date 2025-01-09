@@ -1,20 +1,24 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { throwError } from 'rxjs';
+import { ReplaySubject, throwError } from 'rxjs';
+import { CRUD } from '../models/crud';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BaseService {
-  baseApi = "http://localhost:3000";
+export abstract class BaseService implements CRUD<any> {
+  public static currentRoute:string;
+  public static baseApi = "http://localhost:3000";
+  public http:HttpClient = inject(HttpClient)
+  private static disconnect = new ReplaySubject<Boolean>(1);
+  public static $disconnect = BaseService.disconnect.asObservable();
   constructor() { }
-  protected handleError(error: HttpErrorResponse) {
-    let errorMessage: string | Array<string> = 'An unknown error occurred!';
-    console.log("errorerror",error)
+  public static handleError(error: HttpErrorResponse) {
+    let errorMessage: string | Array<string> = 'Une erreur inconnue est survenue!';
+    console.log("erreur",error)
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
-      errorMessage = `An error occurred: ${error.error.message}`;
+      // Erreur côté client ou réseau
+      errorMessage = `Une erreur est survenue: ${error.error.message}`;
     } else if (error.error && error.error.message) {
       if (!Array.isArray(error.error?.message)) {
         errorMessage = error.error.message;
@@ -30,15 +34,19 @@ export class BaseService {
       }
     }
 
-
-    console.log("errorMessageerrorMessageerrorMessage",errorMessage)
     if(errorMessage === 'invalidtoken'){
-      this.unauthenticated();
+      console.log("sqsdqsdsq")
+      BaseService.disconnect.next(true);
     }
     return throwError(() => errorMessage);
   }
 
-  public unauthenticated(){
+  abstract create(...args: any[])
 
-  }
+  abstract get(...args: any[])
+
+  abstract update(...args: any[])
+
+  abstract delete(...args: any[])
+
 }

@@ -35,7 +35,7 @@ export class AdminsListPage implements OnInit {
 
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
-    this.adminService.getAdmins().then(() => {
+    this.adminService.get().then(() => {
       this.dataSource.data = this.adminService.allAdmins;
       this.loaderService.setLoading(false);
       this.cd.detectChanges();

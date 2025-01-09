@@ -26,8 +26,8 @@ export class GlobalService {
 
 
   loadAllData(bicycleService:BicycleService,technicianService:TechnicianService,interventionService:InterventionService){
-    bicycleService.getBicycles().subscribe()
-    technicianService.getTechnicians();  
-    interventionService.getAllInterventions();
+    bicycleService.get().subscribe()
+    technicianService.get();  
+    interventionService.get();
   }
 }

@@ -40,7 +40,7 @@ export class CompanyListPage implements OnInit {
 
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
-    this.companyService.getCompanies().then(res => {
+    this.companyService.get().then(res => {
       this.dataSource.data = res;
       this.loaderService.setLoading(false);
       this.cd.detectChanges();

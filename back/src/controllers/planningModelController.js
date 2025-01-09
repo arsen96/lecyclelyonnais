@@ -40,7 +40,9 @@ function formatTime(time) {
 
 const get = async (req, res) => {
     const {domain} = req.query;
+    console.log("domaindomaindomain",domain)
     const companyId = await subdomainInfo(domain);
+    console.log("companyIdcompanyIdcompanyId",companyId)
     const query = 'SELECT * FROM planning_models WHERE company_id = $1';
     const result = await pool.query(query,[companyId]);
 
@@ -87,10 +89,6 @@ const deleteModel = async (req, res) => {
 
 const addPlanningModel = async (req, res) => {
     const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
-
-    console.log("zoneId",zoneId)
-    console.log("zoneTypeInterventionMaintenance",zoneTypeInterventionMaintenance)
-    console.log("zoneTypeInterventionRepair",zoneTypeInterventionRepair)
     const query = 'INSERT INTO planning_model_zones (zone_id, planning_model_id_maintenance,planning_model_id_repair) VALUES ($1, $2, $3)';
     return await pool.query(query, [zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair]);
   }

@@ -24,7 +24,10 @@ const createAdmin = async (req, res) => {
     const { first_name, last_name, email, password, role,domain } = req.body;
     const companyId = await subdomainInfo(domain);
     try {
-        // Vérifier si l'email existe déjà dans les tables administrator, technician, ou client
+        /**
+         * Vérifier si l'email existe déjà dans les tables administrator, technician, ou client
+         *  all_emails est un tableau temporaire. UNION conserve la valeur unique des trois tables
+         */
         const checkEmailQuery = `
             SELECT * FROM (
                 SELECT email FROM administrator
@@ -55,7 +58,10 @@ const createAdmin = async (req, res) => {
 const updateAdmin = async (req, res) => {   
     const { id, first_name, last_name, email, password, role } = req.body;
     try {
-        // Vérifier si l'email existe déjà pour un autre utilisateur dans les tables administrator, technician, ou client
+        /**
+         * Vérifier si l'email existe déjà dans les tables administrator, technician, ou client
+         *  all_emails est un tableau temporaire. UNION conserve la valeur unique des trois tables
+         */
         const checkEmailQuery = `
             SELECT * FROM (
                 SELECT email FROM administrator WHERE id != $2

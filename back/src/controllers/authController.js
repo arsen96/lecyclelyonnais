@@ -172,8 +172,8 @@ const passwordForgot = async (req, res) => {
         pass: 'qhoe nawk aecu dody',
       },
     });
-
-    const currentdomain = domain !== "localhost" ? `${domain}.localhost` : 'localhost'
+    console.log("domaindomaindomaindomain",domain)
+    const currentdomain = domain && domain !== "localhost" ? `${domain}.localhost` : 'localhost'
     const mailOptions = {
       from: 'kubatarsen@gmail.com',
       to: email,
@@ -199,7 +199,6 @@ const passwordForgot = async (req, res) => {
 const resetPassword = async (req, res) => {
   const { password,token } = req.body;
   const queryPasswordReset = await pool.query("SELECT * FROM client WHERE password_reset_token = $1 AND password_reset_token_expires > NOW()",[token]);
-  // await pool.query("SELECT * FROM client WHERE password_reset_token = $1 AND password_reset_token WHERE now() < ")
   if(queryPasswordReset?.rows.length > 0){
     const user = queryPasswordReset.rows[0];
     const passwordHash = await bcrypt.hash(password,12)

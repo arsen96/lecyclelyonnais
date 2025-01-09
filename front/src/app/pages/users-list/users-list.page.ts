@@ -34,7 +34,7 @@ export class UsersListPage implements OnInit {
 
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
-    this.clientService.getClients().then(res => {
+    this.clientService.get().then(res => {
       this.dataSource.data = this.clientService.allClients;
       this.loaderService.setLoading(false);
       this.cd.detectChanges();
@@ -69,7 +69,7 @@ export class UsersListPage implements OnInit {
   deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
     console.log('Deleting items with IDs:', selectedIds);
-    const userRemoved$ = this.clientService.deleteClient(selectedIds);
+    const userRemoved$ = this.clientService.create(selectedIds);
     const result = this.loaderService.showLoaderUntilCompleted(userRemoved$);
     result.subscribe({
       next: (response: any) => {

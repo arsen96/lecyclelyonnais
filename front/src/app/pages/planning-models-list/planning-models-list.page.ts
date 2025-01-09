@@ -31,7 +31,7 @@ export class PlanningModelsListPage  {
 
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
-    this.planningModelService.getPlanningModels().then(models => {
+    this.planningModelService.get().then(models => {
       console.log("models", models);
       this.dataSource.data = models;
       this.loaderService.setLoading(false);
@@ -85,7 +85,7 @@ export class PlanningModelsListPage  {
   deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
     console.log('Deleting items with IDs:', selectedIds);
-    const zoneRemoved$ = this.planningModelService.deletePlanningModel(selectedIds);
+    const zoneRemoved$ = this.planningModelService.delete(selectedIds);
     const result = this.loaderService.showLoaderUntilCompleted(zoneRemoved$);
     result.subscribe({
       next: (response: any) => {

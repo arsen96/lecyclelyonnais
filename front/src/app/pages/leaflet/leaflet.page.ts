@@ -126,7 +126,7 @@ export class LeafletPage {
 
       const areaInSquareKilometers = turf.area(polygon) / 1000000;
       if (areaInSquareKilometers > 200) {
-        this.messageService.showToast("La zone que vous avez dessinée est trop grande.", 'danger'); 
+        this.messageService.showToast("La zone que vous avez dessinée est trop grande.", Message.danger); 
         this.resetDrawing();
       } else {
         const wkt = this.convertToWKT(layer);
@@ -183,8 +183,8 @@ export class LeafletPage {
   public convertToWKT(layer: Layer): string {
     const coords = [];
     if (layer instanceof Polygon) {
-      var latlngs = layer.getLatLngs()[0] as any;
-      for (var i = 0; i < latlngs.length; i++) {
+      const latlngs = layer.getLatLngs()[0] as Array<any>;
+      for (let i = 0; i < latlngs.length; i++) {
         coords.push(latlngs[i].lng + " " + latlngs[i].lat);
       };
       return "POLYGON((" + coords.join(",") + "," + latlngs[0].lng + " " + latlngs[0].lat + "))";
@@ -243,7 +243,7 @@ export class LeafletPage {
 
   async addTechnicians() {
     this.technicianService.technicians = new Array();
-    await this.technicianService.getTechnicians();
+    await this.technicianService.get();
     const modal = await this.modalController.create({
       component: TechnicianModalComponent,
       componentProps: {
@@ -282,7 +282,7 @@ export class LeafletPage {
     const modalData = await this.openZoneModal(true)
     console.log("modalData", modalData);
     if(modalData){
-      this.zoneService.updateZone(this.zoneIdSelected, modalData.zoneTitle, modalData.zoneTypeInterventionMaintenance, modalData.zoneTypeInterventionRepair).subscribe({
+      this.zoneService.update(this.zoneIdSelected, modalData.zoneTitle, modalData.zoneTypeInterventionMaintenance, modalData.zoneTypeInterventionRepair).subscribe({
         next: (res: any) => {
           console.log("resresres", res);
           this.zoneSelected.model_planification.maintenance.id = modalData.zoneTypeInterventionMaintenance;

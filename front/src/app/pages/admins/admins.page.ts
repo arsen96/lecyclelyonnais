@@ -43,7 +43,7 @@ export class AdminsPage implements OnInit {
   }
 
   loadAdminDetails(adminId: number) {
-    this.adminService.getAdmins().then((res: any) => {
+    this.adminService.get().then((res: any) => {
       this.selectedAdmin = this.adminService.allAdmins.find(admin => admin.id === adminId);
       if (this.selectedAdmin) {
         this.adminForm.patchValue({
@@ -63,7 +63,7 @@ export class AdminsPage implements OnInit {
     if (this.adminForm.valid) {
       const updatedAdmin = { id: this.selectedAdmin.id, ...this.adminForm.value };
       if (!this.resetPasswordMode || this.adminForm.get('password').value) {
-        this.adminService.updateAdmin(updatedAdmin).subscribe({
+        this.adminService.update(updatedAdmin).subscribe({
           next: (data:any) => {
             this.messageService.showToast(data.message, 'success');
             this.adminService.allAdmins = [];
@@ -97,7 +97,7 @@ export class AdminsPage implements OnInit {
       this.updateAdmin();
     } else {
       if (this.adminForm.valid) {
-        const register$ = this.adminService.createAdmin(this.adminForm.value);
+        const register$ = this.adminService.create(this.adminForm.value);
         const result = this.loaderService.showLoaderUntilCompleted(register$);
         result.subscribe({
           next: (res) => {

@@ -46,7 +46,7 @@ export class BikePage implements OnInit {
 
   onSubmit() {
     if (this.bikeForm.valid) {
-      const action = this.bikeSelected ? this.bicycleService.updateBicycle(this.bikeId, this.bikeForm.value) : this.bicycleService.addNew(this.bikeForm.value);
+      const action = this.bikeSelected ? this.bicycleService.update(this.bikeId, this.bikeForm.value) : this.bicycleService.create(this.bikeForm.value);
       this.loadingService.showLoaderUntilCompleted(action).subscribe({
         next: (res) => { 
           console.log('Form Submitted', res);

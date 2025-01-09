@@ -6,12 +6,12 @@ import { Company } from '../models/company';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthBaseService } from './auth/auth-base.service';
 import { GlobalService, UserRole } from './global.service';
+import { CRUD } from '../models/crud';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CompanyService  extends BaseService{
-  currentRoute = 'companies';
+export class CompanyService extends BaseService {
   companiesLoaded = new ReplaySubject<boolean>(0);
   companies: Company[] = [];
   currentCompany:Company
@@ -19,9 +19,9 @@ export class CompanyService  extends BaseService{
   public router = inject(Router)
   public authService = inject(AuthBaseService)
   public globalService = inject(GlobalService)
+  currentRoute = 'companies';
 
-
-  constructor(private http: HttpClient) {
+  constructor() {
     super()
     this.router.events.subscribe(async x => {
       if (x instanceof NavigationEnd) {
@@ -32,15 +32,16 @@ export class CompanyService  extends BaseService{
 
         console.log("allowedSubdomainallowedSubdomain",allowedSubdomain)
         if(!allowedSubdomain){
+          console.error("CompanyServiceCompanyServiceCompanyService")
           this.authService.logout();
         }
       }
     });
     this.currentSubdomain = this.getSubdomain();
-    this.getCompanies();
+    this.get();
   }
 
-  getCompanies() {
+  override get(): Promise<Company[]> {
     if (this.companies.length > 0) {
       return lastValueFrom(of(this.companies));
     }
@@ -51,7 +52,7 @@ export class CompanyService  extends BaseService{
     }
     console.log("isAdminisAdmin",this.globalService.userRole.getValue())
     
-    return lastValueFrom(this.http.get<{}>(`${this.baseApi}/${this.currentRoute}/get`,{
+    return lastValueFrom(this.http.get<{}>(`${BaseService.baseApi}/${this.currentRoute}/get`,{
       params: param
     }).pipe(
       map((res:{success:boolean,data:Company[]}) => {
@@ -75,32 +76,38 @@ export class CompanyService  extends BaseService{
     ));
   }
 
-  create(company: Company) {
-    return lastValueFrom(this.http.post<Company>(`${this.baseApi}/${this.currentRoute}/create`, company).pipe(
+  override async create(item: Company): Promise<Company> {
+    return lastValueFrom(this.http.post<Company>(`${BaseService.baseApi}/${this.currentRoute}/create`, item).pipe(
       map((res: Company) => {
         this.companies.push(res);
         return res;
       }),
-      catchError(this.handleError.bind(this))
+      catchError(BaseService.handleError.bind(this))
     ));
   }
 
-  update(company: Company) {
-    return lastValueFrom(this.http.post(`${this.baseApi}/${this.currentRoute}/update`, company).pipe(
-      catchError(this.handleError.bind(this))
+  override async update(item: Company): Promise<Company> {
+    return lastValueFrom(this.http.post<Company>(`${BaseService.baseApi}/${this.currentRoute}/update`, item).pipe(
+      map((res: Company) => {
+        const index = this.companies.findIndex(c => c.id === item.id);
+        if (index !== -1) {
+          this.companies[index] = res;
+        }
+        return res;
+      }),
+      catchError(BaseService.handleError.bind(this))
     ));
   }
 
-  delete(companyIds: number[]): Observable<void> {
-    return this.http.post(`${this.baseApi}/${this.currentRoute}/delete`, { ids: companyIds }).pipe(
+  override delete(companyIds: number[]): Observable<void> {
+    return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/delete`, { ids: companyIds }).pipe(
       map((res: any) => {
         this.companies = this.companies.filter(company => !companyIds.includes(company.id));
         return res;
       }),
-      catchError(this.handleError.bind(this))
+      catchError(BaseService.handleError.bind(this))
     );
   }
-
   getCompanyById(companyId: number) {
     return this.companies.find(company => company.id === companyId);
   }
@@ -108,7 +115,6 @@ export class CompanyService  extends BaseService{
   resetCompaniesLoaded() {
     this.companiesLoaded = new ReplaySubject<boolean>(0);
   }
-
 
   get subdomainREQ(){
     return {domain:this.currentSubdomain}
@@ -124,7 +130,7 @@ export class CompanyService  extends BaseService{
     await this.companiesLoaded;
     try{
       if(this.companies.length === 0){
-        await this.getCompanies();
+        await this.get();
       }
       const subdomains = this.companies.map(result => result.subdomain);
       console.log("subdomainssubdomains",subdomains)
@@ -138,6 +144,7 @@ export class CompanyService  extends BaseService{
 
   async isAllowedSubdomain() {
     const allowedSubdomains = await this.allowedSubdomains();
+    console.log("allowedSubdomainsallowedSubdomains",allowedSubdomains)
     if(!allowedSubdomains){
       return false;
     }

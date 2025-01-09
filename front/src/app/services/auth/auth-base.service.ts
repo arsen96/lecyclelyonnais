@@ -3,11 +3,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, inject, Injectable, signal 
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, map, shareReplay, Subject, tap } from 'rxjs';
 import { Observable } from 'rxjs';
-import { BaseService } from 'src/app/services/base.service';
 import { jwtDecode } from "jwt-decode";
 import { GlobalService } from '../global.service';
-import { User } from 'src/app/models/user';
 import { LoadingService } from '../loading.service';
+import { BaseService } from '../base.service';
 
 export interface BearerToken {
 	token: string;
@@ -16,11 +15,11 @@ export interface BearerToken {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthBaseService extends BaseService{
+export class AuthBaseService{
 
   tokenObs:Observable<string> | null;
-  http = inject(HttpClient) 
   router = inject(Router);
+  public http = inject(HttpClient)
   public globalService = inject(GlobalService)
   public loadingService = inject(LoadingService)
   private isUserLoadedSubject = new BehaviorSubject<boolean>(false);
@@ -28,16 +27,15 @@ export class AuthBaseService extends BaseService{
   private wasAuthenticated = false;
 
   constructor(){
-    super();
     this.wasAuthenticated = !!this.checkIsAuthenicated();
     this.globalService.isAuthenticated.next(this.wasAuthenticated);
-    console.log("apeeeeeeeeeeeeeeee")
     if (!this.wasAuthenticated) {
       localStorage.removeItem("access_token");
       // this.router.navigateByUrl('login')
     }
 
     this.getUser();
+    this.unauthenticated();
   }
   getToken(): string | null {
     const token = localStorage.getItem('authToken');
@@ -69,7 +67,7 @@ export class AuthBaseService extends BaseService{
   login(loginCredentials:any,endpoint:string): Observable<string> {
     if(!this.tokenObs){
       this.tokenObs =  this.http.post<BearerToken>(endpoint,loginCredentials)
-      .pipe(catchError(this.handleError.bind(this)))
+      .pipe(catchError(BaseService.handleError.bind(this)))
       .pipe(
         tap(res => {
           if (res) {
@@ -91,11 +89,10 @@ export class AuthBaseService extends BaseService{
 
   getUser(){
     return new Promise((resolve,reject) => {  
-      this.http.get(`${this.baseApi}/auth/user`)
-      .pipe(catchError(this.handleError.bind(this)))
+      this.http.get(`${BaseService.baseApi}/auth/user`)
+      .pipe(catchError(BaseService.handleError.bind(this)))
       .subscribe({
         next : (res) => {
-          console.log("resresresresres",res)
           this.globalService.user.next(res.data);
           this.globalService.userRole.next(res.data.role);
           resolve(res.data);
@@ -123,6 +120,7 @@ export class AuthBaseService extends BaseService{
 
 
   logout(){
+    console.log("apeee")
     this.tokenObs = null;
     const role = this.globalService.userRole.getValue();
     localStorage.removeItem("access_token");
@@ -137,23 +135,19 @@ export class AuthBaseService extends BaseService{
   }
 
 
-  public override unauthenticated(force = false): void {
-    if (this.wasAuthenticated || force) {
-      this.logout();
-      this.router.navigateByUrl("login");
-    }
-  }
-
-  test(){
-    this.http.get(`${this.baseApi}/auth/test`)
-    .pipe(catchError(this.handleError.bind(this)))
-    .subscribe({
-      next : (res) => {
-      },error : (err) => {
-        console.log("erroraxperrr",err)
+  public unauthenticated(): void {
+    BaseService.$disconnect.subscribe((result) => {
+      console.log("resultresult",result)
+      if(result){
+        // if (this.wasAuthenticated || force) {
+          // this.logout();
+          // this.router.navigateByUrl("login");
+        // }
       }
+     
     })
   }
+
 
   
 

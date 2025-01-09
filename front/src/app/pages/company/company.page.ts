@@ -54,7 +54,7 @@ export class CompanyPage implements OnInit {
           if(this.globalService.userRole.getValue() !== UserRole.ADMIN){
             this.router.navigate(['/company-list']);
           }else{
-             this.companyService.getCompanies();
+             this.companyService.get();
           }
         }).catch((err) => {
           console.log("err",err)

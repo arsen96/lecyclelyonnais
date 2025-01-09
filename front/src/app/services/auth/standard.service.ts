@@ -6,20 +6,22 @@ import { BicycleService } from '../bicycle.service';
 import { TechnicianService } from '../technician.service';
 import { InterventionService } from '../intervention.service';
 import { CompanyService } from '../company.service';
+import { BaseService } from '../base.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StandardAuth extends AuthBaseService {
-  currentRoute:string = 'auth';
   public companyService = inject(CompanyService)
+  currentRoute = 'auth';
+  
   constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,private company:CompanyService,private interventionService:InterventionService) {
     super();
    }
 
    loginStandard(loginCredentials:FormLoginModel): any{
       console.log("loginCredentialsloginCredentials",loginCredentials)
-      const value = super.login(loginCredentials,`${this.baseApi}/${this.currentRoute}/login`);
+      const value = super.login(loginCredentials,`${BaseService.baseApi}/${this.currentRoute}/login`);
       return value.pipe(
         map((data:any) => {
           this.globalService.isAuthenticated.next(true)
@@ -33,9 +35,9 @@ export class StandardAuth extends AuthBaseService {
     }
 
     register(form:FormRegisterModel){
-        return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/register`,{...form,...this.company.subdomainREQ})
+        return this.http.post<any>(`${BaseService.baseApi}/${this.currentRoute}/register`,{...form,...this.company.subdomainREQ})
         .pipe(
-          catchError(this.handleError)
+          catchError(BaseService.handleError)
         )
         .pipe(
           tap(res => {
@@ -56,8 +58,8 @@ export class StandardAuth extends AuthBaseService {
   }
 
   resetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/forgot-password`,{...data,...this.companyService.subdomainREQ}).pipe(
-      catchError(this.handleError)
+    return this.http.post<any>(`${BaseService.baseApi}/${this.currentRoute}/forgot-password`,{...data,...this.companyService.subdomainREQ}).pipe(
+      catchError(BaseService.handleError)
     ).pipe(
       map(data => {
         console.log("datadata",data)
@@ -67,8 +69,8 @@ export class StandardAuth extends AuthBaseService {
   }
 
   confirmResetPassword(data:{email:string}){
-    return this.http.post<any>(`${this.baseApi}/${this.currentRoute}/reset-password`,data).pipe(
-      catchError(this.handleError)
+    return this.http.post<any>(`${BaseService.baseApi}/${this.currentRoute}/reset-password`,data).pipe(
+      catchError(BaseService.handleError)
     ).pipe(
       map(data => {
         console.log("datadata",data)

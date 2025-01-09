@@ -22,7 +22,7 @@ export class ZoneModalComponent {
   constructor(private modalController: ModalController) {}
 
   ngOnInit() {
-    this.planningModelService.getPlanningModels().then((data: any) => {
+    this.planningModelService.get().then((data: any) => {
         this.planningModels = this.planningModelService.allPlanningModels;
 
         if(this.edition){

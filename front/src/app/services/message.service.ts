@@ -5,7 +5,9 @@ import { BehaviorSubject, filter, map } from "rxjs"
 
 export enum Message {
   success = 'success',
-  danger =  'danger'
+  danger =  'danger',
+  warning = 'warning',
+  info = 'info'
 }
 export class MessageStatus {
   static status: Message.success | Message.danger;
