@@ -7,6 +7,7 @@ import { MessageService } from 'src/app/services/message.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { GlobalService, UserRole } from 'src/app/services/global.service';
+import { AdminService } from 'src/app/services/admin.service';
 
 @Component({
   selector: 'app-company-list',
@@ -27,6 +28,7 @@ export class CompanyListPage implements OnInit {
   pageSizes = [3, 6, 10, 15];
   companiesLoaded: Promise<boolean>;
   public globalService = inject(GlobalService)
+  public adminsService = inject(AdminService)
   companiesLoadedResolver: (value: boolean) => void;
   constructor(public cd:ChangeDetectorRef) {
     this.companiesLoaded = new Promise((resolve) => {
@@ -41,7 +43,8 @@ export class CompanyListPage implements OnInit {
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
     this.companyService.get().then(res => {
-      this.dataSource.data = res;
+      const resC = res.filter((currComp) => currComp.subdomain !== null )
+      this.dataSource.data = resC;
       this.loaderService.setLoading(false);
       this.cd.detectChanges();
       this.companiesLoadedResolver(true);
@@ -82,6 +85,7 @@ export class CompanyListPage implements OnInit {
     result.subscribe({
       next: (response: any) => {
         console.log('Delete response:', response);
+        this.adminsService.allAdmins = new Array();
         this.dataSource.data = this.dataSource.data.filter(item => !selectedIds.includes(item.id));
         this.selection.clear();
         this.messageService.showToast(response.message, 'success'); 

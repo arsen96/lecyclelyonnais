@@ -27,7 +27,6 @@ const addNew = async (req, res) => {
 const getUserBicycles = async (req, res) => {
     try {
         const userId = req.user.id;
-        console.log("userIduserIduserIduserIduserId", userId);
         const query = 'SELECT * FROM bicycle WHERE client_id = $1';
         const result = await pool.query(query, [userId]);
         res.status(200).send({ success: true, message: "Vélos récupérés avec succès", data: result.rows });

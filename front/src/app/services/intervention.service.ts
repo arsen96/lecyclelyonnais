@@ -19,9 +19,7 @@ export class InterventionService  {
   public http = inject(HttpClient)
 
   constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,public globalService:GlobalService) { 
-    this.interventionsLoaded = new Promise((resolve) => {
-      this.interventionsLoadedResolver = resolve;
-    });
+    this.interventionLoad();
     this.get();
   } 
 
@@ -32,10 +30,12 @@ export class InterventionService  {
   } 
 
   async get() {
+    console.log("appeeee")
     const [bicycleLoaded, techniciansLoaded] = await Promise.all([
       lastValueFrom(this.bicycleService.bicyclesLoaded),
       lastValueFrom(this.technicianService.techniciansLoaded),
     ]);
+
       // const bicycleLoaded = await lastValueFrom(this.bicycleService.bicyclesLoaded);
       // const techniciansLoaded = await lastValueFrom(this.technicianService.techniciansLoaded);
 
@@ -56,6 +56,7 @@ export class InterventionService  {
 
       if (this.allInterventions.length > 0) {
         buildInterventions(this.allInterventions);
+        this.interventionsLoadedResolver(true);
       return lastValueFrom(of(this.allInterventions));
     }
  
@@ -99,6 +100,13 @@ export class InterventionService  {
     }
 
     return this.http.post(`${BaseService.baseApi}/interventions/manage-end`, formData);
+  }
+
+  interventionLoad(){
+    this.interventionsLoaded = null;
+    this.interventionsLoaded = new Promise((resolve) => {
+      this.interventionsLoadedResolver = resolve;
+    });
   }
 
 

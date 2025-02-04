@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { lastValueFrom } from 'rxjs';
 import { ImageModalComponent } from 'src/app/components/image-modal/image-modal.component';
 import { Intervention } from 'src/app/models/intervention';
 import { BaseService } from 'src/app/services/base.service';

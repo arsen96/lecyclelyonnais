@@ -37,11 +37,21 @@
           <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
         </ion-button>
       </ion-item>
+
+      <ion-item *ngIf="!selectedAdmin && globalService.userRole.getValue() === UserRole.SUPERADMIN">
+        <ion-select label="Entreprise" labelPlacement="stacked" formControlName="company_id" interface="popover">
+          <ion-select-option *ngFor="let company of companies" [value]="company.id">
+            {{ company.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
       <div class="ion-text-center">
         <ion-button type="submit" [disabled]="adminForm.invalid">
           {{selectedAdmin ? 'Modifier' : 'Créer un compte'}}
         </ion-button>
       </div>
+     
     </form>
   </div>
 </ion-content>

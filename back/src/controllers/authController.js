@@ -20,32 +20,39 @@ const generateToken = (user, role) => {
  * @returns obtenir le token de session
  */
 const register = async (req, res) => {
-  const { email, password,firstName,lastName,phone,address,domain } = req.body;
+  const { email, password, firstName, lastName, phone, address, domain } = req.body;
   try {
-
     // Vérifier si l'utilisateur existe déjà dans la base de données
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
     const result = await pool.query(checkUserQuery, [email]);
     if (result.rows.length > 0) {
-      return res.status(400).json({ success: false, message: "L'adresse e-mail existe déjà" });
+      return res.status(400).json({ success: false, message: "Cet email est déjà utilisé" });
     }
+
+    // Vérifier si un technicien existe déjà avec cet email
+    const checkTechnicianQuery = 'SELECT EXISTS(SELECT 1 FROM technician WHERE email = $1)';
+    const isTechnicianEmailUsed = await pool.query(checkTechnicianQuery, [email]);
+    if (isTechnicianEmailUsed.rows[0].exists) {
+      return res.status(400).json({ success: false, message: "Cet email est déjà utilisé" });
+    }
+
     // Hasher le mot de passe avant de le sauvegarder
     let companyId;
     const hashedPassword = await bcrypt.hash(password, 12);
     companyId = await subdomainInfo(domain);
-    if(!companyId){
+    if (!companyId) {
       return res.status(400).json({ success: false, message: "Aucune entreprise n'a été reconnue" });
     }
-    
-    const insertUserQuery = 'INSERT INTO client (first_name,last_name,email, password, phone, address,company_id) VALUES ($1, $2,$3, $4, $5, $6,$7 ) RETURNING *';
-    const newUser = await pool.query(insertUserQuery, [firstName,lastName,email, hashedPassword,phone,address,companyId]);
+
+    const insertUserQuery = 'INSERT INTO client (first_name, last_name, email, password, phone, address, company_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
+    const newUser = await pool.query(insertUserQuery, [firstName, lastName, email, hashedPassword, phone, address, companyId]);
 
     const token = generateToken(newUser.rows[0], 'client');
     res.status(201).json({
       success: true,
       token,
       data: {
-        user: {...newUser.rows[0],role:'client' } 
+        user: { ...newUser.rows[0], role: 'client' }
       }
     });
   } catch (error) {
@@ -85,7 +92,7 @@ const login = async (req, res) => {
       const checkTechnicianQuery = 'SELECT * FROM technician WHERE email = $1 AND company_id = $2';
       user = await pool.query(checkTechnicianQuery, [email,companyId]);
       if (user.rows.length === 0) {
-        return res.status(400).json({ success: false, message: "Le mail est incorrect" });
+        return res.status(400).json({ success: false, message: "L'email est incorrect" });
       }
       isUser = false;
     }

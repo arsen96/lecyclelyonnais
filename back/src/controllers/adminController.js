@@ -21,8 +21,13 @@ const getAdmins = async (req, res) => {
 }
 
 const createAdmin = async (req, res) => {
-    const { first_name, last_name, email, password, role,domain } = req.body;
-    const companyId = await subdomainInfo(domain);
+    const { first_name, last_name, email, password, role,domain, company_id } = req.body;
+    let companyId;
+    if(company_id){
+        companyId = company_id 
+    }else{
+        companyId = await subdomainInfo(domain);
+    }
     try {
         /**
          * Vérifier si l'email existe déjà dans les tables administrator, technician, ou client

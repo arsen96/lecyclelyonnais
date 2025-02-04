@@ -35,7 +35,6 @@ export abstract class BaseService implements CRUD<any> {
     }
 
     if(errorMessage === 'invalidtoken'){
-      console.log("sqsdqsdsq")
       BaseService.disconnect.next(true);
     }
     return throwError(() => errorMessage);

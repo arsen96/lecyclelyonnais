@@ -287,6 +287,7 @@ export class ActionsPage implements OnInit {
     const intervention$ = this.interventionService.create(formData);
     this.loadingService.showLoaderUntilCompleted(intervention$).subscribe({
     next: (res: any) => {
+      this.interventionService.interventionLoad();
       this.interventionService.allInterventions = [];
       this.technicianService.getTechniciansByZone(this.concernedZoneId);
       this.bicycleService.resetBicyclesLoaded();
@@ -297,6 +298,7 @@ export class ActionsPage implements OnInit {
       this.stepper.next();
     },
     error: (error: any) => {
+      this.msgService.showToast(error,Message.danger)
       console.log("error",error);
     }
     }); 
@@ -376,18 +378,24 @@ export class ActionsPage implements OnInit {
     return slots;
   }
 
+  /**
+   * Keep only those that overlap with the requested time slot ()
+   * @param slotStart Date
+   * @param slotEnd Date
+   * @returns true  if at least ont technician is available
+   */
   isDateAvailable(slotStart: Date, slotEnd: Date): boolean {
     let isAvailable = true;
-    const interventions = this.interventionService.allInterventions.filter(intervention => {
+    let interventions = this.interventionService.allInterventions.filter(intervention => {
         const appointmentStart = new Date(intervention.appointment_start);
         const appointmentEnd = new Date(intervention.appointment_end);
-        return (slotStart < appointmentEnd && slotEnd > appointmentStart);
+        return (slotStart < appointmentEnd && slotEnd > appointmentStart) && intervention.status == '';
     });
-
-    if(interventions.length > 0){
+    if (interventions.length > 0) {
       const technicians = interventions.map(intervention => this.technicianService.getTechnicianById(intervention.technician.id));
       isAvailable = !(this.techniciansByZone.length === technicians.length);
     }
+
     return isAvailable;
   }
 
@@ -395,9 +403,7 @@ export class ActionsPage implements OnInit {
     const selectedTimeSlot = event.detail.value;
     
     const [startTime, endTime] = selectedTimeSlot.split(' - ');
-    // Get the selected date from the form control
     const selectedDate = new Date(this.maintenanceFormGroup.value.scheduleDate);
-    // Combine the selected date with the start time
     const startDateTime = new Date(selectedDate);
     const [startHour, startMinute] = startTime.split(':').map(Number);
     startDateTime.setHours(startHour, startMinute);
@@ -407,16 +413,14 @@ export class ActionsPage implements OnInit {
     const [endHour, endMinute] = endTime.split(':').map(Number);
     endDateTime.setHours(endHour, endMinute);
 
-
     if (!this.isDateAvailable(startDateTime, endDateTime)) {
         this.msgService.showToast('Le créneau horaire sélectionné est déjà pris.', 'danger');
         // Revert to the previous valid time slot
         this.maintenanceFormGroup.patchValue({ scheduleTime: this.previousTimeSlot });
     } else {
-        // Update the previous time slot to the current valid selection
+        // Update the previous time slot
         this.previousTimeSlot = selectedTimeSlot;
         this.selectedTimeSlotDate = this.maintenanceFormGroup.value.scheduleDate
-        // this.maintenanceFormGroup.patchValue({ scheduleTime: this.previousTimeSlot });
     }
   }
 

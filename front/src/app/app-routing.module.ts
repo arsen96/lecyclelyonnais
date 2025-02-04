@@ -54,13 +54,13 @@ const routes: Routes = [
     path: 'technicien',
     loadChildren: () => import('./pages/technician/technician.module').then( m => m.TechnicianPageModule),
     canActivate: [manageAccessGuard],
-    data: { roles: [UserRole.TECHNICIAN] }
+    data: { roles: [UserRole.ADMIN] }
   },
   {
     path: 'technicien/:id',
     loadChildren: () => import('./pages/technician/technician.module').then( m => m.TechnicianPageModule),
     canActivate: [manageAccessGuard],
-    data: { roles: [UserRole.TECHNICIAN] }
+    data: { roles: [UserRole.TECHNICIAN,UserRole.ADMIN] }
   },
   {
     path: 'actions',
@@ -126,7 +126,7 @@ const routes: Routes = [
     path: 'admins',
     loadChildren: () => import('./pages/admins/admins.module').then( m => m.AdminsPageModule),
     canActivate: [manageAccessGuard],
-    data: { roles: [UserRole.SUPERADMIN] }
+    data: { roles: [UserRole.SUPERADMIN,UserRole.ADMIN] }
   },
   {
     path: 'admins-list',
@@ -156,7 +156,7 @@ const routes: Routes = [
     path: 'admins/:id',
     loadChildren: () => import('./pages/admins/admins.module').then( m => m.AdminsPageModule),
     canActivate: [manageAccessGuard],
-    data: { roles: [UserRole.ADMIN] }
+    data: { roles: [UserRole.ADMIN,UserRole.SUPERADMIN] }
   },
   {
     path: 'login-admin',

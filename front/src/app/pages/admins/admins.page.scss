@@ -8,3 +8,12 @@ app-message{
     display: flex;
     justify-content: center;
 }
+
+ion-select {
+    --padding-start: 10px;
+    --padding-end: 10px;
+    --border-radius: 8px;
+    --background: #fff;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  

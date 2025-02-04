@@ -55,11 +55,17 @@ export class LeafletPage {
   public companyService = inject(CompanyService)
 
   constructor(private cd: ChangeDetectorRef, private technicianService: TechnicianService, private route: ActivatedRoute, public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
-    this.zoneIdSelected = Number(this.route.snapshot.params['id']) ? Number(this.route.snapshot.params['id']) : null;
+    this.route.params.subscribe(params => {
+      this.zoneIdSelected = Number(params['id']) ? Number(params['id']) : null;
+      console.log(" this.zoneIdSelected this.zoneIdSelected", this.zoneIdSelected);
+    });
+
     this.mapReady = new Promise<boolean>((resolve) => {
       this.mapReadyResolver = resolve;
     });
   }
+
+ 
 
   ngOnInit() {
     this.filteredTechnicians = this.zoneSelected?.technicians || [];
@@ -137,7 +143,6 @@ export class LeafletPage {
             this.zoneService.create(wkt, {...modalData,...this.companyService.subdomainREQ}).subscribe({
               next: (res: { success: boolean, message: string, zoneId: number }) => {
                 this.zoneService.allZones = new Array();
-                console.log("res", res);
                 this.zoneService.get().then(() => {
                   this.zoneAdded = true;
                   this.zoneIdSelected = res.zoneId;
@@ -172,8 +177,10 @@ export class LeafletPage {
 
     await modal.present();
     const { data, role } = await modal.onDidDismiss();
-
-    if (role === 'cancel' || !data) {
+     if (!data) {
+      this.resetDrawing();
+    } else if(data.zoneTitle.length > 0 && data.zoneTypeInterventionMaintenance && data.zoneTypeInterventionRepair){
+    }else{
       this.resetDrawing();
     }
 

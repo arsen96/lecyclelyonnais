@@ -6,6 +6,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from 'src/app/services/message.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { GlobalService, UserRole } from 'src/app/services/global.service';
+import { CompanyService } from 'src/app/services/company.service';
 
 @Component({
   selector: 'app-admins-list',
@@ -16,7 +18,7 @@ export class AdminsListPage implements OnInit {
 
   adminService: AdminService = inject(AdminService);
 
-  displayedColumns: string[] = ['select', 'id', 'last_name', 'first_name', 'actions'];
+  displayedColumns: string[] = ['select', 'id', 'last_name', 'first_name', 'company_name', 'actions'];
   dataSource = new MatTableDataSource<any>();
   selection = new SelectionModel<any>(true, []);
   public messageService = inject(MessageService);
@@ -24,7 +26,9 @@ export class AdminsListPage implements OnInit {
   public loaderService = inject(LoadingService);
   @ViewChild('paginator') paginator: MatPaginator;
   pageSizes = [3, 6, 10, 15];
+  globalService = inject(GlobalService);
   adminsLoaded: Promise<boolean>;
+  public companyService = inject(CompanyService)
   adminsLoadedResolver: (value: boolean) => void;
 
   constructor(public cd: ChangeDetectorRef) {
@@ -36,7 +40,20 @@ export class AdminsListPage implements OnInit {
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
     this.adminService.get().then(() => {
-      this.dataSource.data = this.adminService.allAdmins;
+      let admins;
+      if (this.globalService.userRole?.getValue() === UserRole.ADMIN) {
+        admins = this.adminService.allAdmins.filter((admin) => admin.company_id === this.companyService.currentCompany.id);
+      } else {
+        admins = this.adminService.allAdmins;
+      }
+
+      // Map company_id to company name
+      admins = admins.map(admin => ({
+        ...admin,
+        company_name: this.companyService.getCompanyById(admin.company_id)?.name || 'Unknown'
+      }));
+
+      this.dataSource.data = admins;
       this.loaderService.setLoading(false);
       this.cd.detectChanges();
       this.adminsLoadedResolver(true);
@@ -69,12 +86,10 @@ export class AdminsListPage implements OnInit {
 
   deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
-    console.log('Deleting items with IDs:', selectedIds);
     const zoneRemoved$ = this.adminService.delete(selectedIds);
     const result = this.loaderService.showLoaderUntilCompleted(zoneRemoved$);
     result.subscribe({
       next: (response: any) => {
-        console.log('Delete response:', response);
         this.dataSource.data = this.dataSource.data.filter(item => !selectedIds.includes(item.id));
         this.selection.clear();
         this.messageService.showToast(response.message, 'success');

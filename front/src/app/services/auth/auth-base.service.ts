@@ -133,13 +133,13 @@ export class AuthBaseService{
   }
 
 
-  public unauthenticated(): void {
+  public unauthenticated(force = false): void {
     BaseService.$disconnect.subscribe((result) => {
       if(result){
-        // if (this.wasAuthenticated || force) {
-          // this.logout();
-          // this.router.navigateByUrl("login");
-        // }
+        if (this.wasAuthenticated || force) {
+          this.logout();
+          this.router.navigateByUrl("login");
+        }
       }
      
     })

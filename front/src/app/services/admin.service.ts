@@ -64,12 +64,11 @@ export class AdminService extends BaseService {
   login(email: string, password: string): Observable<Admin> {
     return this.http.post(`${BaseService.baseApi}/${this.currentUrl}/login`, { email, password,...this.companyService.subdomainREQ }).pipe(
       map((data:any) => {
+        this.authService.setSession(data.token);
         this.globalService.isAuthenticated.next(true)
         const user = data.data.user;
-
         this.globalService.user.next(user);
         this.globalService.userRole.next(user.role);
-        this.authService.setSession(data.token);
         return user;
       }),
       catchError(error => {

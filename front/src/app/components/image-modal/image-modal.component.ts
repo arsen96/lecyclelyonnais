@@ -13,7 +13,6 @@ export class ImageModalComponent implements OnInit {
   constructor(private modalController: ModalController) {}
 
   ngOnInit() {
-    console.log('Current image path:', this.photos[this.index]);
   }
 
   close() {
@@ -21,10 +20,10 @@ export class ImageModalComponent implements OnInit {
   }
 
   next() {
-    this.index = (this.index + 1) % this.photos.length;
+    this.index = (this.index + 1) % this.photos?.length;
   }
 
   previous() {
-    this.index = (this.index - 1 + this.photos.length) % this.photos.length;
+    this.index = (this.index - 1 + this.photos?.length) % this.photos?.length;
   }
 }

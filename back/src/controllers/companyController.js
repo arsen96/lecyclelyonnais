@@ -24,6 +24,7 @@ const getCompanies = async (req, res) => {
 const createCompany = async (req, res) => {
   try {
     const { name, email, subdomain, theme_color, phone } = req.body;
+    
     const query = 'INSERT INTO company (name, email, subdomain, theme_color, phone) VALUES ($1, $2, $3, $4, $5)';
     await pool.query(query, [name, email, subdomain, theme_color, phone]);
     res.status(201).send({ success: true, message: "Entreprise créée avec succès" });

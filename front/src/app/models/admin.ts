@@ -6,4 +6,5 @@ export interface Admin {
   email: string
   password: string
   role:'admin' | 'superadmin'
+  company_id: number
 }

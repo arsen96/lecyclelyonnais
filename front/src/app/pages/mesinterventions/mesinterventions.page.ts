@@ -172,7 +172,9 @@ export class MesinterventionsPage implements OnInit {
   }
 
   async getSelectedPhotos(intervention: Intervention): Promise<File[]> {
-    const photoPromises = intervention.uploadedPhotos.map(async (photoUrl) => {
+    let photoPromises = []
+    if(intervention.uploadedPhotos){
+      photoPromises = intervention.uploadedPhotos.map(async (photoUrl) => {
         const response = await fetch(photoUrl);
         const blob = await response.blob();
         const mimeType = blob.type;
@@ -180,6 +182,8 @@ export class MesinterventionsPage implements OnInit {
         const fileName = `${photoUrl.split('/').pop() || 'photo'}.${extension}`;
         return new File([blob], fileName, { type: mimeType });
     });
+    }
+ 
 
     return Promise.all(photoPromises);
   }
@@ -209,36 +213,35 @@ export class MesinterventionsPage implements OnInit {
     if(filterType === FilterType.PAST){ 
         this.pastInterventions = this.technicianInterventions.filter(intervention => {
           const interventionEnd = new Date(intervention.appointment_end);
-        const matchesType = this.selectedTypePast ? intervention.type === this.selectedTypePast : true;
-        return (interventionEnd < now || intervention.status === 'completed' || intervention.status === 'canceled') && matchesType;
-      });
+          const matchesType = this.selectedTypePast ? intervention.type === this.selectedTypePast : true;
+          return (interventionEnd < now || intervention.status === 'completed' || intervention.status === 'canceled') && matchesType;
+        });
 
-      this.isFilterAppliedPast = this.selectedTypePast !== '';
+        this.isFilterAppliedPast = this.selectedTypePast !== '';
     }
 
     if(filterType === FilterType.ONGOING){
-
-      console.log("this.selectedTypeOngoing", this.selectedTypeOngoing);
-    this.ongoingInterventions = this.technicianInterventions.filter(intervention => {
-      const interventionStart = new Date(intervention.appointment_start);
-      const interventionEnd = new Date(intervention.appointment_end);
-      const isOngoing = interventionStart <= now && interventionEnd >= now && intervention.status !== 'completed';
-      const matchesType = this.selectedTypeOngoing ? intervention.type === this.selectedTypeOngoing : true;
+      this.ongoingInterventions = this.technicianInterventions.filter(intervention => {
+        const interventionStart = new Date(intervention.appointment_start);
+        const interventionEnd = new Date(intervention.appointment_end);
+        const isOngoing = interventionStart <= now && interventionEnd >= now && intervention.status !== 'completed';
+        const matchesType = this.selectedTypeOngoing ? intervention.type === this.selectedTypeOngoing : true;
         return isOngoing && matchesType;
       });
       this.isFilterAppliedOngoing = this.selectedTypeOngoing !== '';
-      
     }
 
     if(filterType === FilterType.UPCOMING){
-      console.log("this.selectedTypeUpcoming", this.selectedTypeUpcoming);
-    this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
-      const interventionStart = new Date(intervention.appointment_start);
-      const matchesType = this.selectedTypeUpcoming ? intervention.type === this.selectedTypeUpcoming : true;
-      return interventionStart > now && intervention.status !== 'canceled' && matchesType;
+      this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
+        const interventionStart = new Date(intervention.appointment_start);
+        const matchesType = this.selectedTypeUpcoming ? intervention.type === this.selectedTypeUpcoming : true;
+
+        const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';
+        const isNotInPast = !this.pastInterventions.some(pastIntervention => pastIntervention.id === intervention.id);
+        return isUpcoming && isNotInPast && matchesType;
       });
 
-      this.isFilterAppliedOngoing = this.selectedTypeUpcoming !== '';
+      this.isFilterAppliedUpcoming = this.selectedTypeUpcoming !== '';
     }
   }
 

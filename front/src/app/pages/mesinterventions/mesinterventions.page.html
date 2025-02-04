@@ -17,7 +17,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <ion-icon name="hammer-outline"></ion-icon> {{ intervention.type }} {{ intervention.id }}
+              <ion-icon name="hammer-outline"></ion-icon> {{ intervention.type }} 
             </mat-panel-title>
             <mat-panel-description>
               <ion-icon name="calendar-outline"></ion-icon> {{ intervention.appointment_start | date:'d/M/yyyy' }} 
@@ -103,11 +103,11 @@
                 </ion-button>
 
 
-                @if(status === 'ongoing'){
+                <!-- @if(status === 'ongoing'){ -->
                 <ion-button color="success" (click)="markAsDone(intervention)">
                   <ion-icon name="checkmark-circle-outline"></ion-icon> Marquer comme fait
                 </ion-button>
-                }
+                <!-- } -->
                 @if(status === 'upcoming' || status === 'ongoing'){
                 <ion-button color="danger" (click)="confirmCancel(intervention)">
                   <ion-icon name="close-circle-outline"></ion-icon> Annuler

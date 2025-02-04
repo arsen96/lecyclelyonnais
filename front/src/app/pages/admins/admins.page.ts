@@ -4,6 +4,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AdminService } from 'src/app/services/admin.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { Message, MessageService } from 'src/app/services/message.service';
+import { CompanyService } from 'src/app/services/company.service';
+import { GlobalService, UserRole } from 'src/app/services/global.service';
 
 @Component({
   selector: 'app-admins',
@@ -20,13 +22,20 @@ export class AdminsPage implements OnInit {
   error = { type: 'register' };
   selectedAdmin: any = null;
   resetPasswordMode = false;
+  companies: any[] = [];
+  public globalService = inject(GlobalService)
 
-  constructor(private fb: FormBuilder, private route: ActivatedRoute) {
+  public get UserRole() {
+    return UserRole
+  }
+
+  constructor(private fb: FormBuilder, private route: ActivatedRoute, private companyService: CompanyService) {
     this.adminForm = this.fb.group({
       first_name: ['', [Validators.required, Validators.minLength(2)]],
       last_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', this.selectedAdmin ? [] : [Validators.required, Validators.minLength(6)]]
+      password: ['', this.selectedAdmin ? [] : [Validators.required, Validators.minLength(6)]],
+      company_id: ['', this.selectedAdmin || this.globalService.userRole.getValue() === UserRole.ADMIN ? [] : Validators.required]
     });
   }
 
@@ -40,6 +49,8 @@ export class AdminsPage implements OnInit {
         this.adminForm.get('password').updateValueAndValidity();
       }
     });
+
+    this.loadCompanies();
   }
 
   loadAdminDetails(adminId: number) {
@@ -54,6 +65,9 @@ export class AdminsPage implements OnInit {
 
         this.adminForm.get('password').clearValidators();
         this.adminForm.get('password').updateValueAndValidity();
+
+        this.adminForm.get('company_id').clearValidators();
+        this.adminForm.get('company_id').updateValueAndValidity();
       }
     });
     this.resetPasswordMode = false;
@@ -122,5 +136,13 @@ export class AdminsPage implements OnInit {
     this.adminForm.patchValue({ password: '' });
     this.adminForm.get('password').setValidators([Validators.required, Validators.minLength(6)]);
     this.adminForm.get('password').updateValueAndValidity();
+  }
+
+  loadCompanies() {
+    this.companyService.get().then(companies => {
+      this.companies = companies;
+    }).catch(error => {
+      console.error("Error loading companies:", error);
+    });
   }
 }

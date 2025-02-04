@@ -27,7 +27,7 @@ export class LeafletListPage implements OnInit {
   totalItems = 0;
   leafletLoaded: Promise<boolean>;
   leafletLoadedResolver: (value: boolean) => void;
-
+  deleted = false;
   constructor(
     public zoneService: ZoneService,
     public cd: ChangeDetectorRef
@@ -38,6 +38,7 @@ export class LeafletListPage implements OnInit {
   }
 
   ionViewWillEnter() {
+    this.deleted = false;
     this.loaderService.setLoading(true);
     this.zoneService.get().then(zones => {
       this.dataSource.data = zones;
@@ -80,6 +81,7 @@ export class LeafletListPage implements OnInit {
     result.subscribe({
       next: (response: any) => {
         console.log('Delete response:', response);
+        this.deleted = true;
         this.dataSource.data = this.dataSource.data.filter(item => !selectedIds.includes(item.id));
         this.selection.clear();
         this.messageService.showToast(response.message, 'success'); 
@@ -125,5 +127,11 @@ export class LeafletListPage implements OnInit {
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     // this.dataSource.data = this.zoneService.get().slice(startIndex, endIndex);
+  }
+
+  ionViewWillLeave(){
+    if(this.deleted){
+      this.zoneService.allZones = new Array();
+    }
   }
 }

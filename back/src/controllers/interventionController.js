@@ -31,15 +31,37 @@ const save = async (req, res) => {
         try {
             const bicycle = await bicycleController.save(req, res);
             
-            const selectTechnicianQuery = "SELECT id FROM technician WHERE geographical_zone_id = $1 AND is_available = true LIMIT 1";
-            const technicianResult = await pool.query(selectTechnicianQuery, [address.zone]);
-            const technicianId = technicianResult.rows[0]?.id;
-            
-            const appointmentStart = isMaintenance ? maintenance.scheduleTimeStart : repair.scheduleTimeStart;
-            const appointmentEnd = isMaintenance ? maintenance.scheduleTimeEnd : repair.scheduleTimeEnd;
+            const appointmentStart = isMaintenance ? new Date(new Date(maintenance.scheduleTimeStart).getTime() - 60 * 60 * 1000).toISOString() : new Date(new Date(repair.scheduleTimeStart).getTime() - 60 * 60 * 1000).toISOString();
+            const appointmentEnd = isMaintenance ? new Date(new Date(maintenance.scheduleTimeEnd).getTime() - 60 * 60 * 1000).toISOString() : new Date(new Date(repair.scheduleTimeEnd).getTime() - 60 * 60 * 1000).toISOString();
 
-            console.log("appointmentStart", appointmentStart);
-            console.log("appointmentEnd", appointmentEnd);
+
+            //Retrouver un technicien avec NOT EXISTS si aucune ligne ne correspond à la sous-requête
+            const selectTechnicianQuery = `
+                SELECT id FROM technician 
+                WHERE geographical_zone_id = $1 
+                AND NOT EXISTS (
+                    SELECT 1 FROM intervention 
+                    WHERE technician_id = technician.id 
+                    AND (
+                        (appointment_start <= $2 AND appointment_end > $2) OR  
+                        (appointment_start < $3 AND appointment_end >= $3) OR 
+                        (appointment_start >= $2 AND appointment_end <= $3)
+                    )
+                    AND status NOT IN ('completed', 'canceled')
+                )
+                LIMIT 1
+            `;
+
+            // exemple Créneau  : 11:30 → 12:30
+            // 1 condition valide : 11:00 → 12:00 l'intervention commence avant le début du creneau demande et se termine apres le début.
+            //  2 condition valide : 11:00 → 13:00 l'intervention commence avant laa fin du creneau demande et se termine  apres la fin.
+            // 3 condition valide : intervention completement incluse
+            const technicianResult = await pool.query(selectTechnicianQuery, [address.zone, appointmentStart, appointmentEnd]);
+            const technicianId = technicianResult.rows[0]?.id;
+            if (!technicianId) {
+                return res.status(400).send({ success: false, message: "Aucun technicien disponible pour ce créneau horaire" });
+            }
+
             const description = isMaintenance ? "" : repair.issueDetails;
             const package = isMaintenance ? maintenance.package : "";
             

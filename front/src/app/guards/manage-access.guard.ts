@@ -25,7 +25,7 @@ export const manageAccessGuard: CanActivateFn = (route, state) => {
   const requiredRoles = (route.data as any)?.roles as string[];
   const canAccess = requiredRoles ? requiredRoles.includes(userRole) : true;
   
-  console.log("userRoleuserRole",userRole)
+
   if (!canAccess && userRole) {
     const currentUrl = routeRedirectionRole(userRole);
     console.log("currentUrlcurrentUrlcurrentUrlcurrentUrl",currentUrl)

@@ -16,13 +16,12 @@ export class TechnicianPage implements OnInit{
   technicianForm: FormGroup;
   displayMsg = false;
   showPassword = false; 
-  technicianService: TechnicianService = inject(TechnicianService);
   messageService = inject(MessageService)
   addressValidated = false;
   technicianSelected = null;
   actRoute = inject(ActivatedRoute);
   technicianId:number = null;
-  constructor(private fb: FormBuilder,public zoneService: ZoneService) {
+  constructor(private fb: FormBuilder,public zoneService: ZoneService,public technicianService:TechnicianService) {
     this.technicianId = Number(this.actRoute.snapshot.params['id']) ? Number(this.actRoute.snapshot.params['id']) : null;
    }
 
