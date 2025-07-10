@@ -9,4 +9,6 @@ import { LoginPage } from 'src/app/pages/auth/login/login.page';
     CommonModule
   ]
 })
-export class SharedModuleModule { }
+export class SharedModuleModule {
+
+ }

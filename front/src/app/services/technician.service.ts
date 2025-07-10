@@ -3,7 +3,6 @@ import { BaseService } from './base.service';
 import { Technician } from '../models/technicians';
 import {catchError, finalize, lastValueFrom, map, Observable, of, ReplaySubject, tap } from 'rxjs';
 import { CompanyService } from './company.service';
-import { CRUD } from '../models/crud';
 
 @Injectable({
   providedIn: 'root'
@@ -72,7 +71,7 @@ export class TechnicianService extends BaseService {
     return this.technicians.find(technician => technician.id === technicianId)
   }
 
-  getTechniciansByZone(geographicalZoneId: number){
+  getTechniciansByZone(geographicalZoneId: number): Technician[] {
     return this.technicians.filter(technician => technician.geographical_zone_id === geographicalZoneId)
   }
 

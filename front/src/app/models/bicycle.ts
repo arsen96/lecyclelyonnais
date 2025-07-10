@@ -4,5 +4,5 @@ export class Bicycle {
     model: string;
     year: number;
     type: string;
-    user_id: number;
+    user_id?: number;
 }
