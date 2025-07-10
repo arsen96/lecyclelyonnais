@@ -8,66 +8,61 @@ import { MessageService, Message } from 'src/app/services/message.service';
 import { Company } from 'src/app/models/company';
 import { BehaviorSubject } from 'rxjs';
 
+// 🌟 IMPORT DES FIXTURES
+import { 
+  CompanyFactory, 
+  createServiceSpy,
+  createMessageServiceSpy,
+  createRouterSpy,
+  createActivatedRouteSpy
+} from '../../../test-fixtures/factories';
+import { MOCK_COMPANIES } from 'src/test-fixtures/mock-data';
+
 describe('CompanyPage', () => {
   let component: CompanyPage;
   let fixture: ComponentFixture<CompanyPage>;
   let mockCompanyService: jasmine.SpyObj<CompanyService>;
-  let mockGlobalService: jasmine.SpyObj<GlobalService>;
+  let mockGlobalService: any;
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockRouter: jasmine.SpyObj<Router>;
   let mockActivatedRoute: any;
 
-  const mockCompany: Company = {
-    id: 1,
-    name: 'Test Company',
-    email: 'test@company.com',
-    subdomain: 'test',
-    theme_color: '#ff0000',
-    phone: '0123456789',
-  };
+  //  au lieu de données hardcodées
+  const mockCompany = CompanyFactory.create();
 
   beforeEach(() => {
-    const companyServiceSpy = jasmine.createSpyObj('CompanyService', [
-      'getCompanyById', 'update', 'create', 'get'
-    ], {
-      companies: []
-    });
+    // HELPERS pour créer les spies
+    mockCompanyService = createServiceSpy('CompanyService', ['getCompanyById', 'update', 'create', 'get']) as jasmine.SpyObj<CompanyService>;
+    mockMessageService = createMessageServiceSpy();
+    mockRouter = createRouterSpy();
+    mockActivatedRoute = createActivatedRouteSpy();
 
-    const globalServiceSpy = jasmine.createSpyObj('GlobalService', [], {
+    // Setup du GlobalService avec BehaviorSubject
+    mockGlobalService = {
       userRole: new BehaviorSubject(UserRole.SUPERADMIN)
-    });
-
-    const messageServiceSpy = jasmine.createSpyObj('MessageService', [
-      'showMessage', 'clearMessage'
-    ]);
-
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-
-    mockActivatedRoute = {
-      snapshot: {
-        params: { id: null }
-      }
     };
+
+    // Configuration des propriétés
+    Object.defineProperty(mockCompanyService, 'companies', {
+      value: [],
+      writable: true
+    });
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [CompanyPage],
       providers: [
         FormBuilder,
-        { provide: CompanyService, useValue: companyServiceSpy },
-        { provide: GlobalService, useValue: globalServiceSpy },
-        { provide: MessageService, useValue: messageServiceSpy },
-        { provide: Router, useValue: routerSpy },
+        { provide: CompanyService, useValue: mockCompanyService },
+        { provide: GlobalService, useValue: mockGlobalService },
+        { provide: MessageService, useValue: mockMessageService },
+        { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ]
     });
 
     fixture = TestBed.createComponent(CompanyPage);
     component = fixture.componentInstance;
-    mockCompanyService = TestBed.inject(CompanyService) as jasmine.SpyObj<CompanyService>;
-    mockGlobalService = TestBed.inject(GlobalService) as jasmine.SpyObj<GlobalService>;
-    mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should create', () => {
@@ -86,13 +81,12 @@ describe('CompanyPage', () => {
   });
 
   it('should load existing company when companyId is provided', () => {
-    // Utiliser le composant existant avec fixture pour respecter le contexte d'injection
-    component.companyId = 1;
+    component.companyId = mockCompany.id;
     mockCompanyService.getCompanyById.and.returnValue(mockCompany);
     
     component.ngOnInit();
 
-    expect(mockCompanyService.getCompanyById).toHaveBeenCalledWith(1);
+    expect(mockCompanyService.getCompanyById).toHaveBeenCalledWith(mockCompany.id);
     expect(component.companySelected).toBe(mockCompany);
     expect(component.companyForm.get('name')?.value).toBe(mockCompany.name);
   });
@@ -103,15 +97,10 @@ describe('CompanyPage', () => {
     // Test required fields
     expect(component.companyForm.valid).toBe(false);
 
-    // Fill valid data
-    component.companyForm.patchValue({
-      name: 'Valid Company',
-      email: 'valid@company.com',
-      subdomain: 'valid',
-      theme_color: '#ff0000',
-      phone: '0123456789'
-    });
+    // Factory pour données de test
+    const validCompanyData = CompanyFactory.create();
 
+    component.companyForm.patchValue(validCompanyData);
     expect(component.companyForm.valid).toBe(true);
   });
 
@@ -119,8 +108,8 @@ describe('CompanyPage', () => {
     component.ngOnInit();
     component.companySelected = null;
     mockCompanyService.create.and.returnValue(Promise.resolve(mockCompany));
-    
-    component.companyForm.patchValue({
+
+    const { id, created_at, ...newCompanyData } = CompanyFactory.create({
       name: 'New Company',
       email: 'new@company.com',
       subdomain: 'new',
@@ -128,58 +117,42 @@ describe('CompanyPage', () => {
       phone: '0123456789'
     });
 
+    component.companyForm.patchValue(newCompanyData);
+
     await component.onSubmit();
 
-    expect(mockCompanyService.create).toHaveBeenCalledWith({
-      name: 'New Company',
-      email: 'new@company.com',
-      subdomain: 'new',
-      theme_color: '#ff0000',
-      phone: '0123456789',
-    });
+    expect(mockCompanyService.create).toHaveBeenCalledWith(newCompanyData);
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/company-list']);
   });
 
   it('should call update service when submitting existing company', async () => {
     component.ngOnInit();
     component.companySelected = mockCompany;
-    component.companyId = 1;
+    component.companyId = mockCompany.id;
     mockCompanyService.update.and.returnValue(Promise.resolve(mockCompany));
     
-    component.companyForm.patchValue({
-      name: 'Updated Company',
-      email: 'updated@company.com',
-      subdomain: 'updated',
-      theme_color: '#00ff00',
-      phone: '0987654321'
-    });
+    // 🔥 UTILISATION: Factory pour données de mise à jour
+    const updatedCompanyData = CompanyFactory.create();
+
+    component.companyForm.patchValue(updatedCompanyData);
 
     await component.onSubmit();
 
     expect(mockCompanyService.update).toHaveBeenCalledWith({
-      id: 1,
-      name: 'Updated Company',
-      email: 'updated@company.com',
-      subdomain: 'updated',
-      theme_color: '#00ff00',
-      phone: '0987654321'
+      id: mockCompany.id,
+      ...updatedCompanyData
     });
-   
   });
 
   it('should handle different navigation based on user role', async () => {
     component.ngOnInit();
     component.companySelected = mockCompany;
-    component.companyId = 1;
+    component.companyId = mockCompany.id;
     mockCompanyService.update.and.returnValue(Promise.resolve(mockCompany));
     
-    component.companyForm.patchValue({
-      name: 'Test',
-      email: 'test@test.com',
-      subdomain: 'test',
-      theme_color: '#000000',
-      phone: '0123456789'
-    });
+    const testCompanyData = CompanyFactory.create();
+
+    component.companyForm.patchValue(testCompanyData);
 
     // Test SUPERADMIN navigation
     mockGlobalService.userRole.next(UserRole.SUPERADMIN);
@@ -201,19 +174,14 @@ describe('CompanyPage', () => {
     component.companySelected = null;
     const errorMessage = 'Creation failed';
     mockCompanyService.create.and.returnValue(Promise.reject(errorMessage));
-    spyOn(console, 'log'); // Spy sur console.log pour éviter les logs d'erreur
     
-    component.companyForm.patchValue({
-      name: 'Test Company',
-      email: 'test@company.com',
-      subdomain: 'test',
-      theme_color: '#ff0000',
-      phone: '0123456789'
-    });
+    // 🔥 UTILISATION: Factory pour données d'erreur
+    const errorTestData = CompanyFactory.create();
+
+    component.companyForm.patchValue(errorTestData);
 
     await component.onSubmit();
 
-  
     expect(mockRouter.navigate).not.toHaveBeenCalled();
   });
 

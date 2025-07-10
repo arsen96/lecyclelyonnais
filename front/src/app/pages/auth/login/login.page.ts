@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output} from
 import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faLinkedin, faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { HttpClient } from '@angular/common/http';
 import { OauthService } from 'src/app/services/auth/oauth.service';
 import { StandardAuth } from 'src/app/services/auth/standard.service';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -39,7 +38,6 @@ export class LoginPage{
   public loaderService = inject(LoadingService);
   public oauthService = inject(OauthService)
   public router = inject(Router)
-  public http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
   formBuilder = inject(FormBuilder)
   public globalService = inject(GlobalService)
@@ -121,8 +119,6 @@ export class LoginPage{
     )
 
   }
-
-
 
 
   displayError(err: string, type?: 'login' | 'register') {

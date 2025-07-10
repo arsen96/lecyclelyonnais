@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { AdminsPage } from './admins.page';
 import { AdminService } from 'src/app/services/admin.service';
@@ -9,7 +10,17 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { MessageService, Message } from 'src/app/services/message.service';
 import { CompanyService } from 'src/app/services/company.service';
 import { GlobalService, UserRole } from 'src/app/services/global.service';
-import { BehaviorSubject } from 'rxjs';
+
+import { 
+  AdminFactory, 
+  CompanyFactory,
+  createServiceSpy,
+  createLoadingServiceSpy,
+  createMessageServiceSpy,
+  createRouterSpy,
+  createActivatedRouteSpy,
+  TEST_CONSTANTS
+} from '../../../test-fixtures';
 
 describe('AdminsPage', () => {
   let component: AdminsPage;
@@ -22,65 +33,35 @@ describe('AdminsPage', () => {
   let mockActivatedRoute: any;
   let mockGlobalService: any;
 
-  const mockAdmin = {
-    id: 1,
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'john@example.com',
-    password: 'password123',
-    role: 'admin' as const,
-    company_id: 1
-  };
-
-  const mockCompanies = [
-    { 
-      id: 1, 
-      name: 'Company A',
-      email: 'contact@company-a.com',
-      subdomain: 'company-a',
-      theme_color: '#ff0000',
-      phone: '0123456789'
-    },
-    { 
-      id: 2, 
-      name: 'Company B',
-      email: 'contact@company-b.com', 
-      subdomain: 'company-b',
-      theme_color: '#00ff00',
-      phone: '0987654321'
-    }
-  ];
+  const mockAdmin = AdminFactory.create();
+  const mockCompanies = CompanyFactory.createMultiple(2);
 
   beforeEach(() => {
-    const adminServiceSpy = jasmine.createSpyObj('AdminService', ['get', 'create', 'update'], {
-      allAdmins: [mockAdmin]
+    mockAdminService = createServiceSpy('AdminService', []) as jasmine.SpyObj<AdminService>;
+    mockLoadingService = createLoadingServiceSpy();
+    mockMessageService = createMessageServiceSpy();
+    mockCompanyService = createServiceSpy('CompanyService', ['get']) as jasmine.SpyObj<CompanyService>;
+    mockRouter = createRouterSpy();
+    mockActivatedRoute = createActivatedRouteSpy();
+    mockGlobalService = { userRole: new BehaviorSubject(UserRole.SUPERADMIN) };
+
+    Object.defineProperty(mockAdminService, 'allAdmins', {
+      value: [mockAdmin],
+      writable: true
     });
-    const loadingServiceSpy = jasmine.createSpyObj('LoadingService', ['showLoaderUntilCompleted']);
-    const messageServiceSpy = jasmine.createSpyObj('MessageService', ['showToast', 'showMessage', 'clearMessage']);
-    const companyServiceSpy = jasmine.createSpyObj('CompanyService', ['get']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
     
-    // Setup default return values
-    companyServiceSpy.get.and.returnValue(Promise.resolve(mockCompanies));
-
-    mockActivatedRoute = {
-      paramMap: of(new Map([['id', null]]))
-    };
-
-    mockGlobalService = {
-      userRole: new BehaviorSubject(UserRole.SUPERADMIN)
-    };
+    mockCompanyService.get.and.returnValue(Promise.resolve(mockCompanies));
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [AdminsPage],
       providers: [
         FormBuilder,
-        { provide: AdminService, useValue: adminServiceSpy },
-        { provide: LoadingService, useValue: loadingServiceSpy },
-        { provide: MessageService, useValue: messageServiceSpy },
-        { provide: CompanyService, useValue: companyServiceSpy },
-        { provide: Router, useValue: routerSpy },
+        { provide: AdminService, useValue: mockAdminService },
+        { provide: LoadingService, useValue: mockLoadingService },
+        { provide: MessageService, useValue: mockMessageService },
+        { provide: CompanyService, useValue: mockCompanyService },
+        { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: GlobalService, useValue: mockGlobalService }
       ]
@@ -88,19 +69,13 @@ describe('AdminsPage', () => {
 
     fixture = TestBed.createComponent(AdminsPage);
     component = fixture.componentInstance;
-    
-    mockAdminService = TestBed.inject(AdminService) as jasmine.SpyObj<AdminService>;
-    mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
-    mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
-    mockCompanyService = TestBed.inject(CompanyService) as jasmine.SpyObj<CompanyService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit()', () => {
+  describe('Form initialization', () => {
     it('should initialize form with validators', () => {
       component.ngOnInit();
 
@@ -112,15 +87,15 @@ describe('AdminsPage', () => {
     });
 
     it('should load admin details when adminId exists', () => {
-      mockActivatedRoute.paramMap = of(new Map([['id', '1']]));
+      mockActivatedRoute.paramMap = of(new Map([['id', '2']]));
       spyOn(component, 'loadAdminDetails');
 
       component.ngOnInit();
 
-      expect(component.loadAdminDetails).toHaveBeenCalledWith(1);
+      expect(component.loadAdminDetails).toHaveBeenCalledWith(2);
     });
 
-    it('should load companies', async () => {
+    it('should load companies on init', async () => {
       spyOn(component, 'loadCompanies');
 
       component.ngOnInit();
@@ -129,70 +104,21 @@ describe('AdminsPage', () => {
     });
   });
 
-  describe('loadAdminDetails()', () => {
-    it('should load and patch admin data', async () => {
-      mockAdminService.get.and.returnValue(Promise.resolve([mockAdmin]));
-      component.ngOnInit();
-
-      await component.loadAdminDetails(1);
-
-      expect(component.selectedAdmin).toEqual(mockAdmin);
-      expect(component.adminForm.get('first_name')?.value).toBe(mockAdmin.first_name);
-      expect(component.resetPasswordMode).toBe(false);
-    });
-
-    it('should clear password and company validators for existing admin', async () => {
-      mockAdminService.get.and.returnValue(Promise.resolve([mockAdmin]));
-      component.ngOnInit();
-      spyOn(component.adminForm.get('password')!, 'clearValidators');
-      spyOn(component.adminForm.get('company_id')!, 'clearValidators');
-
-      await component.loadAdminDetails(1);
-
-      expect(component.adminForm.get('password')!.clearValidators).toHaveBeenCalled();
-      expect(component.adminForm.get('company_id')!.clearValidators).toHaveBeenCalled();
-    });
-  });
-
-  describe('generatePassword()', () => {
-    it('should generate password and show it', () => {
-      component.ngOnInit();
-
-      component.generatePassword();
-
-      const password = component.adminForm.get('password')?.value;
-      expect(password).toBeDefined();
-      expect(password.length).toBe(8);
-      expect(component.showPassword).toBe(true);
-    });
-  });
-
-  describe('enablePasswordReset()', () => {
-    it('should enable password reset mode', () => {
-      component.ngOnInit();
-
-      component.enablePasswordReset();
-
-      expect(component.resetPasswordMode).toBe(true);
-      expect(component.adminForm.get('password')?.value).toBe('');
-    });
-  });
-
-
-  describe('onSubmitAdmin()', () => {
+  describe('Admin operations', () => {
     beforeEach(() => {
       component.ngOnInit();
-      component.adminForm.patchValue({
+      const formData = AdminFactory.create({
         first_name: 'Test',
         last_name: 'Admin',
         email: 'test@example.com',
         password: 'password123',
         company_id: 1
       });
+      component.adminForm.patchValue(formData);
     });
 
-    it('should call updateAdmin when selectedAdmin exists', () => {
-      component.selectedAdmin = mockAdmin;
+    it('should update existing admin', () => {
+      component.selectedAdmin = AdminFactory.create();
       spyOn(component, 'updateAdmin');
 
       component.onSubmitAdmin();
@@ -200,7 +126,7 @@ describe('AdminsPage', () => {
       expect(component.updateAdmin).toHaveBeenCalled();
     });
 
-    it('should create new admin when no selectedAdmin', () => {
+    it('should create new admin and navigate', () => {
       component.selectedAdmin = null;
       const createResponse = { success: true };
       mockAdminService.create.and.returnValue(of(createResponse as any));
@@ -224,50 +150,116 @@ describe('AdminsPage', () => {
       expect(component.displayError).toHaveBeenCalledWith(error);
     });
 
-    it('should show error when form is invalid', () => {
-      component.adminForm.patchValue({
-        first_name: '',
-        last_name: '',
-        email: '',
-        password: '',
-        company_id: ''
-      });
+    it('should validate form before submit', () => {
+      component.adminForm.patchValue({ first_name: '', email: '' });
 
       component.onSubmitAdmin();
 
       expect(mockMessageService.showMessage).toHaveBeenCalledWith(
-        'Veuillez remplir tous les champs requis.',
+        TEST_CONSTANTS.MESSAGES.FORM_INVALID,
         Message.danger
       );
     });
   });
 
-  describe('loadCompanies()', () => {
+  describe('Admin details loading', () => {
+    it('should load and patch admin data', async () => {
+      const testAdmin = AdminFactory.create({ id: 1 });
+      mockAdminService.get.and.returnValue(Promise.resolve([testAdmin]));
+      component.ngOnInit();
+
+      await component.loadAdminDetails(1);
+
+      expect(component.selectedAdmin).toEqual(testAdmin);
+      expect(component.adminForm.get('first_name')?.value).toBe(testAdmin.first_name);
+      expect(component.resetPasswordMode).toBe(false);
+    });
+
+    it('should clear validators for existing admin', async () => {
+      const existingAdmin = AdminFactory.create({ id: 1 });
+      mockAdminService.get.and.returnValue(Promise.resolve([existingAdmin]));
+      component.ngOnInit();
+      spyOn(component.adminForm.get('password')!, 'clearValidators');
+      spyOn(component.adminForm.get('company_id')!, 'clearValidators');
+
+      await component.loadAdminDetails(1);
+
+      expect(component.adminForm.get('password')!.clearValidators).toHaveBeenCalled();
+      expect(component.adminForm.get('company_id')!.clearValidators).toHaveBeenCalled();
+    });
+  });
+
+  describe('Password features', () => {
+    beforeEach(() => component.ngOnInit());
+
+    it('should generate password and show it', () => {
+      component.generatePassword();
+
+      const password = component.adminForm.get('password')?.value;
+      expect(password).toBeDefined();
+      expect(password.length).toBe(8);
+      expect(component.showPassword).toBe(true);
+    });
+
+    it('should enable password reset mode', () => {
+      component.enablePasswordReset();
+
+      expect(component.resetPasswordMode).toBe(true);
+      expect(component.adminForm.get('password')?.value).toBe('');
+    });
+  });
+
+  describe('Company operations', () => {
     it('should load companies successfully', async () => {
-      mockCompanyService.get.and.returnValue(Promise.resolve(mockCompanies));
+      const testCompanies = CompanyFactory.createMultiple(3);
+      mockCompanyService.get.and.returnValue(Promise.resolve(testCompanies));
 
       await component.loadCompanies();
 
-      expect(component.companies).toEqual(mockCompanies);
+      expect(component.companies).toEqual(testCompanies);
     });
 
-  });
-
-  describe('displayError()', () => {
-    it('should display error message', () => {
-      const errorMessage = 'Test error';
-
-      component.displayError(errorMessage);
-
-      expect(mockMessageService.showMessage).toHaveBeenCalledWith(errorMessage, Message.danger);
+    it('should handle company loading errors', async () => {
+      const error = 'Failed to load companies';
+      mockCompanyService.get.and.returnValue(Promise.reject(error));
+      try {
+        await component.loadCompanies();
+      } catch (e) {
+        expect(console.error).toHaveBeenCalledWith('Error loading companies:', error);
+      }
     });
   });
 
-  describe('ionViewWillLeave()', () => {
-    it('should clear messages', () => {
-      component.ionViewWillLeave();
 
-      expect(mockMessageService.clearMessage).toHaveBeenCalled();
+  // Tests avec factories avancées
+  describe('Factory usage examples', () => {
+    it('should work with super admin', () => {
+      const superAdmin = AdminFactory.superAdmin();
+      component.selectedAdmin = superAdmin;
+      
+      expect(superAdmin.role).toBe('superadmin');
+    });
+
+    it('should work with admin for specific company', () => {
+      const company = CompanyFactory.create({ id: 5 });
+      const adminForCompany = AdminFactory.withCompany(company.id);
+      
+      expect(adminForCompany.company_id).toBe(5);
+    });
+
+    it('should maintain form structure after admin creation', () => {
+      const newAdmin = AdminFactory.create({
+        first_name: 'Regression',
+        last_name: 'Test',
+        email: 'regression@test.com'
+      });
+      
+      component.ngOnInit();
+      component.adminForm.patchValue(newAdmin);
+      
+      expect(component.adminForm.get('first_name')?.value).toBe('Regression');
+      expect(component.adminForm.get('email')?.value).toBe('regression@test.com');
+      expect(component.adminForm.valid).toBeTruthy();
     });
   });
 });

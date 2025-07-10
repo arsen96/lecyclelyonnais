@@ -34,6 +34,7 @@ export class PlanningModelService extends BaseService{
     return new Promise<PlanningModel[]>((resolve,reject)=>{
       if(this.allPlanningModels.length > 0){
         resolve(this.allPlanningModels);
+        return;
       }
       this.http.get(`${BaseService.baseApi}${this.currentRoute}/get`,{
         params: {...this.companyService.subdomainREQ}

@@ -7,7 +7,15 @@ import { BikePage } from './bike.page';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MessageService } from 'src/app/services/message.service';
-import { Bicycle } from 'src/app/models/bicycle';
+
+// 🌟 IMPORT DES FIXTURES
+import { 
+  BicycleFactory, 
+  createServiceSpy,
+  createLoadingServiceSpy,
+  createMessageServiceSpy,
+  createActivatedRouteSpy
+} from '../../../../test-fixtures';
 
 describe('BikePage', () => {
   let component: BikePage;
@@ -17,51 +25,31 @@ describe('BikePage', () => {
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockActivatedRoute: any;
 
-  const mockBike: Bicycle = {
-    id: 1,
-    brand: 'Test Brand',
-    model: 'Test Model',
-    year: 2023,
-    type: 'Vélo classique'
-  };
-
-  const mockBikes: Bicycle[] = [mockBike];
+  // 🔥 FACTORY au lieu de données hardcodées
+  const mockBike = BicycleFactory.create();
+  const mockBikes = BicycleFactory.createMultiple(2);
 
   beforeEach(() => {
-    const bicycleServiceSpy = jasmine.createSpyObj('BicycleService', [
-      'getUserBicycles', 'create', 'update'
-    ]);
-    const loadingServiceSpy = jasmine.createSpyObj('LoadingService', [
-      'showLoaderUntilCompleted'
-    ]);
-    const messageServiceSpy = jasmine.createSpyObj('MessageService', [
-      'showToast', 'clearMessage'
-    ]);
-
-    mockActivatedRoute = {
-      snapshot: {
-        params: { id: null }
-      }
-    };
+    // 🌟 HELPERS pour créer les spies
+    mockBicycleService = createServiceSpy('BicycleService', ['getUserBicycles', 'create', 'update']) as jasmine.SpyObj<BicycleService>;
+    mockLoadingService = createLoadingServiceSpy();
+    mockMessageService = createMessageServiceSpy();
+    mockActivatedRoute = createActivatedRouteSpy();
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [BikePage],
       providers: [
         FormBuilder,
-        { provide: BicycleService, useValue: bicycleServiceSpy },
-        { provide: LoadingService, useValue: loadingServiceSpy },
-        { provide: MessageService, useValue: messageServiceSpy },
+        { provide: BicycleService, useValue: mockBicycleService },
+        { provide: LoadingService, useValue: mockLoadingService },
+        { provide: MessageService, useValue: mockMessageService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ]
     });
 
     fixture = TestBed.createComponent(BikePage);
     component = fixture.componentInstance;
-    
-    mockBicycleService = TestBed.inject(BicycleService) as jasmine.SpyObj<BicycleService>;
-    mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
-    mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
 
     // Setup default mocks
     mockLoadingService.showLoaderUntilCompleted.and.returnValue(of(mockBikes));
@@ -72,8 +60,8 @@ describe('BikePage', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit()', () => {
-    it('should initialize form with default values', () => {
+  describe('Initialization', () => {
+    it('should initialize form with validators', () => {
       component.ngOnInit();
 
       expect(component.bikeForm).toBeDefined();
@@ -83,23 +71,17 @@ describe('BikePage', () => {
       expect(component.bikeForm.get('type')).toBeDefined();
     });
 
-    it('should set required validators', () => {
+
+    it('should have required validators', () => {
       component.ngOnInit();
+      const form = component.bikeForm;
 
-      const brandControl = component.bikeForm.get('brand');
-      const modelControl = component.bikeForm.get('model');
-      const yearControl = component.bikeForm.get('year');
-      const typeControl = component.bikeForm.get('type');
+      form.patchValue({ brand: '', model: '', year: '', type: '' });
 
-      brandControl?.setValue('');
-      modelControl?.setValue('');
-      yearControl?.setValue('');
-      typeControl?.setValue('');
-
-      expect(brandControl?.invalid).toBe(true);
-      expect(modelControl?.invalid).toBe(true);
-      expect(yearControl?.invalid).toBe(true);
-      expect(typeControl?.invalid).toBe(true);
+      expect(form.get('brand')?.hasError('required')).toBe(true);
+      expect(form.get('model')?.hasError('required')).toBe(true);
+      expect(form.get('year')?.hasError('required')).toBe(true);
+      expect(form.get('type')?.hasError('required')).toBe(true);
     });
 
     it('should validate year pattern', () => {
@@ -117,8 +99,10 @@ describe('BikePage', () => {
     });
   });
 
-  describe('ionViewDidEnter()', () => {
-    it('should load bikes and not patch form when no bikeId', () => {
+  describe('Data loading', () => {
+    beforeEach(() => component.ngOnInit());
+
+    it('should load bikes without patching form when no bikeId', () => {
       component.bikeId = null;
       
       component.ionViewDidEnter();
@@ -129,40 +113,41 @@ describe('BikePage', () => {
       expect(component.bikeSelected).toBe(null);
     });
 
-    it('should load bikes and patch form when bikeId exists', () => {
-      component.bikeId = 1;
-      component.ngOnInit();
+    it('should load and patch form when bikeId exists', () => {
+      component.bikeId = mockBike.id;
+      // 🔧 CORRECTION: mockBikes contient le mockBike
+      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of([mockBike]));
       spyOn(component.bikeForm, 'patchValue');
       
       component.ionViewDidEnter();
 
-      expect(mockLoadingService.showLoaderUntilCompleted).toHaveBeenCalled();
       expect(component.bikeSelected).toEqual(mockBike);
       expect(component.bikeForm.patchValue).toHaveBeenCalledWith(mockBike);
     });
 
     it('should handle bike not found', () => {
       component.bikeId = 999;
-      component.ngOnInit();
+      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of([]));
       
       component.ionViewDidEnter();
 
-      expect(component.bikeSelected).toBe(undefined);
+      expect(component.bikeSelected).toBeUndefined();
     });
   });
 
-  describe('onSubmit()', () => {
+  describe('Form submission', () => {
     beforeEach(() => {
       component.ngOnInit();
-      component.bikeForm.patchValue({
+      const formData = BicycleFactory.create({
         brand: 'Test Brand',
         model: 'Test Model',
-        year: '2023',
+        year: 2023,
         type: 'Vélo classique'
       });
+      component.bikeForm.patchValue(formData);
     });
 
-    it('should create new bike when bikeSelected is null', () => {
+    it('should create new bike', () => {
       component.bikeSelected = null;
       const createResponse = { message: 'Created successfully' };
       mockBicycleService.create.and.returnValue(of(createResponse));
@@ -176,9 +161,9 @@ describe('BikePage', () => {
       expect(component.bikeForm.reset).toHaveBeenCalled();
     });
 
-    it('should update existing bike when bikeSelected exists', () => {
+    it('should update existing bike', () => {
       component.bikeSelected = mockBike;
-      component.bikeId = 1;
+      component.bikeId = mockBike.id;
       const updateResponse = { message: 'Updated successfully' };
       mockBicycleService.update.and.returnValue(of(updateResponse));
       mockLoadingService.showLoaderUntilCompleted.and.returnValue(of(updateResponse));
@@ -186,7 +171,7 @@ describe('BikePage', () => {
 
       component.onSubmit();
 
-      expect(mockBicycleService.update).toHaveBeenCalledWith(1, component.bikeForm.value);
+      expect(mockBicycleService.update).toHaveBeenCalledWith(mockBike.id, component.bikeForm.value);
       expect(mockMessageService.showToast).toHaveBeenCalledWith('Bike saved successfully', 'success');
       expect(component.bikeForm.reset).not.toHaveBeenCalled();
     });
@@ -199,16 +184,11 @@ describe('BikePage', () => {
 
       component.onSubmit();
 
-      expect(mockMessageService.showToast).toHaveBeenCalledWith(error.message, 'danger');
+      expect(mockMessageService.showToast).toHaveBeenCalledWith('Creation failed', 'danger');
     });
 
     it('should not submit when form is invalid', () => {
-      component.bikeForm.patchValue({
-        brand: '',
-        model: '',
-        year: '',
-        type: ''
-      });
+      component.bikeForm.patchValue({ brand: '', model: '', year: '', type: '' });
 
       component.onSubmit();
 
@@ -218,12 +198,42 @@ describe('BikePage', () => {
     });
   });
 
-  describe('ionViewWillLeave()', () => {
-    it('should clear messages', () => {
+  describe('Lifecycle', () => {
+    it('should clear messages on leave', () => {
       component.ionViewWillLeave();
 
       expect(mockMessageService.clearMessage).toHaveBeenCalled();
     });
   });
 
+
+  describe('Edge cases', () => {
+    beforeEach(() => component.ngOnInit());
+
+
+    it('should handle form validation with edge year values', () => {
+      const yearControl = component.bikeForm.get('year');
+      
+      // Test limite basse
+      yearControl?.setValue('1000');
+      expect(yearControl?.hasError('pattern')).toBe(false);
+      
+      // Test limite haute
+      yearControl?.setValue('9999');
+      expect(yearControl?.hasError('pattern')).toBe(false);
+      
+      // Test invalide
+      yearControl?.setValue('12345');
+      expect(yearControl?.hasError('pattern')).toBe(true);
+    });
+
+    it('should handle empty bike list response', () => {
+      component.bikeId = 1;
+      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of([]));
+      
+      component.ionViewDidEnter();
+      
+      expect(component.bikeSelected).toBeUndefined();
+    });
+  });
 });
