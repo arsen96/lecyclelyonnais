@@ -45,8 +45,9 @@ export class LoginPage{
   faGoogle = faGoogle
   faLinkedin = faLinkedin
   modelLogin: FormLoginModel = { email: "", password: "" };
+  loginForm: FormGroup; 
   public error = {
-    type: 'login' || 'register'
+    type: 'login'
   }
   public interventionService = inject(InterventionService)  
   registrationForm: FormGroup;
@@ -82,6 +83,12 @@ export class LoginPage{
         }
       }
     })
+    
+    this.loginForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+
     this.registrationForm = this.formBuilder.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
@@ -93,30 +100,36 @@ export class LoginPage{
 
   }
 
+  get loginControls() {
+    return this.loginForm.controls;
+  }
+
   get f() {
     return this.registrationForm.controls;
   }
 
 
   async onSubmitLogin() {
-    console.log("this.companyService.this.modelLogin",this.modelLogin)
-    const login$ = this.standardAuthService.loginStandard({...this.modelLogin,...this.companyService.subdomainREQ});
-    const result = this.loaderService.showLoaderUntilCompleted(login$);
-    result.subscribe(
-      {
-        next: () => {
-          if(this.isStepper){
-            this.stepperAuthentication.emit(true)
-          }else{
-            this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
-            this.router.navigateByUrl("list-zones")
+    if (this.loginForm.valid) {
+      const loginData = this.loginForm.value;
+      const login$ = this.standardAuthService.loginStandard({...loginData,...this.companyService.subdomainREQ});
+      const result = this.loaderService.showLoaderUntilCompleted(login$);
+      result.subscribe(
+        {
+          next: () => {
+            if(this.isStepper){
+              this.stepperAuthentication.emit(true)
+            }else{
+              this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
+              this.router.navigateByUrl("list-zones")
+            }
+          }, error: (err) => {
+            this.displayError(err,'login')
+            console.log("login error", err)
           }
-        }, error: (err) => {
-          this.displayError(err,'login')
-          console.log("login error", err)
         }
-      }
-    )
+      )
+    }
 
   }
 

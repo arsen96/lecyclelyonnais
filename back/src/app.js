@@ -13,10 +13,6 @@ const routesAdmin = require('./routes/adminRoute');
 const routesCompany = require('./routes/companyRoute');
 require('dotenv').config()
 const cors = require('cors'); 
-// var bodyParser = require('body-parser');
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
-
 
 app.use(cors());
 // app.use(cors({

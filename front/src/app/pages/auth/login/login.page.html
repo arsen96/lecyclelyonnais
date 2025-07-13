@@ -30,23 +30,23 @@
               @if(error.type == 'login'){
                 <app-message></app-message>
               }
-              <form (ngSubmit)="onSubmitLogin()" #loginForm="ngForm">
+              <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
                 <div class="mb-3">
                   <ion-item>
-                    <ion-input label="Email" id="emailLogin"  name="email" type="text"  #emailField="ngModel" [(ngModel)]="modelLogin.email" required></ion-input>
+                    <ion-input label="Email" class="emailLogin" id="emailLogin" name="email" type="text" formControlName="email"></ion-input>
                   </ion-item>
-                  @if(emailField.errors?.["required"] && emailField.touched){
-                    <small class="invalid">L'email est requis.</small>
+                  @if(loginControls['email'].invalid && loginControls['email'].touched){
+                    <small class="invalid" *ngIf="loginControls['email'].errors?.['required']">L'email est requis.</small>
+                    <small class="invalid" *ngIf="loginControls['email'].errors?.['email']">L'email doit être valide.</small>
                   }
-
                 </div>
                 <div class="mb-3">
                   <ion-item>
-                    <ion-input label="Mot de passe"  id="passwordLogin" name="password" #passwordField="ngModel"
-                    type="password" [(ngModel)]="modelLogin.password" required></ion-input>
+                    <ion-input label="Mot de passe" class="passwordLogin" id="passwordLogin" name="password" type="password" formControlName="password"></ion-input>
                   </ion-item>
-                  @if(passwordField.errors?.["required"] && passwordField.touched){
-                    <small class="invalid">Le mot de passe est requis.</small>
+                  @if(loginControls['password'].invalid && loginControls['password'].touched){
+                    <small class="invalid" *ngIf="loginControls['password'].errors?.['required']">Le mot de passe est requis.</small>
+                    <small class="invalid" *ngIf="loginControls['password'].errors?.['minlength']">Le mot de passe doit avoir au moins 6 caractères.</small>
                   }
                 </div>
 
@@ -55,7 +55,7 @@
                   <p><a routerLink="/reset" class="forgetPassword">Mot de passe oublié ?</a></p>
                 </div>
                 }
-                <ion-button type="submit" [disabled]="!loginForm.valid">Se connecter</ion-button>
+                <ion-button type="submit" class="loginButton" [disabled]="!loginForm.valid">Se connecter</ion-button>
                 <button class="btn btn-dark" type="submit" ><i
                     class="fa fa-sign-in-alt me-2"></i> </button>
                 <div class="my-2">
@@ -87,7 +87,7 @@
                   <!-- Champ Prénom -->
                   <div class="mb-3">
                     <ion-item>
-                      <ion-input placeholder="Prénom" formControlName="firstName"></ion-input>
+                      <ion-input placeholder="Prénom" class="firstNameRegister" formControlName="firstName"></ion-input>
                     </ion-item>
                     @if(f['firstName'].invalid && f['firstName'].touched){
                       <small class="invalid" *ngIf="f['firstName'].errors?.['required']">Le prénom est obligatoire.</small>
@@ -98,7 +98,7 @@
                   <!-- Champ Nom -->
                   <div class="mb-3">
                     <ion-item>
-                      <ion-input placeholder="Nom" formControlName="lastName"></ion-input>
+                      <ion-input placeholder="Nom" class="lastNameRegister" formControlName="lastName"></ion-input>
                     </ion-item>
                     @if(f['lastName'].invalid && f['lastName'].touched){
                       <small class="invalid" *ngIf="f['lastName'].errors?.['required']">Le nom est obligatoire.</small>
@@ -109,7 +109,7 @@
                   <!-- Champ Email -->
                   <div class="mb-3">
                     <ion-item>
-                      <ion-input placeholder="Email" formControlName="email"></ion-input>
+                      <ion-input placeholder="Email" class="emailRegister" formControlName="email"></ion-input>
                     </ion-item>
                     @if(f['email'].invalid && f['email'].touched){
                       <small class="invalid" *ngIf="f['email'].errors?.['required']">L'email est obligatoire.</small>
@@ -120,7 +120,7 @@
                   <!-- Champ Mot de Passe -->
                   <div class="mb-3">
                     <ion-item>
-                      <ion-input placeholder="Mot de passe" type="password" formControlName="password"></ion-input>
+                      <ion-input placeholder="Mot de passe" class="passwordRegister" type="password" formControlName="password"></ion-input>
                     </ion-item>
                       @if(f['password'].invalid && f['password'].touched){
                       <small class="invalid" *ngIf="f['password'].errors?.['required']">Le mot de passe est obligatoire.</small>
@@ -131,7 +131,7 @@
                   <!-- Champ Téléphone -->
                   <div class="mb-3">
                     <ion-item>
-                      <ion-input placeholder="Numéro de téléphone" formControlName="phone"></ion-input>
+                      <ion-input placeholder="Numéro de téléphone" class="phoneRegister" formControlName="phone"></ion-input>
                     </ion-item>
                       @if(f['phone'].invalid && f['phone'].touched){
                         <small class="invalid" *ngIf="f['phone'].errors?.['required']">Le numéro de téléphone est obligatoire.</small>
@@ -142,7 +142,7 @@
                   <!-- Champ Adresse -->
                   <div class="mb-3">
                     <ion-item>
-                      <input formControlName="address" class="addressInput" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)"/>
+                      <input formControlName="address" class="addressInput addressRegister" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)"/>
                     </ion-item>
                     <!-- @if(f['address'].invalid && f['address'].touched){
                       <small class="invalid" *ngIf="f['address'].errors?.['required']">L'adresse est obligatoire.</small>
@@ -151,7 +151,7 @@
 
                   
                 
-                  <ion-button type="submit" [disabled]="registrationForm.invalid">Créer un compte</ion-button>
+                  <ion-button type="submit" class="registerButton" [disabled]="registrationForm.invalid">Créer un compte</ion-button>
                 </form>
                 
                 

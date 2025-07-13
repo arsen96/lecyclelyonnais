@@ -59,10 +59,10 @@ export class ActionsPage implements OnInit {
       address: [adresse || '', Validators.required]
     });
     this.detailsFormGroup = this._formBuilder.group({
-      brand: ['Default Brand', Validators.required],
-      model: ['Default Model', Validators.required],
-      year: ['2023', [Validators.required, Validators.pattern('^[0-9]{4}$')]],
-      type: ['Vélo classique', Validators.required]
+      brand: ['', Validators.required],
+      model: ['', Validators.required],
+      year: ['', [Validators.required, Validators.pattern('^[0-9]{4}$')]],
+      type: ['', Validators.required]
     });
     this.operationFormGroup = this._formBuilder.group({
       operation: ['maintenance', Validators.required]
@@ -118,7 +118,7 @@ export class ActionsPage implements OnInit {
   }
 
   isDateEnabled(dateIsoString: string): boolean {
-    if(!this.concernedZone || !this.operationFormGroup.value.operation){
+    if(!this.concernedZone ){
       return false
     }
     const date = new Date(dateIsoString);

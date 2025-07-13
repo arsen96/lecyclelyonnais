@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { CompanyListPage } from './company-list.page';
@@ -12,6 +10,16 @@ import { AdminService } from 'src/app/services/admin.service';
 import { Company } from 'src/app/models/company';
 import { ChangeDetectorRef } from '@angular/core';
 
+import { 
+  CompanyFactory, 
+  createServiceSpy,
+  createLoadingServiceSpy,
+  createMessageServiceSpy,
+  createChangeDetectorRefSpy,
+  createMockEvent,
+  createMockSortEvent,
+} from '../../../test-fixtures';
+
 describe('CompanyListPage', () => {
   let component: CompanyListPage;
   let fixture: ComponentFixture<CompanyListPage>;
@@ -21,53 +29,43 @@ describe('CompanyListPage', () => {
   let mockAdminService: jasmine.SpyObj<AdminService>;
 
   const mockCompanies: Company[] = [
-    {
-      id: 1,
-      name: 'Company A',
-      subdomain: 'company-a',
-      created_at: '2023-01-01',
-      email: 'contact@company-a.com',
-      theme_color: '#ff0000',
-      phone: '0123456789'
-    },
-    {
+    CompanyFactory.create(),
+    CompanyFactory.create({
       id: 2,
       name: 'Company B',
-      subdomain: null, // Cette entreprise sera filtrée
+      subdomain: null,
       created_at: '2023-02-01',
       email: 'contact@company-b.com',
       theme_color: '#00ff00',
       phone: '0987654321'
-    }
+    })
   ];
 
   beforeEach(() => {
-    const companyServiceSpy = jasmine.createSpyObj('CompanyService', ['get', 'delete']);
-    const messageServiceSpy = jasmine.createSpyObj('MessageService', ['showToast']);
-    const loadingServiceSpy = jasmine.createSpyObj('LoadingService', ['setLoading', 'showLoaderUntilCompleted']);
-    const adminServiceSpy = jasmine.createSpyObj('AdminService', [], {
-      allAdmins: []
+    mockCompanyService = createServiceSpy('CompanyService');
+    mockMessageService = createMessageServiceSpy();
+    mockLoadingService = createLoadingServiceSpy();
+    mockAdminService = createServiceSpy('AdminService');
+
+    Object.defineProperty(mockAdminService, 'allAdmins', {
+      value: [],
+      writable: true
     });
 
     TestBed.configureTestingModule({
       declarations: [CompanyListPage],
       providers: [
-        { provide: CompanyService, useValue: companyServiceSpy },
-        { provide: MessageService, useValue: messageServiceSpy },
-        { provide: LoadingService, useValue: loadingServiceSpy },
+        { provide: CompanyService, useValue: mockCompanyService },
+        { provide: MessageService, useValue: mockMessageService },
+        { provide: LoadingService, useValue: mockLoadingService },
         { provide: GlobalService, useValue: { userRole: new BehaviorSubject(UserRole.SUPERADMIN) } },
-        { provide: AdminService, useValue: adminServiceSpy },
-        { provide: ChangeDetectorRef, useValue: jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']) }
+        { provide: AdminService, useValue: mockAdminService },
+        { provide: ChangeDetectorRef, useValue: createChangeDetectorRefSpy() }
       ]
     });
 
     fixture = TestBed.createComponent(CompanyListPage);
     component = fixture.componentInstance;
-    
-    mockCompanyService = TestBed.inject(CompanyService) as jasmine.SpyObj<CompanyService>;
-    mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
-    mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
-    mockAdminService = TestBed.inject(AdminService) as jasmine.SpyObj<AdminService>;
   });
 
   it('should create', () => {
@@ -88,7 +86,7 @@ describe('CompanyListPage', () => {
 
   describe('applyFilter()', () => {
     it('should filter data correctly', () => {
-      const mockEvent = { target: { value: '  Company A  ' } } as any;
+      const mockEvent = createMockEvent('  Company A  ');
 
       component.applyFilter(mockEvent);
 
@@ -146,13 +144,25 @@ describe('CompanyListPage', () => {
   describe('sortData()', () => {
     beforeEach(() => {
       component.dataSource.data = [
-        { id: 2, name: 'Zebra', subdomain: 'zebra', created_at: '2023-02-01' },
-        { id: 1, name: 'Alpha', subdomain: 'alpha', created_at: '2023-01-01' }
-      ] as Company[];
+        CompanyFactory.create({
+          id: 2,
+          name: 'Zebra',
+          subdomain: 'zebra',
+          created_at: '2023-02-01'
+        }),
+        CompanyFactory.create({
+          id: 1,
+          name: 'Alpha',
+          subdomain: 'alpha',
+          created_at: '2023-01-01'
+        })
+      ];
     });
 
     it('should sort by name ascending', () => {
-      component.sortData({ active: 'name', direction: 'asc' });
+      const sortEvent = createMockSortEvent('name', 'asc');
+      
+      component.sortData(sortEvent);
       
       expect(component.dataSource.data[0].name).toBe('Alpha');
       expect(component.dataSource.data[1].name).toBe('Zebra');
@@ -160,8 +170,9 @@ describe('CompanyListPage', () => {
 
     it('should not sort with empty direction', () => {
       const originalData = [...component.dataSource.data];
+      const sortEvent = createMockSortEvent('name', '');
       
-      component.sortData({ active: 'name', direction: '' });
+      component.sortData(sortEvent);
       
       expect(component.dataSource.data).toEqual(originalData);
     });

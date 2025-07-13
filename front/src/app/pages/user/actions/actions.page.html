@@ -23,13 +23,13 @@
             }
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Adresse</mat-label>
-              <input matInput placeholder="Saisissez votre adresse" formControlName="address" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="changeAddressValidated()" required>
+              <input matInput placeholder="Saisissez votre adresse" class="adresse-input" formControlName="address" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="changeAddressValidated()" required>
               <mat-error *ngIf="addressFormGroup.get('address').hasError('required')">
                 L'adresse est requise.
               </mat-error>
             </mat-form-field>
             <div class="button-group">
-              <button mat-raised-button color="primary" class="next-btn" type="submit">Suivant</button>
+              <button mat-raised-button color="primary" class="next-btn adresse-btn" type="submit">Suivant</button>
             </div>
           </div>
         </form>
@@ -86,7 +86,7 @@
             </mat-form-field>
             <div class="button-group">
               <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
-              <button mat-raised-button class="next-btn" type="submit">Suivant</button>
+              <button mat-raised-button class="next-btn details-btn" type="submit">Suivant</button>
             </div>
           </div>
         </form>
@@ -114,7 +114,7 @@
             </mat-error>
             <div class="button-group">
               <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
-              <button mat-raised-button class="next-btn" type="submit">Suivant</button>
+              <button mat-raised-button class="next-btn operation-btn" type="submit">Suivant</button>
             </div>
           </div>
         </form>
@@ -144,7 +144,7 @@
                   accept="image/png, image/jpeg" multiple>
               </ion-item>
             </div>
-            <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD YYYY" formControlName="scheduleDate" required
+            <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD YYYY" class="scheduleDate" formControlName="scheduleDate" required
             [min]="minDate" [isDateEnabled]="isDateEnabled.bind(this)" (ionChange)="onDateChange($event)" presentation="date"></ion-datetime>
 
             <div class="selectContainer">
@@ -156,7 +156,7 @@
             </div>
             <div class="button-group">
               <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
-              <button mat-raised-button class="next-btn" type="submit" (click)="onSubmit()">{{globalService.isAuthenticated.getValue() === true ? 'Finaliser' : 'Suivant'}}</button>
+              <button mat-raised-button class="next-btn maintenance-btn" type="submit" (click)="onSubmit()">{{globalService.isAuthenticated.getValue() === true ? 'Finaliser' : 'Suivant'}}</button>
             </div>
           </div>
         </form>
@@ -182,7 +182,7 @@
                   accept="image/png, image/jpeg" multiple>
               </ion-item>
             </div>
-            <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD YYYY" formControlName="scheduleDate" required
+            <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD YYYY" class="scheduleDate" formControlName="scheduleDate" required
             [min]="minDate" [isDateEnabled]="isDateEnabled.bind(this)" (ionChange)="onDateChange($event)" presentation="date"></ion-datetime>
 
             <div class="selectContainer">
@@ -195,7 +195,7 @@
            
             <div class="button-group">
               <button mat-raised-button class="prev-btn" matStepperPrevious>Retour</button>
-              <button mat-raised-button class="next-btn" type="submit" (click)="onSubmit()">Finaliser</button>
+              <button mat-raised-button class="next-btn reparation-btn" type="submit" (click)="onSubmit()">Finaliser</button>
             </div>
           </div>
         </form>

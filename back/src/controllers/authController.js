@@ -79,14 +79,6 @@ const login = async (req, res) => {
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1 AND company_id = $2';
     let user = await pool.query(checkUserQuery, [email,companyId]);
     let isUser = true;
-    // let user = await pool.query(checkUserQuery, [email]);
-
-    // const checkUserQuery2 = `SELECT * FROM 
-    //                           (
-    //                               SELECT email FROM FROM administrator,
-    //                               UNION
-    //                               SELECT email FROM client
-    //                            ) AS email_result WHERE email = $1`;
 
     if (user.rows.length === 0) {
       const checkTechnicianQuery = 'SELECT * FROM technician WHERE email = $1 AND company_id = $2';

@@ -66,7 +66,11 @@
   <ion-grid class="ion-justify-content-center ion-align-items-center" style="height: 100%; display: flex;">
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-md="12" class="ion-text-center">
-        <h1>Aucune zone n'a été créée</h1>
+        @if(errorOccured){
+          <h1>Aucune zone trouvée</h1>
+        }@else{
+          <h1>Aucune zone n'a été créée</h1>
+        }
         <ion-button class="ion-margin-top addZoneBtn" routerLink="/zone">
           <ion-icon name="add"></ion-icon>
         </ion-button>

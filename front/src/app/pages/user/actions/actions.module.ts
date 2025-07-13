@@ -16,8 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Loader } from '@googlemaps/js-api-loader';
 import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 import { LoginPageModule } from '../../auth/login/login.module';
-import { LoginPage } from '../../auth/login/login.page';
-// import { SharedModuleModule } from 'src/app/component/shared-module/shared-module.module';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   imports: [
@@ -42,7 +41,7 @@ import { LoginPage } from '../../auth/login/login.page';
     {
       provide: Loader,
       useValue: new Loader({
-        apiKey: 'AIzaSyBkR-iE9z0QmKidHCvMiTEB7Z36rKwxXpQ',
+        apiKey: environment.GOOGLE_MAP_API,
         libraries: ['places']
       })
     },

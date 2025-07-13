@@ -4,12 +4,14 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/app.js",
-    "test": "mocha tests/index.test.js"
+    "test": "mocha tests/index.test.js",
+    "seed": "node database/create-test-data.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@faker-js/faker": "^9.9.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",

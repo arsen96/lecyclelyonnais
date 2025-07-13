@@ -9,6 +9,7 @@ import { UsersPage } from './users.page';
 import { Loader } from '@googlemaps/js-api-loader';
 import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 import { MessageComponent } from 'src/app/components/message/message.component';
+import { environment } from 'src/environments/environment';
 @NgModule({
   imports: [
     NgxGpAutocompleteModule,
@@ -24,7 +25,7 @@ import { MessageComponent } from 'src/app/components/message/message.component';
     {
       provide: Loader,
       useValue: new Loader({
-        apiKey: 'AIzaSyBkR-iE9z0QmKidHCvMiTEB7Z36rKwxXpQ',
+        apiKey: environment.GOOGLE_MAP_API,
         libraries: ['places']
       })
     },

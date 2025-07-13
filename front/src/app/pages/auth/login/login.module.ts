@@ -13,6 +13,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MessageComponent } from 'src/app/components/message/message.component';
 import { Loader } from '@googlemaps/js-api-loader';
 import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
+import { environment } from 'src/environments/environment';
 @NgModule({
   imports: [
     NgxGpAutocompleteModule,
@@ -34,7 +35,7 @@ import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
     {
       provide: Loader,
       useValue: new Loader({
-        apiKey: 'AIzaSyBkR-iE9z0QmKidHCvMiTEB7Z36rKwxXpQ',
+        apiKey: environment.GOOGLE_MAP_API,
         libraries: ['places']
       })
     },
