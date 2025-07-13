@@ -175,6 +175,7 @@ export class ActionsPage implements OnInit {
             }
           });
         } catch (error) {
+          console.error('Error submitting address:', error);
         }
       }else {
         this.displayError = true;
@@ -186,7 +187,6 @@ export class ActionsPage implements OnInit {
 
   onDetailsSubmit() {
     if (this.detailsFormGroup.valid) {
-      const detailsData = this.detailsFormGroup.value;
       this.detailsFormCompleted = true;
       this.stepper.next();
     }
@@ -194,7 +194,6 @@ export class ActionsPage implements OnInit {
 
   onOperationSubmit() {
     if (this.operationFormGroup.valid) {
-      const operationData = this.operationFormGroup.value;
       this.operationFormCompleted = true;
       this.stepper.next();
     }
@@ -427,7 +426,6 @@ export class ActionsPage implements OnInit {
 
   onLoginSubmit() {
     if (this.loginFormGroup.valid) {
-      const loginData = this.loginFormGroup.value;
       this.stepper.next();
     }
   }

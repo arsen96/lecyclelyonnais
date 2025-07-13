@@ -121,16 +121,11 @@ export class CompanyService extends BaseService {
 
   async allowedSubdomains() {
     await this.companiesLoaded;
-    try{
-      if(this.companies.length === 0){
-        await this.get();
-      }
-      const subdomains = this.companies.map(result => result.subdomain);
-      return subdomains;
-    }catch(err){
-      console.error("error while recovering companies")
+    if(this.companies.length === 0){
+      await this.get();
     }
-    return null;
+    const subdomains = this.companies.map(result => result.subdomain);
+    return subdomains;
   }
 
   async isAllowedSubdomain() {

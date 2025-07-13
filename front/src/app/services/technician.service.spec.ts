@@ -11,7 +11,6 @@ import { lastValueFrom } from 'rxjs';
 describe('TechnicianService', () => {
   let service: TechnicianService;
   let httpMock: HttpTestingController;
-  let companyService: jasmine.SpyObj<CompanyService>;
 
   const mockTechnicians = [
     {
@@ -57,7 +56,6 @@ describe('TechnicianService', () => {
 
     service = TestBed.inject(TechnicianService);
     httpMock = TestBed.inject(HttpTestingController);
-    companyService = TestBed.inject(CompanyService) as jasmine.SpyObj<CompanyService>;
 
     // Gérer l'appel HTTP du constructeur
     const req = httpMock.expectOne(`${BaseService.baseApi}/technicians/get`);

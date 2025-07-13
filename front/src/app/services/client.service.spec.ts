@@ -64,7 +64,6 @@ describe('UsersPage', () => {
     
     mockClientService = TestBed.inject(ClientService) as jasmine.SpyObj<ClientService>;
     mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should create', () => {

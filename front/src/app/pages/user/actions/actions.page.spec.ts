@@ -17,7 +17,6 @@ import { ChangeDetectorRef } from '@angular/core';
 describe('ActionsPage', () => {
   let component: ActionsPage;
   let fixture: ComponentFixture<ActionsPage>;
-  let mockZoneService: jasmine.SpyObj<ZoneService>;
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockLoadingService: jasmine.SpyObj<LoadingService>;
   let mockBicycleService: jasmine.SpyObj<BicycleService>;
@@ -81,7 +80,6 @@ describe('ActionsPage', () => {
     fixture = TestBed.createComponent(ActionsPage);
     component = fixture.componentInstance;
     
-    mockZoneService = TestBed.inject(ZoneService) as jasmine.SpyObj<ZoneService>;
     mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
     mockBicycleService = TestBed.inject(BicycleService) as jasmine.SpyObj<BicycleService>;
