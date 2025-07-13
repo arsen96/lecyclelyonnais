@@ -15,13 +15,13 @@ const getAdmins = async (req, res) => {
         const admins = await pool.query(query);
         res.status(200).json({success: true, data: admins.rows});
     } catch (error) {
-        console.error("Error fetching admins:", error);
+        console.error("Erreur lors de la récupération des admins:", error);
         res.status(500).json({ success: false, message: "Erreur lors de la récupération des admins" });
     }
 }
 
 const createAdmin = async (req, res) => {
-    const { first_name, last_name, email, password, role,domain, company_id } = req.body;
+    const { first_name, last_name, email, password,domain, company_id } = req.body;
     let companyId;
     if(company_id){
         companyId = company_id 
@@ -54,7 +54,7 @@ const createAdmin = async (req, res) => {
         await pool.query(query, [first_name, last_name, email, hashedPassword, 'admin',companyId]);
         res.status(200).json({ success: true, message: "Admin créé avec succès" });
     } catch (error) {
-        console.log("error", error);
+        console.error("Erreur lors de la création de l'admin:", error);
         res.status(500).json({ success: false, message: "Erreur lors de la création de l'admin" });
     }
 }
@@ -92,6 +92,7 @@ const updateAdmin = async (req, res) => {
         await pool.query(query, params);
         res.status(200).json({ success: true, message: "Admin mis à jour avec succès" });
     } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'admin:", error);
         res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de l'admin" });
     }
 }
@@ -103,6 +104,7 @@ const deleteAdmin = async (req, res) => {
         await pool.query(query, [ids]);
         res.status(200).json({ success: true, message: "Admins supprimés avec succès" });
     } catch (error) {
+        console.error("Erreur lors de la suppression des admins:", error);
         res.status(500).json({ success: false, message: "Erreur lors de la suppression des admins" });
     }
 }
@@ -129,7 +131,7 @@ const loginAdmin = async (req, res) => {
     res.status(200).json(
         { success: true, message: "Connexion réussie", token, data: {  user: { ...admin, role: admin.role } } });
   } catch (error) {
-    console.log("error", error);
+    console.error("Erreur lors de la connexion:", error);
     res.status(500).json({ success: false, message: "Erreur lors de la connexion" });
   }
 };
