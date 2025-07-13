@@ -26,7 +26,6 @@ describe('LoginPage', () => {
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockRouter: jasmine.SpyObj<Router>;
   let mockGlobalService: any;
-  let mockBicycleService: any;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
@@ -80,7 +79,6 @@ describe('LoginPage', () => {
     mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
     mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    mockBicycleService = TestBed.inject(BicycleService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

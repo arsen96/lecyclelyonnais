@@ -95,6 +95,7 @@ describe('TechnicianListPage', () => {
       try {
         await component.ionViewWillEnter();
       } catch (e) {
+        console.error('Error loading technicians:', error);
         expect(mockLoadingService.setLoading).toHaveBeenCalledWith(false);
       }
     });

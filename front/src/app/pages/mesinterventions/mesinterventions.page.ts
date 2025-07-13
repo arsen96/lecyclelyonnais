@@ -233,7 +233,6 @@ export class MesinterventionsPage implements OnInit {
 
     if(filterType === FilterType.UPCOMING){
       this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
-        const interventionStart = new Date(intervention.appointment_start);
         const matchesType = this.selectedTypeUpcoming ? intervention.type === this.selectedTypeUpcoming : true;
 
         const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';

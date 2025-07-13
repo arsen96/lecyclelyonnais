@@ -129,9 +129,6 @@ export class LeafletListPage implements OnInit {
   }
 
   updateDataSource() {
-    const startIndex = this.pageIndex * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    // this.dataSource.data = this.zoneService.get().slice(startIndex, endIndex);
   }
 
   ionViewWillLeave(){

@@ -12,7 +12,6 @@ describe('LeafletListPage', () => {
   let component: LeafletListPage;
   let fixture: ComponentFixture<LeafletListPage>;
   let mockZoneService: jasmine.SpyObj<ZoneService>;
-  let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockLoadingService: jasmine.SpyObj<LoadingService>;
 
   const mockZones = [
@@ -38,7 +37,6 @@ describe('LeafletListPage', () => {
     component = fixture.componentInstance;
     
     mockZoneService = TestBed.inject(ZoneService) as jasmine.SpyObj<ZoneService>;
-    mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
   });
 

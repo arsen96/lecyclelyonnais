@@ -8,17 +8,62 @@ const {subdomainInfo} = require("../controllers/companyController")
  * @returns {Promise<number|null>} - L'ID de la zone géographique ou null si non trouvé
  */
 const getGeographicalZoneId = async (address) => {
-  if (address?.length > 0) {
-    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-    const response = await fetch(nominatimUrl);
+  if (!address || address.length === 0) {
+    return null;
+  }
+  
+  try {
+    if (typeof address !== 'string' || address.length > 500) {
+      throw new Error('Adresse invalide');
+    }
+    
+    // Sanitisation : supprimer caractères dangereux
+    const sanitizedAddress = address
+      .replace(/[<>\"']/g, '') // Supprimer caractères HTML
+      .replace(/[&]/g, 'and')   // Remplacer & par "and"
+      .trim();
+    
+    if (sanitizedAddress.length === 0) {
+      return null;
+    }
+    
+    // construction sécurisée avec URLSearchParams pour sonarqube
+    const baseUrl = 'https://nominatim.openstreetmap.org/search';
+    const params = new URLSearchParams({
+      format: 'json',
+      q: sanitizedAddress,
+      limit: '1', // limiter le nombre de résultats
+    });
+    
+    const nominatimUrl = `${baseUrl}?${params.toString()}`;
+    
+    // Timeout pour éviter les requêtes longues
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const response = await fetch(nominatimUrl, {
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+    
     const data = await response.json();
 
-    if (data.length === 0) {
+    if (!Array.isArray(data) || data.length === 0) {
       return null;
     }
 
     const { lat, lon } = data[0];
-    const point = `POINT(${lon} ${lat})`;
+    
+    if (!lat || !lon || isNaN(parseFloat(lat)) || isNaN(parseFloat(lon))) {
+      return null;
+    }
+    
+    const point = `POINT(${parseFloat(lon)} ${parseFloat(lat)})`;
 
     const zoneQuery = `
       SELECT id FROM geographical_zone 
@@ -26,8 +71,11 @@ const getGeographicalZoneId = async (address) => {
     `;
     const zoneResult = await pool.query(zoneQuery, [point]);
     return zoneResult.rows.length > 0 ? zoneResult.rows[0].id : null;
+    
+  } catch (error) {
+    console.error('Erreur lors de la géolocalisation:', error);
+    return null; 
   }
-  return null;
 };
 
 /**

@@ -98,6 +98,7 @@ describe('PlanningModelsListPage', () => {
       try {
         await component.ionViewWillEnter();
       } catch (e) {
+        console.error('Error loading planning models:', error);
         expect(mockLoadingService.setLoading).toHaveBeenCalledWith(false);
       }
     });

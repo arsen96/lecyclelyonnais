@@ -23,8 +23,6 @@ describe('InterventionsPage', () => {
   let mockModalController: jasmine.SpyObj<ModalController>;
   let mockLoadingService: jasmine.SpyObj<LoadingService>;
 
-  const mockUser = { id: 1, name: 'Test User' };
-  
   const mockInterventions: Intervention[] = [
     {
       id: 1,
@@ -78,7 +76,6 @@ describe('InterventionsPage', () => {
     component = fixture.componentInstance;
     
     mockInterventionService = TestBed.inject(InterventionService) as jasmine.SpyObj<InterventionService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     mockModalController = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
     mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;

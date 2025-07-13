@@ -225,6 +225,7 @@ describe('AdminsPage', () => {
       try {
         await component.loadCompanies();
       } catch (e) {
+        console.error('Error loading companies:', error);
         expect(console.error).toHaveBeenCalledWith('Error loading companies:', error);
       }
     });

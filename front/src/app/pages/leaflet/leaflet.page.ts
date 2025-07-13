@@ -176,7 +176,7 @@ export class LeafletPage {
     });
 
     await modal.present();
-    const { data, role } = await modal.onDidDismiss();
+    const { data } = await modal.onDidDismiss();
      if (!data) {
       this.resetDrawing();
     } else if(data.zoneTitle.length > 0 && data.zoneTypeInterventionMaintenance && data.zoneTypeInterventionRepair){
