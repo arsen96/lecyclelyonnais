@@ -54,8 +54,9 @@ export class PlanningModelService extends BaseService{
           resolve(this.allPlanningModels);
         },
         error:(err)=>{
+          const error = err instanceof Error ? err : new Error(err?.toString() || 'Erreur lors du chargement des modèles de planning');
           this.planningModelsLoadedResolver(false);
-          reject(err);
+          reject(error);
         }
       })
     });

@@ -29,7 +29,10 @@ export class ClientService extends BaseService {
           console.log(this.allClients);
           resolve(true);
         },
-        error: (err) => reject(err)
+        error: (err) => {
+          const error = err instanceof Error ? err : new Error(err?.toString() || 'Erreur lors du chargement des clients');
+          reject(error);
+        }
       })
     })
   }
