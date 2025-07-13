@@ -1,6 +1,6 @@
 
 # Étape de construction
-FROM node:latest AS build
+FROM node:18.17.1 AS build
 
 WORKDIR /usr/src/app
 

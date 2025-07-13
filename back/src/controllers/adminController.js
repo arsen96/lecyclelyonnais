@@ -116,8 +116,6 @@ const loginAdmin = async (req, res) => {
   try {
     const query = "SELECT * FROM administrator WHERE email = $1 AND company_id = $2";
     const result = await pool.query(query, [email, companyId]);
-    const query2 = "SELECT * FROM administrator";
-    const result2 = await pool.query(query2);
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
     }

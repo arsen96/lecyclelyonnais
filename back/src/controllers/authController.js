@@ -214,10 +214,19 @@ const getConnectedUser = async (req, res) => {
 
   try {
     const {id,role} = jwt.verify(token, process.env.JWT_SECRET); 
-    let bddTableSearch = (role === "admin" || role === "superadmin") ? 'administrator' : (role === "client") ? "client" : "technician";
+    
+    let bddTableSearch;
+    if (role === "admin" || role === "superadmin") {
+      bddTableSearch = 'administrator';
+    } else if (role === "client") {
+      bddTableSearch = "client";
+    } else {
+      bddTableSearch = "technician";
+    }
+    
     const userQuery = `SELECT * FROM ${bddTableSearch} WHERE id = $1`;
     const userResult = await pool.query(userQuery, [id]);
-    user = {...userResult.rows[0],role};
+    const user = {...userResult.rows[0],role};
     res.status(200).json({ success: true, data: user });
   } catch (error) {
     console.error(error);

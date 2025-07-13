@@ -63,10 +63,10 @@ const save = async (req, res) => {
             }
 
             const description = isMaintenance ? "" : repair.issueDetails;
-            const package = isMaintenance ? maintenance.package : "";
+            const currentPackage = isMaintenance ? maintenance.package : "";
             
             const queryIntervention = 'INSERT INTO intervention (type, bicycle_id, technician_id, client_id, status, description, appointment_start, appointment_end, package) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
-            const result = await pool.query(queryIntervention, [operation.operation, bicycle.id, technicianId, userId, "", description, appointmentStart, appointmentEnd, package]);
+            const result = await pool.query(queryIntervention, [operation.operation, bicycle.id, technicianId, userId, "", description, appointmentStart, appointmentEnd, currentPackage]);
             const intervention = result.rows[0];
             if (photos) {
                 await uploadUserOperationPhotos(photos, intervention.id);
@@ -74,6 +74,7 @@ const save = async (req, res) => {
             
             res.status(200).send({ success: true, message: "Intervention créée avec succès", data: intervention });
         } catch (error) {
+            console.error("Erreur lors de la création de l'intervention", error);
             res.status(500).send({ success: false, message: "Erreur lors de la création de l'intervention", error: error.message });
         }
     });
@@ -107,26 +108,23 @@ const get = async (req, res) => {
           client_info: row.client_info[0] // Assuming you want the first object in the array
         };
       });
-    const id = result.rows.filter(row => row.photos?.length > 0 && row.photos[0] !== null);
     res.status(200).send({ success: true, message: "Interventions récupérées avec succès", data});
 }
 
 
-const uploadUserOperationPhotos = async (files,interventionId) => {
-    return new Promise(async (resolve, reject) => {
-        const query = 'INSERT INTO intervention_bicycle_photos (intervention_id, file_path) VALUES ($1, $2)';
-        try {
-            for (const file of files) {
-                const filePath = filePathOperation + file.filename;
-                console.log("filePath", filePath);
-                await pool.query(query, [interventionId, filePath]);
-            }
-            resolve(true);
-        } catch (dbError) {
-            console.error("Database error:", dbError);
-            reject(dbError);
+const uploadUserOperationPhotos = async (files, interventionId) => {
+    const query = 'INSERT INTO intervention_bicycle_photos (intervention_id, file_path) VALUES ($1, $2)';
+    try {
+        for (const file of files) {
+            const filePath = filePathOperation + file.filename;
+            console.log("filePath", filePath);
+            await pool.query(query, [interventionId, filePath]);
         }
-    });
+        return true;
+    } catch (dbError) {
+        console.error("Database error:", dbError);
+        throw dbError;
+    }
 };
 
 const filePathIntervention = 'uploads/interventions/';
@@ -151,21 +149,19 @@ const uploadInterventionPhotos = multer({
 ]);
 
 const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
-    return new Promise(async (resolve, reject) => {
-        const query = 'INSERT INTO intervention_technician_photos (intervention_id, file_path) VALUES ($1, $2)';
-        
-        try {
-            for (const file of files) {
-                const filePath = filePathIntervention + file.filename;
-                console.log("filePath", filePath);
-                await pool.query(query, [interventionId, filePath]);
-            }
-            resolve(true);
-        } catch (dbError) {
-            console.error("Database error:", dbError);
-            reject(dbError);
+    const query = 'INSERT INTO intervention_technician_photos (intervention_id, file_path) VALUES ($1, $2)';
+    
+    try {
+        for (const file of files) {
+            const filePath = filePathIntervention + file.filename;
+            console.log("filePath", filePath);
+            await pool.query(query, [interventionId, filePath]);
         }
-    });
+        return true; 
+    } catch (dbError) {
+        console.error("Database error:", dbError);
+        throw dbError; 
+    }
 };
 
 /**
@@ -178,8 +174,6 @@ const manageEnd = async (req, res) => {
     }
 
     try {
-        // const { role } = jwt.verify(token, process.env.JWT_SECRET);
-
         uploadInterventionPhotos(req, res, async (err) => {
             if (err) {
                 return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
@@ -192,16 +186,13 @@ const manageEnd = async (req, res) => {
             try {
                 const currentStatus = isCanceled ? "canceled" : "completed";
                 console.log("currentStatus", currentStatus);
-                // if(role === 'client'){
-                //     await pool.query('DELETE FROM intervention WHERE id = $1',[intervention_id]);
-                // }else{
-                    await pool.query('UPDATE intervention SET status = $1, comment = $2 WHERE id = $3', [currentStatus, comment, intervention_id]);
-                // }
+                await pool.query('UPDATE intervention SET status = $1, comment = $2 WHERE id = $3', [currentStatus, comment, intervention_id]);
                 if (photos && photos.length > 0) {
                     await uploadTechnicianInterventionPhotos(photos, intervention_id);
                 }
                 res.status(200).send({ success: true, message: is_canceled ? "Intervention annulée" : "Intervention a été complétée" });
             } catch (error) {
+                console.error("Erreur lors de l'annulation de l'intervention", error);
                 res.status(500).send({ success: false, message: "Erreur lors de l'annulation de l'intervention" });
             }
         });

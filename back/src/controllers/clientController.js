@@ -7,6 +7,7 @@ const getClients = async (req, res) => {
     const clients = await pool.query(query);
     res.status(200).json({ success: true, data: clients.rows });
   } catch (error) {
+    console.log("Erreur lors de la récupération des clients", error);
     res.status(500).json({ success: false, message: "Erreur lors de la récupération des clients" });
   }
 };
@@ -32,8 +33,10 @@ const updateClient = async (req, res) => {
     } catch (error) {
         console.error("error", error);
         if (error.code === '23505') { // PostgreSQL error code for unique violation
+          console.log("Erreur lors de la mise à jour du client", error);
             res.status(400).send({ success: false, message: "Un client avec cette adresse email existe déjà" });
         } else {
+            console.log("Erreur lors de la mise à jour du client", error);
             res.status(500).send({ success: false, message: "Erreur lors de la mise à jour du client" });
         }
     }
@@ -49,7 +52,7 @@ const deleteClient = async (req, res) => {
         await pool.query(query, [ids]);
         res.status(200).json({ success: true, message: "Clients supprimés avec succès" });
     } catch (error) {
-      console.error("error", error);
+        console.error("Erreur lors de la suppression des clients", error);
         res.status(500).json({ success: false, message: "Erreur lors de la suppression des clients" });
     }
 }

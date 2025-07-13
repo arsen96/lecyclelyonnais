@@ -26,7 +26,7 @@ const save = async (req, res) => {
       zoneId: zoneId
     });
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la sauvegarde de la zone", error);
     res.status(500).json({ success: false, message: "Erreur lors de la sauvegarde de la zone" });
   }
 };
@@ -86,21 +86,21 @@ const get = async (req, res) => {
 
     res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la récupération des zones", error);
     res.status(500).json({ success: false, message: "Erreur lors de la récupération des zones" });
   }
 };
 
 
 const updateZone = async (req, res) => {
-  const { zoneId, zoneTitle, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
+  const { zoneId, zoneTitle} = req.body;
   const query = 'UPDATE geographical_zone SET zone_name = $1 WHERE id = $2';
   try { 
     await pool.query(query, [zoneTitle, zoneId]);
     await planningModelService.updateZonePlanningModel({ ...req, body: { ...req.body, zoneId } }, res);
     res.status(200).json({ success: true, message: "La zone a été mise à jour" });
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la mise à jour de la zone", error);
     res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de la zone" });
   }
 } 
@@ -119,7 +119,7 @@ const deleteSelected = async (req, res) => {
     let message = ids.length > 1 ? "Les zones ont été supprimées" : "La zone a été supprimée";
     res.status(200).json({ success: true, message });
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la suppression des zones", error);
     res.status(500).json({ success: false, message: "Erreur lors de la suppression des zones" });
   }
 };  
@@ -131,7 +131,7 @@ const removeTechnicianFromZone = async (req, res) => {
     await pool.query(updateQuery, [technicianId]);
     res.status(200).json({ success: true, message: "Technicien supprimé de la zone" });
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la suppression du technicien de la zone", error);
     res.status(500).json({ success: false, message: "Erreur lors de la suppression du technicien de la zone" });
   }
 };
@@ -162,7 +162,7 @@ const addTechnicianToZone = async (req, res) => {
 
     res.status(200).send({ success: true, message: "Techniciens mis à jour avec succès" });
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la mise à jour des techniciens", error);
     res.status(500).send({success: false, message: 'Erreur lors de la mise à jour des techniciens'});
   }
 }
@@ -202,7 +202,7 @@ const isAddressInZone = async (req, res) => {
       res.status(200).json({ success: zoneConcerned, message: "" });
     }
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la vérification de l'adresse", error);
     res.status(500).json({ success: false, message: error.message || "Erreur lors de la vérification de l'adresse" });
   }
 }
