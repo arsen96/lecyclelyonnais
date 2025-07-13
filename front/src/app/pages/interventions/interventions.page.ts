@@ -44,7 +44,7 @@ export class InterventionsPage implements OnInit {
     console.log("user", user.id)
 
     console.log("this.allInterventions",this.interventionService.allInterventions)
-    this.userInterventions = this.interventionService.getInterventionsByUser(this.globalService.user.getValue().id);
+    this.userInterventions = await this.interventionService.getInterventionsByUser(this.globalService.user.getValue().id);
     const now = new Date();
     this.pastInterventions = this.userInterventions.filter(intervention => new Date(intervention.appointment_end) < now || intervention.status === 'completed' || intervention.status === 'canceled');
     this.upcomingInterventions = this.userInterventions.filter(intervention => {

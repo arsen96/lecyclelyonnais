@@ -172,16 +172,15 @@ describe('CompanyPage', () => {
   it('should handle errors during form submission', async () => {
     component.ngOnInit();
     component.companySelected = null;
-    const errorMessage = 'Creation failed';
+    
+    const errorMessage = new Error('Creation failed');
     mockCompanyService.create.and.returnValue(Promise.reject(errorMessage));
     
-    // 🔥 UTILISATION: Factory pour données d'erreur
     const errorTestData = CompanyFactory.create();
-
     component.companyForm.patchValue(errorTestData);
-
+  
     await component.onSubmit();
-
+  
     expect(mockRouter.navigate).not.toHaveBeenCalled();
   });
 

@@ -57,7 +57,7 @@ export class MesinterventionsPage implements OnInit {
   async ionViewWillEnter() {
     const success = await this.interventionService.interventionsLoaded;
     if (success) {
-      this.technicianInterventions = this.interventionService.getInterventionsByTechnician(this.globalService.user.getValue().id);
+      this.technicianInterventions = await this.interventionService.getInterventionsByTechnician(this.globalService.user.getValue().id);
       const now = new Date();
       this.pastInterventions = this.technicianInterventions.filter(intervention => new Date(intervention.appointment_end) < now || intervention.status === 'completed' || intervention.status === 'canceled');
       this.ongoingInterventions = this.technicianInterventions.filter(intervention => {

@@ -220,7 +220,7 @@ describe('AdminsPage', () => {
     });
 
     it('should handle company loading errors', async () => {
-      const error = 'Failed to load companies';
+      const error = new Error('Failed to load companies'); 
       mockCompanyService.get.and.returnValue(Promise.reject(error));
       spyOn(console, 'error');
     
