@@ -94,13 +94,9 @@ describe('PlanningModelsListPage', () => {
       const error = 'Service error';
       mockPlanningModelService.get.and.returnValue(Promise.reject(error));
       spyOn(console, 'error');
-
-      try {
-        await component.ionViewWillEnter();
-      } catch (e) {
-        console.error('Error loading planning models:', error);
-        expect(mockLoadingService.setLoading).toHaveBeenCalledWith(false);
-      }
+      await expectAsync(component.ionViewWillEnter()).toBeRejected();
+      expect(console.error).toHaveBeenCalledWith('Error loading planning models:', error);
+      expect(mockLoadingService.setLoading).toHaveBeenCalledWith(false);
     });
   });
 

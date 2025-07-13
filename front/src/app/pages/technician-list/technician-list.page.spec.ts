@@ -91,13 +91,9 @@ describe('TechnicianListPage', () => {
       const error = 'Service error';
       mockTechnicianService.get.and.returnValue(Promise.reject(error));
       spyOn(console, 'error');
-
-      try {
-        await component.ionViewWillEnter();
-      } catch (e) {
-        console.error('Error loading technicians:', error);
-        expect(mockLoadingService.setLoading).toHaveBeenCalledWith(false);
-      }
+      await expectAsync(component.ionViewWillEnter()).toBeRejected();
+      expect(console.error).toHaveBeenCalledWith('Error loading technicians:', error);
+      expect(mockLoadingService.setLoading).toHaveBeenCalledWith(false);
     });
   });
 

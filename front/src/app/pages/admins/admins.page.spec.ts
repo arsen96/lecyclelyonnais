@@ -222,12 +222,10 @@ describe('AdminsPage', () => {
     it('should handle company loading errors', async () => {
       const error = 'Failed to load companies';
       mockCompanyService.get.and.returnValue(Promise.reject(error));
-      try {
-        await component.loadCompanies();
-      } catch (e) {
-        console.error('Error loading companies:', error);
-        expect(console.error).toHaveBeenCalledWith('Error loading companies:', error);
-      }
+      spyOn(console, 'error');
+    
+      await expectAsync(component.loadCompanies()).toBeRejectedWith(error);
+      expect(console.error).toHaveBeenCalledWith('Error loading companies:', error);
     });
   });
 
