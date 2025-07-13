@@ -14,28 +14,61 @@ import { CRUD } from '../models/crud';
 export class CompanyService extends BaseService {
   companiesLoaded = new ReplaySubject<boolean>(0);
   companies: Company[] = [];
-  currentCompany:Company
-  currentSubdomain
-  public router = inject(Router)
-  public authService = inject(AuthBaseService)
-  public globalService = inject(GlobalService)
+  currentCompany: Company;
+  currentSubdomain: string | null;
+  public router = inject(Router);
+  public authService = inject(AuthBaseService);
+  public globalService = inject(GlobalService);
   currentRoute = 'companies';
+  private initialized = false;
 
   constructor() {
-    super()
-    this.router.events.subscribe(async x => {
-      if (x instanceof NavigationEnd) {
-        this.currentSubdomain = this.getSubdomain();
-        const allowedSubdomain = await this.isAllowedSubdomain();
-        
+    super();
+    this.currentSubdomain = this.getSubdomain();
+    this.setupNavigationSubscription();
+  }
 
-        if(!allowedSubdomain){
-          this.authService.logout();
+  async initialize(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
+    try {
+      await this.get();
+      this.initialized = true;
+    } catch (error) {
+      console.error('Error during company service initialization:', error);
+      this.initialized = true;
+    }
+  }
+
+  // S'assurer que le service est initialisé
+  async ensureInitialized(): Promise<void> {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+  }
+
+  // Configuration des événements de navigation (synchrone)
+  private setupNavigationSubscription(): void {
+    this.router.events.subscribe(async (event) => {
+      if (event instanceof NavigationEnd) {
+        try {
+          this.currentSubdomain = this.getSubdomain();
+          
+          //  S'assurer que les données sont chargées avant vérification
+          await this.ensureInitialized();
+          
+          const allowedSubdomain = await this.isAllowedSubdomain();
+          
+          if (!allowedSubdomain) {
+            this.authService.logout();
+          }
+        } catch (error) {
+          console.error('Error during navigation handling:', error);
         }
       }
     });
-    this.currentSubdomain = this.getSubdomain();
-    this.get();
   }
 
   override get(): Promise<Company[]> {
@@ -44,14 +77,14 @@ export class CompanyService extends BaseService {
     }
 
     let param = null;
-    if(this.globalService.userRole.getValue() === UserRole.ADMIN){
-      param = this.subdomainREQ
+    if (this.globalService.userRole.getValue() === UserRole.ADMIN) {
+      param = this.subdomainREQ;
     }
     
-    return lastValueFrom(this.http.get<{}>(`${BaseService.baseApi}/${this.currentRoute}/get`,{
+    return lastValueFrom(this.http.get<{}>(`${BaseService.baseApi}/${this.currentRoute}/get`, {
       params: param
     }).pipe(
-      map((res:{success:boolean,data:Company[]}) => {
+      map((res: { success: boolean, data: Company[] }) => {
         this.companies = res.data;
         this.companiesLoaded.next(true);
         this.currentCompany = this.companies.find((currentComp) => currentComp.subdomain === this.currentSubdomain);
@@ -59,7 +92,7 @@ export class CompanyService extends BaseService {
         return this.companies;
       }),
       catchError((err) => {
-        console.log("errrrrrr",err)
+        console.error('Error loading companies:', err);
         this.companiesLoaded.next(false);
         return of(err);
       }),
@@ -101,16 +134,18 @@ export class CompanyService extends BaseService {
       catchError(BaseService.handleError.bind(this))
     );
   }
-  getCompanyById(companyId: number) {
+
+  getCompanyById(companyId: number): Company | undefined {
     return this.companies.find(company => company.id === companyId);
   }
 
-  resetCompaniesLoaded() {
+  resetCompaniesLoaded(): void {
     this.companiesLoaded = new ReplaySubject<boolean>(0);
+    this.initialized = false; 
   }
 
-  get subdomainREQ(){
-    return {domain:this.currentSubdomain}
+  get subdomainREQ(): { domain: string | null } {
+    return { domain: this.currentSubdomain };
   }
 
   getSubdomain(): string | null {
@@ -119,29 +154,42 @@ export class CompanyService extends BaseService {
     return subdomain !== 'localhost' ? subdomain : null;
   }
 
-  async allowedSubdomains() {
-    await this.companiesLoaded;
-    if(this.companies.length === 0){
-      await this.get();
+  async allowedSubdomains(): Promise<(string | null)[]> {
+    try {
+      await this.ensureInitialized();
+      
+      if (this.companies.length === 0) {
+        await this.get();
+      }
+      
+      const subdomains = this.companies.map(result => result.subdomain);
+      return subdomains;
+    } catch (error) {
+      console.error('Error loading allowed subdomains:', error);
+      return [];
     }
-    const subdomains = this.companies.map(result => result.subdomain);
-    return subdomains;
   }
 
-  async isAllowedSubdomain() {
-    const allowedSubdomains = await this.allowedSubdomains();
-    if(!allowedSubdomains){
+  async isAllowedSubdomain(): Promise<boolean> {
+    try {
+      const allowedSubdomains = await this.allowedSubdomains();
+      
+      if (!allowedSubdomains || allowedSubdomains.length === 0) {
+        return false;
+      }
+      
+      return allowedSubdomains.includes(this.currentSubdomain);
+    } catch (error) {
+      console.error('Error checking allowed subdomain:', error);
       return false;
     }
-    return allowedSubdomains.includes(this.currentSubdomain);
   }
 
-  setToolbarBackgroundColor() {
+  setToolbarBackgroundColor(): void {
     if (this.currentCompany && this.currentCompany.theme_color) {
       document.documentElement.style.setProperty('--ion-toolbar-background', this.currentCompany.theme_color);
       document.documentElement.style.setProperty('--ion-item-background', this.currentCompany.theme_color);
       document.documentElement.style.setProperty('--ion-background-color', this.currentCompany.theme_color);
     }
   }
-
-} 
+}

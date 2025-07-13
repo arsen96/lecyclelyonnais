@@ -1,18 +1,19 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { AuthBaseService } from './services/auth/auth-base.service';
 import { StandardAuth } from './services/auth/standard.service';
 import { OauthService } from './services/auth/oauth.service';
 import { GlobalService, UserRole } from './services/global.service';
 import { combineLatest } from 'rxjs';
 import { CompanyService } from './services/company.service';
-
+import { InterventionService } from './services/intervention.service';
+import { TechnicianService } from './services/technician.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   authService = inject(AuthBaseService);
   cdr  = inject(ChangeDetectorRef);
@@ -21,6 +22,8 @@ export class AppComponent {
   appPages = signal<any[]>([])
   public globalService = inject(GlobalService)
   public companyService = inject(CompanyService)
+  public interventionService = inject(InterventionService)
+  public technicianService = inject(TechnicianService)
   userProfileUrl: string = this.getUserProfileUrl();
   manageCompanies = this.getManageCompanyUrl();
   public appPagesFix: any[] = [
@@ -49,6 +52,15 @@ export class AppComponent {
 
       this.updateMenu();
     });
+  }
+
+  async ngOnInit() {
+     await Promise.allSettled([
+      this.authService.ensureInitialized(),
+      this.companyService.ensureInitialized(),
+      this.technicianService.ensureInitialized(),
+      this.interventionService.ensureInitialized()
+    ]);
   }
 
   updateMenu() {
