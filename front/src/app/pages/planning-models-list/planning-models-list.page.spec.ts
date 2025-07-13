@@ -91,7 +91,7 @@ describe('PlanningModelsListPage', () => {
     });
 
     it('should handle service errors', async () => {
-      const error = 'Service error';
+      const error = new Error('Service error');
       mockPlanningModelService.get.and.returnValue(Promise.reject(error));
       spyOn(console, 'error');
       await expectAsync(component.ionViewWillEnter()).toBeRejected();
