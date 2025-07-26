@@ -40,12 +40,13 @@ const createCompany = async (req, res) => {
 
 const subdomainInfo = async (subdomain) => {
   let result;
-  if(!subdomain || subdomain == 'null'){
+  const currentSubdomain = null;
+  if(!currentSubdomain || currentSubdomain == 'null'){
     const query = "SELECT id FROM company WHERE subdomain IS NULL";
     result = await pool.query(query);
   }else{
     const query = "SELECT id FROM company WHERE subdomain = $1";
-    result = await pool.query(query, [subdomain]);
+    result = await pool.query(query, [currentSubdomain]);
   }
   return result.rows[0]?.id ?? null;
 }
@@ -69,9 +70,25 @@ const deleteCompanies = async (req, res) => {
   try {
     const { ids } = req.body;
     const deleteQuery = 'DELETE FROM company WHERE id = ANY($1::int[])';
-    await pool.query(deleteQuery, [ids]);
+    
+    const result = await pool.query(deleteQuery, [ids]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Aucune entreprise trouvée avec ces IDs" 
+      });
+    }
+    
+    if (result.rowCount < ids.length) {
+      return res.status(207).json({ 
+        success: true, 
+        message: `${result.rowCount} entreprise(s) supprimée(s) sur ${ids.length} demandée(s)` 
+      });
+    }
+    
     let message = ids.length > 1 ? "Les entreprises ont été supprimées" : "L'entreprise a été supprimée";
     res.status(200).json({ success: true, message });
+    
   } catch (error) {
     if (error.code === '23503') {
       res.status(400).send({ success: false, message: "Cette entreprise est liée à une autre entité" });

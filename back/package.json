@@ -5,7 +5,14 @@
   "scripts": {
     "start": "nodemon src/app.js",
     "test": "mocha tests/index.test.js",
-    "seed": "node database/create-test-data.js"
+    "seed": "node database/create-test-data.js",
+    "test:api:staging": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json",
+    "test:api:technicians": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json --folder Technicians",
+    "test:api:company": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json --folder Company",
+    "test:api:bicycle": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json --folder Bicycle",
+    "test:api:intervention": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json --folder Interventionn",
+    "test:api:zones": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json --folder Zones",
+    "test:api:auth": "newman run tests/postman/collections/lecyclelyonnais.postman_collection.json -e tests/postman/environments/test.postman_environment.json --folder Authentification"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +24,7 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^4.20.0",
     "jsonwebtoken": "^9.0.2",
     "leaflet-draw": "^1.0.4",
@@ -29,6 +36,8 @@
   },
   "devDependencies": {
     "mocha": "^10.7.3",
+    "newman": "^4.6.1",
+    "newman-reporter-html": "^1.0.5",
     "request": "^2.88.2"
   }
 }

@@ -37,13 +37,58 @@ const getUserBicycles = async (req, res) => {
 }
 
 const deleteBicycles = async (req, res) => {
-    const { ids } = req.body;
+    try {
+        const { ids } = req.body;
+        const userId = req.user.id; 
+        
+        // Vérifier d'abord quels vélos existent et appartiennent à l'utilisateur
+        const checkQuery = 'SELECT id FROM bicycle WHERE id = ANY($1::int[]) AND client_id = $2';
+        const existingBikes = await pool.query(checkQuery, [ids, userId]);
+        
+        if (existingBikes.rows.length === 0) {
+            return res.status(404).send({ 
+                success: false, 
+                message: "Aucun vélo trouvé avec les IDs fournis ou vous n'avez pas les permissions" 
+            });
+        }
 
-    console.log("ids", ids);
-    const query = 'DELETE FROM bicycle WHERE id = ANY($1::int[])';
-    const result = await pool.query(query, [ids]);
-    res.status(200).send({ success: true, message: "Vélos supprimés avec succès", data: result.rows });
-}
+        // Supprimer seulement les vélos qui existent et appartiennent à l'utilisateur
+        const deleteQuery = 'DELETE FROM bicycle WHERE id = ANY($1::int[]) AND client_id = $2 RETURNING id';
+        const result = await pool.query(deleteQuery, [ids, userId]);
+        
+        if (result.rowCount === 0) {
+            return res.status(404).send({ 
+                success: false, 
+                message: "Aucun vélo n'a pu être supprimé" 
+            });
+        }
+
+        const deletedIds = result.rows.map(row => row.id);
+        const notFoundIds = ids.filter(id => !deletedIds.includes(id));
+        
+        let message = `${result.rowCount} vélo(s) supprimé(s) avec succès`;
+        if (notFoundIds.length > 0) {
+            message += `. IDs non trouvés ou non autorisés: ${notFoundIds.join(', ')}`;
+        }
+
+        res.status(200).send({ 
+            success: true, 
+            message: message,
+            data: {
+                deletedIds: deletedIds,
+                deletedCount: result.rowCount,
+                notFoundIds: notFoundIds
+            }
+        });
+        
+    } catch (error) {
+        console.error("Erreur lors de la suppression des vélos:", error);
+        res.status(500).send({ 
+            success: false, 
+            message: "Erreur lors de la suppression des vélos" 
+        });
+    }
+};
 
 const updateBicycle = async (req, res) => {
     const { id, brand, model, year, type } = req.body;

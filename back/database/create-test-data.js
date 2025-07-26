@@ -1,6 +1,6 @@
 const pool = require('../src/config/db'); 
 const { faker } = require('@faker-js/faker');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const MAIN_TEST_COMPANY_ID = 10;
 

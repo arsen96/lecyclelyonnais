@@ -74,8 +74,6 @@ const login = async (req, res) => {
   const { email, password, domain } = req.body;
   try {
     let companyId = await subdomainInfo(domain);
-  
-
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1 AND company_id = $2';
     let user = await pool.query(checkUserQuery, [email,companyId]);
     let isUser = true;

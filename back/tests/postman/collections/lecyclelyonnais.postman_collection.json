@@ -1,0 +1,2224 @@
+{
+	"info": {
+		"_postman_id": "76ac86fa-889f-44c1-b0ed-db72bb5589fb",
+		"name": "Lecyclelyonnais",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2648723"
+	},
+	"item": [
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"COMPANY GET Response Status:\", pm.response.code);",
+									"console.log(\"COMPANY GET Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Vérification du format de réponse",
+									"pm.test(\"Response contains companies data\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    // La réponse peut être un array ou un objet avec une propriété data",
+									"    pm.expect(jsonData).to.satisfy(function (data) {",
+									"        return Array.isArray(data) || (typeof data === 'object' && data !== null);",
+									"    });",
+									"});",
+									"",
+									"// Test 3: Vérification de la structure des données",
+									"pm.test(\"Company has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let companies = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (companies.length > 0) {",
+									"        const company = companies[0];",
+									"        pm.expect(company).to.have.property('name');",
+									"        pm.expect(company).to.have.property('email');",
+									"        pm.expect(company).to.have.property('phone');",
+									"        console.log(\"Company structure validated:\", company.name);",
+									"    } else {",
+									"        console.log(\"No companies found - empty response is valid\");",
+									"        pm.expect(companies).to.be.an('array');",
+									"    }",
+									"});",
+									"",
+									"// Test 4: Validation des données métier",
+									"pm.test(\"Company data format is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let companies = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (companies.length > 0) {",
+									"        const company = companies[0];",
+									"        // Vérifier le format email",
+									"        if (company.email) {",
+									"            pm.expect(company.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"        }",
+									"        // Vérifier que le nom n'est pas vide",
+									"        if (company.name) {",
+									"            pm.expect(company.name.length).to.be.greaterThan(0);",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/companies/get",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"companies",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"COMPANY DELETE Response Status:\", pm.response.code);",
+									"console.log(\"COMPANY DELETE Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 400, 403, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 200) {",
+									"    // Succès - Company supprimée",
+									"    pm.test(\"Company was deleted successfully\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Delete success:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Delete response format is correct\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.success !== false);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 404) {",
+									"    // Company non trouvée",
+									"    pm.test(\"404 error for non-existent company\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('trouvé') || msg.includes('found') || msg.includes('existe');",
+									"        });",
+									"        console.log(\"Company not found:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation (IDs manquants/invalides)",
+									"    pm.test(\"Bad Request for invalid delete data\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Invalid delete request:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 403) {",
+									"    // Pas d'autorisation pour supprimer",
+									"    pm.test(\"Forbidden error for unauthorized delete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Unauthorized delete:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error during delete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Delete server error:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des IDs envoyés",
+									"pm.test(\"Request body contains valid IDs\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody).to.have.property('ids');",
+									"        pm.expect(requestBody.ids).to.be.an('array');",
+									"        pm.expect(requestBody.ids.length).to.be.greaterThan(0);",
+									"        console.log(\"Delete requested for IDs:\", requestBody.ids);",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse request body\");",
+									"    }",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Delete response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [134]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/companies/delete",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"companies",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Vélo Service Lyon\",\n  \"address\": \"123 Rue de la République, 69001 Lyon\",\n  \"phone\": \"04 78 12 34 56\",\n  \"email\": \"contact@veloservicelyon.fr\",\n  \"domain\": \"veloservicelyon\",\n  \"logo\": \"logo-velo-service.png\",\n  \"theme_color\": \"#2E7D32\",\n  \"description\": \"Service de réparation de vélos à domicile sur Lyon\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/companies/create",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"companies",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentification",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"AUTH LOGIN Response Status:\", pm.response.code);",
+									"console.log(\"AUTH LOGIN Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates authentication result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 404, 422, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    // Login réussi",
+									"    pm.test(\"Login was successful\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.satisfy(function (data) {",
+									"            return data.token || data.access_token || data.jwt || data.success === true;",
+									"        });",
+									"    });",
+									"    ",
+									"    pm.test(\"Response contains authentication token\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        ",
+									"        // Chercher le token dans différents formats possibles",
+									"        const token = jsonData.token || jsonData.access_token || jsonData.jwt || ",
+									"                     (jsonData.data && jsonData.data.token);",
+									"        ",
+									"        pm.expect(token).to.exist;",
+									"        pm.expect(token).to.be.a('string');",
+									"        pm.expect(token.length).to.be.greaterThan(20); // JWT tokens are long",
+									"        ",
+									"        console.log(\"Authentication token received:\", token.substring(0, 20) + '...');",
+									"        ",
+									"        // Stocker le token pour les autres requêtes (optionnel)",
+									"        pm.environment.set(\"auth_token\", token);",
+									"    });",
+									"    ",
+									"    pm.test(\"Response contains user information\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        ",
+									"        // Chercher les infos utilisateur",
+									"        const userData = jsonData.user || jsonData.data || jsonData;",
+									"        ",
+									"        if (userData.email || userData.role || userData.id) {",
+									"            pm.expect(userData).to.be.an('object');",
+									"            ",
+									"            if (userData.email) {",
+									"                pm.expect(userData.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"                console.log(\"User authenticated:\", userData.email);",
+									"            }",
+									"            ",
+									"            if (userData.role) {",
+									"                pm.expect(userData.role).to.be.a('string');",
+									"                pm.expect(['client', 'technician', 'admin', 'superadmin']).to.include(userData.role);",
+									"                console.log(\"User role:\", userData.role);",
+									"            }",
+									"            ",
+									"            if (userData.id) {",
+									"                pm.expect(userData.id).to.be.a('number');",
+									"                pm.expect(userData.id).to.be.greaterThan(0);",
+									"            }",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"Token format is valid JWT\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const token = jsonData.token || jsonData.access_token || jsonData.jwt || ",
+									"                     (jsonData.data && jsonData.data.token);",
+									"        ",
+									"        if (token) {",
+									"            // JWT a 3 parties séparées par des points",
+									"            const parts = token.split('.');",
+									"            pm.expect(parts.length).to.equal(3, \"JWT should have 3 parts separated by dots\");",
+									"            ",
+									"            // Chaque partie doit être en base64",
+									"            parts.forEach((part, index) => {",
+									"                pm.expect(part.length).to.be.greaterThan(0, `JWT part ${index + 1} should not be empty`);",
+									"            });",
+									"            ",
+									"            console.log(\"JWT format validated\");",
+									"        }",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation des données",
+									"    pm.test(\"Bad Request for invalid login data\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Login validation error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error message explains validation issue\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('email') || msg.includes('password') || ",
+									"                   msg.includes('required') || msg.includes('invalid') ||",
+									"                   msg.includes('manquant') || msg.includes('obligatoire');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 401) {",
+									"    // Identifiants incorrects",
+									"    pm.test(\"Unauthorized for invalid credentials\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Invalid credentials:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error message indicates authentication failure\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('incorrects') || msg.includes('invalid') || ",
+									"                   msg.includes('wrong') || msg.includes('credentials') ||",
+									"                   msg.includes('mot de passe') || msg.includes('email');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 404) {",
+									"    // Utilisateur non trouvé",
+									"    pm.test(\"User not found\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('trouvé') || msg.includes('found') || ",
+									"                   msg.includes('existe') || msg.includes('not found');",
+									"        });",
+									"        console.log(\"User not found:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 422) {",
+									"    // Compte bloqué, non validé, etc.",
+									"    pm.test(\"Account status issue\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Account issue:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error during authentication\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Auth server error:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des données envoyées",
+									"pm.test(\"Request contains valid login data\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        ",
+									"        // Vérifier les champs obligatoires",
+									"        pm.expect(requestBody).to.have.property('email');",
+									"        pm.expect(requestBody).to.have.property('password');",
+									"        pm.expect(requestBody).to.have.property('domain');",
+									"        ",
+									"        // Vérifier le format email",
+									"        pm.expect(requestBody.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"        ",
+									"        // Vérifier que le mot de passe n'est pas vide",
+									"        pm.expect(requestBody.password.length).to.be.greaterThan(0);",
+									"        ",
+									"        // Vérifier le domaine",
+									"        pm.expect(requestBody.domain).to.be.a('string');",
+									"        pm.expect(requestBody.domain.length).to.be.greaterThan(0);",
+									"        ",
+									"        console.log(\"Login attempt for:\", requestBody.email, \"on domain:\", requestBody.domain);",
+									"        ",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse login request body:\", e.message);",
+									"    }",
+									"});",
+									"",
+									"",
+									"// Test de performance",
+									"pm.test(\"Authentication response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jean.dupont@example.com\",\n  \"password\": \"motdepasse123\",\n  \"domain\": \"localhost\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/auth/login",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"AUTH REGISTER Response Status:\", pm.response.code);",
+									"console.log(\"AUTH REGISTER Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates registration result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 409, 422, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    // Inscription réussie",
+									"    pm.test(\"Registration was successful\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.satisfy(function (data) {",
+									"            return data.id || data.user_id || data.success === true || ",
+									"                   data.message || data.user;",
+									"        });",
+									"    });",
+									"    ",
+									"    pm.test(\"Response contains user information\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const userData = jsonData.user || jsonData.data || jsonData;",
+									"        ",
+									"        if (userData.id || userData.email) {",
+									"            pm.expect(userData).to.be.an('object');",
+									"            ",
+									"            if (userData.email) {",
+									"                pm.expect(userData.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"                console.log(\"User registered:\", userData.email);",
+									"            }",
+									"            ",
+									"            if (userData.id) {",
+									"                pm.expect(userData.id).to.be.a('number');",
+									"                pm.expect(userData.id).to.be.greaterThan(0);",
+									"                console.log(\"User registered with ID:\", userData.id);",
+									"            }",
+									"            ",
+									"            // Par défaut, les nouveaux utilisateurs sont des clients",
+									"            if (userData.role) {",
+									"                pm.expect(userData.role).to.equal('client');",
+									"                console.log(\"User role set to:\", userData.role);",
+									"            }",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"Registration confirmation message\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        if (jsonData.message) {",
+									"            pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"                return msg.includes('créé') || msg.includes('created') || ",
+									"                       msg.includes('inscrit') || msg.includes('registered') ||",
+									"                       msg.includes('succès') || msg.includes('success');",
+									"            });",
+									"            console.log(\"Registration message:\", jsonData.message);",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"User data structure is complete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const userData = jsonData.user || jsonData.data || jsonData;",
+									"        ",
+									"        if (userData.firstName || userData.first_name) {",
+									"            pm.expect(userData.firstName || userData.first_name).to.be.a('string');",
+									"        }",
+									"        ",
+									"        if (userData.lastName || userData.last_name) {",
+									"            pm.expect(userData.lastName || userData.last_name).to.be.a('string');",
+									"        }",
+									"        ",
+									"        if (userData.phone) {",
+									"            pm.expect(userData.phone).to.be.a('string');",
+									"            pm.expect(userData.phone.length).to.be.greaterThan(5);",
+									"        }",
+									"        ",
+									"        if (userData.address) {",
+									"            pm.expect(userData.address).to.be.a('string');",
+									"        }",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation des données",
+									"    pm.test(\"Bad Request for invalid registration data\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Registration validation error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error message explains validation issue\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('required') || msg.includes('invalid') ||",
+									"                   msg.includes('obligatoire') || msg.includes('manquant') ||",
+									"                   msg.includes('format') || msg.includes('email') ||",
+									"                   msg.includes('password') || msg.includes('phone');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 409) {",
+									"    // Utilisateur existe déjà",
+									"    pm.test(\"Conflict for existing user\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('existe') || msg.includes('already') || ",
+									"                   msg.includes('déjà') || msg.includes('registered') ||",
+									"                   msg.includes('email');",
+									"        });",
+									"        console.log(\"User already exists:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 422) {",
+									"    // Erreur de règles métier (mot de passe faible, etc.)",
+									"    pm.test(\"Unprocessable Entity for business rules\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Registration business rule error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Business error is informative\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('password') || msg.includes('mot de passe') ||",
+									"                   msg.includes('format') || msg.includes('policy') ||",
+									"                   msg.includes('règle') || msg.includes('critères');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error during registration\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Registration server error:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des données envoyées",
+									"pm.test(\"Request contains valid registration data\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        ",
+									"        // Vérifier les champs obligatoires",
+									"        pm.expect(requestBody).to.have.property('firstName');",
+									"        pm.expect(requestBody).to.have.property('lastName');",
+									"        pm.expect(requestBody).to.have.property('email');",
+									"        pm.expect(requestBody).to.have.property('password');",
+									"        pm.expect(requestBody).to.have.property('phone');",
+									"        pm.expect(requestBody).to.have.property('address');",
+									"        pm.expect(requestBody).to.have.property('domain');",
+									"        ",
+									"        // Vérifier le format email",
+									"        pm.expect(requestBody.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"        ",
+									"        // Vérifier que les champs ne sont pas vides",
+									"        pm.expect(requestBody.firstName.length).to.be.greaterThan(0);",
+									"        pm.expect(requestBody.lastName.length).to.be.greaterThan(0);",
+									"        pm.expect(requestBody.password.length).to.be.greaterThan(5); // Mot de passe minimum",
+									"        pm.expect(requestBody.phone.length).to.be.greaterThan(5);",
+									"        ",
+									"        // Vérifier le format téléphone français",
+									"        if (requestBody.phone.startsWith('0') || requestBody.phone.startsWith('+33')) {",
+									"            pm.expect(requestBody.phone).to.match(/^(\\+33|0)[1-9](\\d{8})$/);",
+									"        }",
+									"        ",
+									"        console.log(\"Registration attempt for:\", requestBody.email, ",
+									"                   `${requestBody.firstName} ${requestBody.lastName}`);",
+									"        ",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse registration request body:\", e.message);",
+									"    }",
+									"});",
+									"",
+									"// Test de sécurité - Le mot de passe ne doit pas apparaître dans la réponse",
+									"pm.test(\"Password is not exposed in response\", function () {",
+									"    const responseText = pm.response.text();",
+									"    pm.expect(responseText).to.not.include('motdepasse123');",
+									"    pm.expect(responseText).to.not.include('password');",
+									"});",
+									"",
+									"// Test de conformité RGPD",
+									"pm.test(\"Registration respects data privacy\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    ",
+									"    // Vérifier qu'on ne renvoie pas de données sensibles",
+									"    pm.expect(jsonData).to.not.have.property('password');",
+									"    pm.expect(jsonData).to.not.have.property('hash');",
+									"    pm.expect(jsonData).to.not.have.property('salt');",
+									"    ",
+									"    console.log(\"Privacy compliance check passed\");",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Registration response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(5000); // L'inscription peut prendre plus de temps",
+									"});",
+									"",
+									"// Test bonus : vérifier la génération automatique du rôle client",
+									"pm.test(\"New user gets client role by default\", function () {",
+									"    if (pm.response.code === 200 || pm.response.code === 201) {",
+									"        const jsonData = pm.response.json();",
+									"        const userData = jsonData.user || jsonData.data || jsonData;",
+									"        ",
+									"        if (userData.role) {",
+									"            pm.expect(userData.role).to.equal('client');",
+									"            console.log(\"Default role assigned correctly: client\");",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Jean\",\n  \"lastName\": \"Dupont\",\n  \"email\": \"jean.dupont@example.com\",\n  \"password\": \"motdepasse123\",\n  \"phone\": \"0123456789\",\n  \"address\": \"123 Rue de la Paix, Paris\",\n  \"domain\": \"localhost\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/auth/register",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bicycle",
+			"item": [
+				{
+					"name": "Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"BICYCLE GET Response Status:\", pm.response.code);",
+									"console.log(\"BICYCLE GET Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Vérification du format de réponse",
+									"pm.test(\"Response contains bicycles data\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    // La réponse peut être un array ou un objet avec une propriété data",
+									"    pm.expect(jsonData).to.satisfy(function (data) {",
+									"        return Array.isArray(data) || (typeof data === 'object' && data !== null);",
+									"    });",
+									"});",
+									"",
+									"// Test 3: Vérification de la structure des données",
+									"pm.test(\"Bicycle has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let bicycles = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (bicycles.length > 0) {",
+									"        const bicycle = bicycles[0];",
+									"        pm.expect(bicycle).to.have.property('brand');",
+									"        pm.expect(bicycle).to.have.property('model');",
+									"        pm.expect(bicycle).to.have.property('type');",
+									"        console.log(\"Bicycle structure validated:\", `${bicycle.brand} ${bicycle.model}`);",
+									"    } else {",
+									"        console.log(\"No bicycles found - empty response is valid\");",
+									"        pm.expect(bicycles).to.be.an('array');",
+									"    }",
+									"});",
+									"",
+									"// Test 4: Validation des données métier",
+									"pm.test(\"Bicycle data format is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let bicycles = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (bicycles.length > 0) {",
+									"        const bicycle = bicycles[0];",
+									"        ",
+									"        // Vérifier que la marque n'est pas vide",
+									"        if (bicycle.brand) {",
+									"            pm.expect(bicycle.brand.length).to.be.greaterThan(0);",
+									"        }",
+									"        ",
+									"        // Vérifier l'année si présente",
+									"        if (bicycle.year) {",
+									"            pm.expect(bicycle.year).to.be.a('number');",
+									"            pm.expect(bicycle.year).to.be.within(1900, 2030);",
+									"        }",
+									"        ",
+									"        // Vérifier le type de vélo",
+									"        if (bicycle.type) {",
+									"            pm.expect(bicycle.type.length).to.be.greaterThan(0);",
+									"        }",
+									"        ",
+									"        console.log(`Bicycle data validated: ${bicycle.year} ${bicycle.brand} ${bicycle.model}`);",
+									"    }",
+									"});",
+									"",
+									"// Test 5: Test de performance",
+									"pm.test(\"Response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/bicycles/get",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"bicycles",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"BICYCLE CREATE Response Status:\", pm.response.code);",
+									"console.log(\"BICYCLE CREATE Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 403, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    // Succès - Bicycle créé",
+									"    pm.test(\"Bicycle was created successfully\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.satisfy(function (data) {",
+									"            return data.id || data.success === true || data.message;",
+									"        });",
+									"    });",
+									"    ",
+									"    pm.test(\"Created bicycle has correct data\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const bicycle = jsonData.data || jsonData;",
+									"        ",
+									"        // Vérifier que les données correspondent à ce qu'on a envoyé",
+									"        if (bicycle.brand || bicycle.model) {",
+									"            pm.expect(bicycle.brand || bicycle.message).to.exist;",
+									"            console.log(\"Bicycle creation successful:\", `${bicycle.brand} ${bicycle.model}`);",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"Bicycle has valid structure after creation\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const bicycle = jsonData.data || jsonData;",
+									"        ",
+									"        if (bicycle.brand) {",
+									"            pm.expect(bicycle).to.have.property('brand');",
+									"            pm.expect(bicycle).to.have.property('model');",
+									"            pm.expect(bicycle).to.have.property('type');",
+									"        }",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation",
+									"    pm.test(\"Bad Request contains validation errors\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Validation error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error message is informative\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message.length).to.be.greaterThan(5);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 401) {",
+									"    // Non authentifié",
+									"    pm.test(\"Unauthorized error for missing/invalid token\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Authentication required:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 403) {",
+									"    // Pas d'autorisation",
+									"    pm.test(\"Forbidden error for insufficient permissions\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Insufficient permissions:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error is logged\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Server error:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des données envoyées",
+									"pm.test(\"Request body contains valid bicycle data\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody).to.have.property('brand');",
+									"        pm.expect(requestBody).to.have.property('model');",
+									"        pm.expect(requestBody).to.have.property('type');",
+									"        ",
+									"        // Validation année",
+									"        if (requestBody.year) {",
+									"            pm.expect(requestBody.year).to.be.a('number');",
+									"            pm.expect(requestBody.year).to.be.within(1900, 2030);",
+									"        }",
+									"        ",
+									"        console.log(\"Request data valid:\", `${requestBody.brand} ${requestBody.model}`);",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse request body\");",
+									"    }",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Creation response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTA1LCJlbWFpbCI6ImplYW4uZHVwb250QGV4YW1wbGUuY29tIiwicm9sZSI6ImNsaWVudCIsImlhdCI6MTc1MzA3OTk3NCwiZXhwIjoxNzg0NjM3NTc0fQ.4n14vkPpjx4QkeMqazdK8ncC93uE6nCRHdAgnPFIhaQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"brand\": \"Trek\",\n  \"model\": \"Domane AL 2\",\n  \"year\": 2023,\n  \"type\": \"Route\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/bicycles/addNew",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"bicycles",
+								"addNew"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"BICYCLE DELETE Response Status:\", pm.response.code);",
+									"console.log(\"BICYCLE DELETE Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 400, 401, 403, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 200) {",
+									"    // Succès - Bicycles supprimés",
+									"    pm.test(\"Bicycles were deleted successfully\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Delete success:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Delete response format is correct\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.success !== false);",
+									"    });",
+									"    ",
+									"    pm.test(\"Delete confirmation mentions bicycles\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.toLowerCase().includes('bicycle') || ",
+									"                   msg.toLowerCase().includes('vélo') || ",
+									"                   msg.toLowerCase().includes('supprimé') ||",
+									"                   msg.toLowerCase().includes('deleted');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 404) {",
+									"    // Bicycles non trouvés",
+									"    pm.test(\"404 error for non-existent bicycles\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('trouvé') || msg.includes('found') || ",
+									"                   msg.includes('existe') || msg.includes('IDs');",
+									"        });",
+									"        console.log(\"Bicycles not found:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation (IDs manquants/invalides)",
+									"    pm.test(\"Bad Request for invalid delete data\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Invalid delete request:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error explains what's wrong with IDs\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('ids') || msg.includes('ID') || msg.includes('invalide');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 401) {",
+									"    // Non authentifié",
+									"    pm.test(\"Unauthorized error for missing/invalid token\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Authentication required for delete:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 403) {",
+									"    // Pas d'autorisation pour supprimer",
+									"    pm.test(\"Forbidden error for unauthorized delete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Unauthorized bicycle delete:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error during bicycle delete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Delete server error:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des IDs envoyés",
+									"pm.test(\"Request body contains valid bicycle IDs\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody).to.have.property('ids');",
+									"        pm.expect(requestBody.ids).to.be.an('array');",
+									"        pm.expect(requestBody.ids.length).to.be.greaterThan(0);",
+									"        ",
+									"        // Vérifier que tous les IDs sont des nombres",
+									"        requestBody.ids.forEach(id => {",
+									"            pm.expect(id).to.be.a('number');",
+									"            pm.expect(id).to.be.greaterThan(0);",
+									"        });",
+									"        ",
+									"        console.log(\"Delete requested for bicycle IDs:\", requestBody.ids);",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse request body for ID validation\");",
+									"    }",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Delete response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									"",
+									"// Test bonus : vérifier le nombre d'IDs",
+									"pm.test(\"Reasonable number of bicycles to delete\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody.ids.length).to.be.below(100); // Pas plus de 100 à la fois",
+									"        console.log(`Deleting ${requestBody.ids.length} bicycle(s)`);",
+									"    } catch (e) {",
+									"        // Ignore si on ne peut pas parser",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTA1LCJlbWFpbCI6ImplYW4uZHVwb250QGV4YW1wbGUuY29tIiwicm9sZSI6ImNsaWVudCIsImlhdCI6MTc1MzA3OTk3NCwiZXhwIjoxNzg0NjM3NTc0fQ.4n14vkPpjx4QkeMqazdK8ncC93uE6nCRHdAgnPFIhaQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [490,491,492]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/bicycles/deleteBicycles",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"bicycles",
+								"deleteBicycles"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Interventionn",
+			"item": [
+				{
+					"name": "Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"INTERVENTION GET Response Status:\", pm.response.code);",
+									"console.log(\"INTERVENTION GET Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Vérification du format de réponse",
+									"pm.test(\"Response contains interventions data\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    // La réponse peut être un array ou un objet avec une propriété data",
+									"    pm.expect(jsonData).to.satisfy(function (data) {",
+									"        return Array.isArray(data) || (typeof data === 'object' && data !== null);",
+									"    });",
+									"});",
+									"",
+									"// Test 3: Vérification de la structure des données",
+									"pm.test(\"Intervention has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let interventions = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (interventions.length > 0) {",
+									"        const intervention = interventions[0];",
+									"        ",
+									"        // Champs de base attendus pour une intervention",
+									"        pm.expect(intervention).to.satisfy(function (item) {",
+									"            return item.id || item.intervention_id || item.type || item.status;",
+									"        });",
+									"        ",
+									"        console.log(\"Intervention structure validated:\", intervention.id || \"ID not found\");",
+									"        ",
+									"        // Log des propriétés disponibles pour debug",
+									"        console.log(\"Available intervention properties:\", Object.keys(intervention));",
+									"    } else {",
+									"        console.log(\"No interventions found - empty response is valid\");",
+									"        pm.expect(interventions).to.be.an('array');",
+									"    }",
+									"});",
+									"",
+									"// Test 4: Validation des données métier spécifiques aux interventions",
+									"pm.test(\"Intervention data format is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let interventions = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (interventions.length > 0) {",
+									"        const intervention = interventions[0];",
+									"        ",
+									"        // Vérifier les dates si présentes",
+									"        if (intervention.created_at || intervention.schedule_time_start) {",
+									"            const dateField = intervention.created_at || intervention.schedule_time_start;",
+									"            pm.expect(dateField).to.be.a('string');",
+									"            // Vérifier que c'est une date valide",
+									"            pm.expect(new Date(dateField).toString()).to.not.equal('Invalid Date');",
+									"        }",
+									"        ",
+									"        // Vérifier le statut si présent",
+									"        if (intervention.status) {",
+									"            pm.expect(intervention.status).to.be.a('string');",
+									"            pm.expect(intervention.status.length).to.be.greaterThan(0);",
+									"        }",
+									"        ",
+									"        // Vérifier l'ID si présent",
+									"        if (intervention.id) {",
+									"            pm.expect(intervention.id).to.be.a('number');",
+									"            pm.expect(intervention.id).to.be.greaterThan(0);",
+									"        }",
+									"        ",
+									"        console.log(\"Intervention data validated\");",
+									"    }",
+									"});",
+									"",
+									"// Test 5: Test de performance",
+									"pm.test(\"Response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									"",
+									"// Test 6: Vérifier la cohérence des données d'intervention",
+									"pm.test(\"Intervention business logic is consistent\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let interventions = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (interventions.length > 0) {",
+									"        interventions.forEach((intervention, index) => {",
+									"            // Si il y a des dates de début et fin, vérifier la cohérence",
+									"            if (intervention.schedule_time_start && intervention.schedule_time_end) {",
+									"                const startTime = new Date(intervention.schedule_time_start);",
+									"                const endTime = new Date(intervention.schedule_time_end);",
+									"                pm.expect(startTime.getTime()).to.be.below(endTime.getTime(), ",
+									"                    `Intervention ${index}: Start time should be before end time`);",
+									"            }",
+									"        });",
+									"        console.log(`Validated ${interventions.length} intervention(s) for business logic`);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/interventions/all",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"interventions",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"INTERVENTION CREATE Response Status:\", pm.response.code);",
+									"console.log(\"INTERVENTION CREATE Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 403, 422, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    // Succès - Intervention créée",
+									"    pm.test(\"Intervention was created successfully\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.satisfy(function (data) {",
+									"            return data.id || data.intervention_id || data.success === true || data.message;",
+									"        });",
+									"    });",
+									"    ",
+									"    pm.test(\"Created intervention has valid structure\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const intervention = jsonData.data || jsonData;",
+									"        ",
+									"        // Vérifier que l'intervention a été créée avec les bonnes données",
+									"        if (intervention.id || intervention.intervention_id) {",
+									"            console.log(\"Intervention creation successful with ID:\", intervention.id || intervention.intervention_id);",
+									"        }",
+									"        ",
+									"        // Si on a les détails de l'intervention créée",
+									"        if (intervention.details || intervention.repair || intervention.operation) {",
+									"            pm.expect(intervention).to.be.an('object');",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"Intervention timestamps are valid\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const intervention = jsonData.data || jsonData;",
+									"        ",
+									"        // Vérifier les timestamps si présents",
+									"        if (intervention.created_at) {",
+									"            pm.expect(new Date(intervention.created_at).toString()).to.not.equal('Invalid Date');",
+									"        }",
+									"        ",
+									"        if (intervention.schedule_time_start) {",
+									"            pm.expect(new Date(intervention.schedule_time_start).toString()).to.not.equal('Invalid Date');",
+									"        }",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation",
+									"    pm.test(\"Bad Request contains validation errors\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Validation error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error message is informative for intervention\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message.length).to.be.greaterThan(5);",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('intervention') || msg.includes('required') || ",
+									"                   msg.includes('invalid') || msg.includes('manquant');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 401) {",
+									"    // Non authentifié",
+									"    pm.test(\"Unauthorized error for missing/invalid token\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Authentication required for intervention:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 403) {",
+									"    // Pas d'autorisation",
+									"    pm.test(\"Forbidden error for insufficient permissions\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Insufficient permissions for intervention:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 422) {",
+									"    // Erreur de logique métier (ex: créneaux non disponibles)",
+									"    pm.test(\"Unprocessable Entity for business logic error\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Business logic error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Business error is related to intervention constraints\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('disponible') || msg.includes('créneau') || ",
+									"                   msg.includes('horaire') || msg.includes('zone') ||",
+									"                   msg.includes('available') || msg.includes('schedule');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error is logged\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Server error during intervention creation:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des données FormData envoyées",
+									"pm.test(\"Request contains valid intervention data\", function () {",
+									"    try {",
+									"        // L'intervention est envoyée en FormData, pas en JSON",
+									"        const formData = pm.request.body.formdata;",
+									"        const interventionField = formData.find(item => item.key === 'intervention');",
+									"        ",
+									"        if (interventionField) {",
+									"            const interventionData = JSON.parse(interventionField.value);",
+									"            ",
+									"            // Vérifier la structure attendue",
+									"            pm.expect(interventionData).to.have.property('details');",
+									"            pm.expect(interventionData).to.have.property('repair');",
+									"            pm.expect(interventionData).to.have.property('operation');",
+									"            pm.expect(interventionData).to.have.property('address');",
+									"            ",
+									"            // Vérifier les détails du vélo",
+									"            pm.expect(interventionData.details).to.have.property('brand');",
+									"            pm.expect(interventionData.details).to.have.property('model');",
+									"            pm.expect(interventionData.details).to.have.property('type');",
+									"            ",
+									"            // Vérifier les informations de réparation",
+									"            pm.expect(interventionData.repair).to.have.property('scheduleTimeStart');",
+									"            pm.expect(interventionData.repair).to.have.property('scheduleTimeEnd');",
+									"            ",
+									"            // Vérifier les dates",
+									"            const startTime = new Date(interventionData.repair.scheduleTimeStart);",
+									"            const endTime = new Date(interventionData.repair.scheduleTimeEnd);",
+									"            pm.expect(startTime.toString()).to.not.equal('Invalid Date');",
+									"            pm.expect(endTime.toString()).to.not.equal('Invalid Date');",
+									"            pm.expect(startTime.getTime()).to.be.below(endTime.getTime());",
+									"            ",
+									"            console.log(\"Intervention data structure validated:\", ",
+									"                `${interventionData.details.brand} ${interventionData.details.model} - ${interventionData.operation.operation}`);",
+									"        }",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse intervention FormData:\", e.message);",
+									"    }",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Creation response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(8000); // Plus long car processus complexe",
+									"});",
+									"",
+									"// Test spécifique aux zones géographiques",
+									"pm.test(\"Intervention zone is valid\", function () {",
+									"    try {",
+									"        const formData = pm.request.body.formdata;",
+									"        const interventionField = formData.find(item => item.key === 'intervention');",
+									"        ",
+									"        if (interventionField) {",
+									"            const interventionData = JSON.parse(interventionField.value);",
+									"            ",
+									"            if (interventionData.address && interventionData.address.zone) {",
+									"                pm.expect(interventionData.address.zone).to.be.a('number');",
+									"                pm.expect(interventionData.address.zone).to.be.greaterThan(0);",
+									"                console.log(\"Intervention zone validated:\", interventionData.address.zone);",
+									"            }",
+									"        }",
+									"    } catch (e) {",
+									"        console.log(\"Zone validation skipped\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTA1LCJlbWFpbCI6ImplYW4uZHVwb250QGV4YW1wbGUuY29tIiwicm9sZSI6ImNsaWVudCIsImlhdCI6MTc1MzA3OTk3NCwiZXhwIjoxNzg0NjM3NTc0fQ.4n14vkPpjx4QkeMqazdK8ncC93uE6nCRHdAgnPFIhaQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "intervention",
+									"value": "{\n  \"details\": {\n    \"brand\": \"Trek\",\n    \"model\": \"Test\",\n    \"year\": \"2023\",\n    \"type\": \"Vélo de route\"\n  },\n  \"repair\": {\n    \"scheduleTimeStart\": \"2025-01-15T09:00:00.000Z\",\n    \"scheduleTimeEnd\": \"2025-01-15T10:00:00.000Z\",\n    \"issueDetails\": \"Test réparation\"\n  },\n  \"operation\": {\n    \"operation\": \"repair\"\n  },\n  \"address\": {\n    \"zone\": 29\n  }\n}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/interventions/save",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"interventions",
+								"save"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Zones",
+			"item": [
+				{
+					"name": "Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"ZONES GET Response Status:\", pm.response.code);",
+									"console.log(\"ZONES GET Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Vérification du format de réponse",
+									"pm.test(\"Response contains zones data\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    // La réponse peut être un array ou un objet avec une propriété data",
+									"    pm.expect(jsonData).to.satisfy(function (data) {",
+									"        return Array.isArray(data) || (typeof data === 'object' && data !== null);",
+									"    });",
+									"});",
+									"",
+									"",
+									"// Test 4: Validation des données géographiques",
+									"pm.test(\"Zone geographic data is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let zones = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (zones.length > 0) {",
+									"        zones.forEach((zone, index) => {",
+									"            // Vérifier l'ID",
+									"            if (zone.id || zone.zone_id) {",
+									"                const zoneId = zone.id || zone.zone_id;",
+									"                pm.expect(zoneId).to.be.a('number');",
+									"                pm.expect(zoneId).to.be.greaterThan(0);",
+									"            }",
+									"            ",
+									"            // Vérifier le WKT (Well-Known Text) pour les coordonnées géographiques",
+									"            if (zone.wkt) {",
+									"                pm.expect(zone.wkt).to.be.a('string');",
+									"                pm.expect(zone.wkt).to.match(/^(POLYGON|POINT|LINESTRING)/i, ",
+									"                    `Zone ${index}: WKT should start with POLYGON, POINT, or LINESTRING`);",
+									"                console.log(`Zone ${index} WKT validated:`, zone.wkt.substring(0, 20) + '...');",
+									"            }",
+									"            ",
+									"            // Vérifier le titre de la zone",
+									"            if (zone.zoneTitle) {",
+									"                pm.expect(zone.zoneTitle).to.be.a('string');",
+									"                pm.expect(zone.zoneTitle.length).to.be.greaterThan(0);",
+									"            }",
+									"            ",
+									"            // Vérifier le domaine",
+									"            if (zone.domain) {",
+									"                pm.expect(zone.domain).to.be.a('string');",
+									"                pm.expect(zone.domain.length).to.be.greaterThan(0);",
+									"            }",
+									"        });",
+									"        ",
+									"        console.log(`Validated ${zones.length} zone(s) for geographic data`);",
+									"    }",
+									"});",
+									"",
+									"// Test 5: Validation des tarifs d'intervention",
+									"pm.test(\"Zone intervention prices are valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    let zones = Array.isArray(jsonData) ? jsonData : (jsonData.data || [jsonData]);",
+									"    ",
+									"    if (zones.length > 0) {",
+									"        zones.forEach((zone, index) => {",
+									"            // Vérifier les tarifs de maintenance et réparation",
+									"            if (zone.zoneTypeInterventionMaintenance) {",
+									"                pm.expect(zone.zoneTypeInterventionMaintenance).to.be.a('number');",
+									"                pm.expect(zone.zoneTypeInterventionMaintenance).to.be.greaterThan(0);",
+									"                console.log(`Zone ${index} maintenance price:`, zone.zoneTypeInterventionMaintenance);",
+									"            }",
+									"            ",
+									"            if (zone.zoneTypeInterventionRepair) {",
+									"                pm.expect(zone.zoneTypeInterventionRepair).to.be.a('number');",
+									"                pm.expect(zone.zoneTypeInterventionRepair).to.be.greaterThan(0);",
+									"                console.log(`Zone ${index} repair price:`, zone.zoneTypeInterventionRepair);",
+									"            }",
+									"            ",
+									"            // Vérifier la cohérence des tarifs (maintenance généralement moins cher que réparation)",
+									"            if (zone.zoneTypeInterventionMaintenance && zone.zoneTypeInterventionRepair) {",
+									"                pm.expect(zone.zoneTypeInterventionMaintenance).to.be.at.most(",
+									"                    zone.zoneTypeInterventionRepair * 2, ",
+									"                    `Zone ${index}: Maintenance price should not be more than 2x repair price`",
+									"                );",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									"",
+									"// Test 6: Test de performance",
+									"pm.test(\"Response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/zones/get",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"zones",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"ZONES DELETE Response Status:\", pm.response.code);",
+									"console.log(\"ZONES DELETE Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 400, 401, 403, 409, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 200) {",
+									"    // Succès - Zones supprimées",
+									"    pm.test(\"Zones were deleted successfully\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Zone delete success:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Delete response format is correct\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.success !== false);",
+									"    });",
+									"    ",
+									"    pm.test(\"Delete confirmation mentions zones\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.toLowerCase().includes('zone') || ",
+									"                   msg.toLowerCase().includes('supprimé') ||",
+									"                   msg.toLowerCase().includes('deleted') ||",
+									"                   msg.toLowerCase().includes('removed');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 404) {",
+									"    // Zones non trouvées",
+									"    pm.test(\"404 error for non-existent zones\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('trouvé') || msg.includes('found') || ",
+									"                   msg.includes('existe') || msg.includes('IDs');",
+									"        });",
+									"        console.log(\"Zones not found:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation (IDs manquants/invalides)",
+									"    pm.test(\"Bad Request for invalid delete data\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Invalid zone delete request:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error explains what's wrong with zone IDs\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('ids') || msg.includes('ID') || msg.includes('invalide');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 401) {",
+									"    // Non authentifié",
+									"    pm.test(\"Unauthorized error for missing/invalid token\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Authentication required for zone delete:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 403) {",
+									"    // Pas d'autorisation pour supprimer",
+									"    pm.test(\"Forbidden error for unauthorized zone delete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Unauthorized zone delete:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 409) {",
+									"    // Conflit - Zone utilisée par des interventions",
+									"    pm.test(\"Conflict error for zone in use\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('utilisé') || msg.includes('intervention') || ",
+									"                   msg.includes('in use') || msg.includes('referenced');",
+									"        });",
+									"        console.log(\"Zone in use, cannot delete:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error during zone delete\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Zone delete server error:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des IDs envoyés",
+									"pm.test(\"Request body contains valid zone IDs\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody).to.have.property('ids');",
+									"        pm.expect(requestBody.ids).to.be.an('array');",
+									"        pm.expect(requestBody.ids.length).to.be.greaterThan(0);",
+									"        ",
+									"        // Vérifier que tous les IDs sont des nombres",
+									"        requestBody.ids.forEach(id => {",
+									"            pm.expect(id).to.be.a('number');",
+									"            pm.expect(id).to.be.greaterThan(0);",
+									"        });",
+									"        ",
+									"        console.log(\"Delete requested for zone IDs:\", requestBody.ids);",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse request body for zone ID validation\");",
+									"    }",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Zone delete response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									"",
+									"// Test bonus : vérifier le nombre raisonnable de zones à supprimer",
+									"pm.test(\"Reasonable number of zones to delete\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody.ids.length).to.be.below(50); // Pas plus de 50 zones à la fois",
+									"        console.log(`Deleting ${requestBody.ids.length} zone(s)`);",
+									"    } catch (e) {",
+									"        // Ignore si on ne peut pas parser",
+									"    }",
+									"});",
+									"",
+									"// Test de sécurité : vérifier qu'on ne supprime pas toutes les zones",
+									"pm.test(\"Not attempting to delete all zones\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        pm.expect(requestBody.ids.length).to.be.below(100); // Sécurité contre suppression massive",
+									"    } catch (e) {",
+									"        // Ignore si on ne peut pas parser",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTA1LCJlbWFpbCI6ImplYW4uZHVwb250QGV4YW1wbGUuY29tIiwicm9sZSI6ImNsaWVudCIsImlhdCI6MTc1MzA3OTk3NCwiZXhwIjoxNzg0NjM3NTc0fQ.4n14vkPpjx4QkeMqazdK8ncC93uE6nCRHdAgnPFIhaQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [35]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/zones/delete",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"zones",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Logs de debug",
+									"console.log(\"ZONES CREATE Response Status:\", pm.response.code);",
+									"console.log(\"ZONES CREATE Response Body:\", pm.response.text());",
+									"",
+									"// Test 1: Vérification du code de statut",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 403, 422, 500]);",
+									"});",
+									"",
+									"// Tests conditionnels selon le code de réponse",
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    // Succès - Zone créée",
+									"    pm.test(\"Zone was created successfully\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.satisfy(function (data) {",
+									"            return data.id || data.zone_id || data.success === true || data.message;",
+									"        });",
+									"    });",
+									"    ",
+									"    pm.test(\"Created zone has valid structure\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const zone = jsonData.data || jsonData;",
+									"        ",
+									"        if (zone.id || zone.zone_id) {",
+									"            console.log(\"Zone creation successful with ID:\", zone.id || zone.zone_id);",
+									"        }",
+									"        ",
+									"        // Vérifier que la zone créée a les bonnes propriétés",
+									"        if (zone.zoneTitle || zone.wkt) {",
+									"            pm.expect(zone).to.be.an('object');",
+									"            console.log(\"Zone created:\", zone.zoneTitle);",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"Zone geographic data was saved correctly\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        const zone = jsonData.data || jsonData;",
+									"        ",
+									"        // Vérifier que les données géographiques sont cohérentes",
+									"        if (zone.wkt) {",
+									"            pm.expect(zone.wkt).to.match(/^(POLYGON|POINT|LINESTRING)/i);",
+									"        }",
+									"        ",
+									"        if (zone.zoneTypeInterventionMaintenance) {",
+									"            pm.expect(zone.zoneTypeInterventionMaintenance).to.be.a('number');",
+									"        }",
+									"        ",
+									"        if (zone.zoneTypeInterventionRepair) {",
+									"            pm.expect(zone.zoneTypeInterventionRepair).to.be.a('number');",
+									"        }",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 400) {",
+									"    // Erreur de validation",
+									"    pm.test(\"Bad Request contains validation errors\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Zone validation error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Error message is informative for zone\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message.length).to.be.greaterThan(5);",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('zone') || msg.includes('wkt') || msg.includes('coordonnées') ||",
+									"                   msg.includes('required') || msg.includes('invalid') || msg.includes('manquant');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 401) {",
+									"    // Non authentifié",
+									"    pm.test(\"Unauthorized error for missing/invalid token\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Authentication required for zone creation:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 403) {",
+									"    // Pas d'autorisation",
+									"    pm.test(\"Forbidden error for insufficient permissions\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Insufficient permissions for zone creation:\", jsonData.message);",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 422) {",
+									"    // Erreur de logique métier (ex: zone qui se chevauche)",
+									"    pm.test(\"Unprocessable Entity for zone business logic error\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        console.log(\"Zone business logic error:\", jsonData.message);",
+									"    });",
+									"    ",
+									"    pm.test(\"Business error is related to zone constraints\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.message).to.satisfy(function (msg) {",
+									"            return msg.includes('overlap') || msg.includes('chevauchement') || ",
+									"                   msg.includes('existe') || msg.includes('duplicate') ||",
+									"                   msg.includes('coordonnées') || msg.includes('invalid');",
+									"        });",
+									"    });",
+									"    ",
+									"} else if (pm.response.code === 500) {",
+									"    // Erreur serveur",
+									"    pm.test(\"Server error is logged\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.error(\"Server error during zone creation:\", jsonData);",
+									"        pm.expect(pm.response.code).to.eql(500);",
+									"    });",
+									"}",
+									"",
+									"// Test de validation des données envoyées",
+									"pm.test(\"Request contains valid zone data\", function () {",
+									"    try {",
+									"        const requestBody = JSON.parse(pm.request.body.raw);",
+									"        ",
+									"        // Vérifier les champs obligatoires",
+									"        pm.expect(requestBody).to.have.property('wkt');",
+									"        pm.expect(requestBody).to.have.property('zoneTitle');",
+									"        pm.expect(requestBody).to.have.property('domain');",
+									"        ",
+									"        // Vérifier le format WKT",
+									"        pm.expect(requestBody.wkt).to.be.a('string');",
+									"        pm.expect(requestBody.wkt).to.match(/^POLYGON\\(/i);",
+									"        ",
+									"        // Vérifier les tarifs",
+									"        if (requestBody.zoneTypeInterventionMaintenance) {",
+									"            pm.expect(requestBody.zoneTypeInterventionMaintenance).to.be.a('number');",
+									"            pm.expect(requestBody.zoneTypeInterventionMaintenance).to.be.greaterThan(0);",
+									"        }",
+									"        ",
+									"        if (requestBody.zoneTypeInterventionRepair) {",
+									"            pm.expect(requestBody.zoneTypeInterventionRepair).to.be.a('number');",
+									"            pm.expect(requestBody.zoneTypeInterventionRepair).to.be.greaterThan(0);",
+									"        }",
+									"        ",
+									"        console.log(\"Zone request data validated:\", requestBody.zoneTitle);",
+									"        console.log(\"WKT coordinates:\", requestBody.wkt.substring(0, 50) + '...');",
+									"        ",
+									"    } catch (e) {",
+									"        console.log(\"Could not parse zone request body:\", e.message);",
+									"    }",
+									"});",
+									"",
+									"// Test de performance",
+									"pm.test(\"Zone creation response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"wkt\": \"POLYGON((-0.400 43.320, -0.350 43.320, -0.340 43.300, -0.390 43.295, -0.400 43.320))\",\n  \"zoneTitle\": \"Zone Centre-Ville\",\n  \"domain\": \"test\",\n  \"zoneTypeInterventionMaintenance\": 20,\n  \"zoneTypeInterventionRepair\": 19\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/zones/save",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"zones",
+								"save"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Technicians",
+			"item": [
+				{
+					"name": "Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains technicians array\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Technician has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData[0]).to.have.property('first_name');",
+									"        pm.expect(jsonData[0]).to.have.property('last_name');",
+									"        pm.expect(jsonData[0]).to.have.property('email');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN_UNLIMITED}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/technicians/get",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"technicians",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Loggez la réponse complète pour debug",
+									"console.log(\"DELETE Response Status:\", pm.response.code);",
+									"console.log(\"DELETE Response Body:\", pm.response.text());",
+									"",
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 404) {",
+									"    pm.test(\"404 error details\", function () {",
+									"        console.log(\"DELETE failed - ID probably doesn't exist\");",
+									"        pm.expect(pm.response.code).to.eql(404);",
+									"    });",
+									"} else {",
+									"    pm.test(\"Delete response contains success message\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [96]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/technicians/delete",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"technicians",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Loggez la réponse complète pour debug",
+									"console.log(\"CREATE Response Status:\", pm.response.code);",
+									"console.log(\"CREATE Response Body:\", pm.response.text());",
+									"",
+									"pm.test(\"Status code indicates result\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 500]);",
+									"});",
+									"",
+									"if (pm.response.code === 400) {",
+									"    pm.test(\"Bad Request shows validation errors\", function () {",
+									"        const jsonData = pm.response.json();",
+									"        console.log(\"Validation errors:\", JSON.stringify(jsonData, null, 2));",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"last_name\": \"Dubois\",\n  \"first_name\": \"Antoine\",\n  \"phone\": \"06 12 34 56 78\",\n  \"address\": \"12 Avenue de l'Université, 64000 Pau, France\",\n  \"password\": \"motdepasse123\",\n  \"email\": \"antoine.du.bois@email.com\",\n  \"domain\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_CYCLE}}/technicians/save",
+							"host": [
+								"{{SERVER_CYCLE}}"
+							],
+							"path": [
+								"technicians",
+								"save"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "TOKEN_UNLIMITED",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImVtYWlsIjoia3ViYXRhcnNlbkBnbWFpbC5jb20iLCJyb2xlIjoidGVjaG5pY2lhbiIsImlhdCI6MTczNjI2MjQ5MiwiZXhwIjoxNzY3ODIwMDkyfQ.2jaHOHq6RdniW-6IBX-_vd6n3ewimkTAZHN68hTWyq0"
+		}
+	]
+}

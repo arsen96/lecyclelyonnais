@@ -110,19 +110,61 @@ const updateZone = async (req, res) => {
 
 const deleteSelected = async (req, res) => {
   const { ids } = req.body;
+  
+  // Validation des paramètres
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Aucun ID de zone fourni" 
+    });
+  }
+
   try {
+    const checkQuery = 'SELECT id FROM geographical_zone WHERE id = ANY($1::int[])';
+    const checkResult = await pool.query(checkQuery, [ids]);
+    const existingZones = checkResult.rows.map(row => row.id);
+    
+    if (existingZones.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: ids.length > 1 ? "Aucune des zones spécifiées n'existe" : "La zone spécifiée n'existe pas"
+      });
+    }
+
+    const notFoundZones = ids.filter(id => !existingZones.includes(id));
+    if (notFoundZones.length > 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: `Zone(s) non trouvée(s): ${notFoundZones.join(', ')}`
+      });
+    }
+
     const dissociateTechniciansQuery = 'UPDATE technician SET geographical_zone_id = NULL, address = NULL WHERE geographical_zone_id = ANY($1::int[])';
-    await pool.query(dissociateTechniciansQuery, [ids]);
+    const dissociateResult = await pool.query(dissociateTechniciansQuery, [existingZones]);
     
     const deleteQuery = 'DELETE FROM geographical_zone WHERE id = ANY($1::int[])';
-    await pool.query(deleteQuery, [ids]);
-    let message = ids.length > 1 ? "Les zones ont été supprimées" : "La zone a été supprimée";
-    res.status(200).json({ success: true, message });
+    const deleteResult = await pool.query(deleteQuery, [existingZones]);
+    
+    let message = `${deleteResult.rowCount} zone(s) supprimée(s) avec succès`;
+    if (dissociateResult.rowCount > 0) {
+      message += ` (${dissociateResult.rowCount} technicien(s) dissocié(s))`;
+    }
+    
+    res.status(200).json({ 
+      success: true, 
+      message,
+      deletedCount: deleteResult.rowCount,
+      dissociatedTechnicians: dissociateResult.rowCount
+    });
+
   } catch (error) {
     console.error("Erreur lors de la suppression des zones", error);
-    res.status(500).json({ success: false, message: "Erreur lors de la suppression des zones" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Erreur lors de la suppression des zones" 
+    });
   }
-};  
+}; 
 
 const removeTechnicianFromZone = async (req, res) => {
   const {technicianId } = req.body;
