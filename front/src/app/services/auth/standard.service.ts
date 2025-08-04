@@ -19,6 +19,11 @@ export class StandardAuth extends AuthBaseService {
     super();
    }
 
+   /**
+    * Authentifie un utilisateur avec email/mot de passe
+    * @param loginCredentials - Credentials de connexion standard
+    * @returns Observable avec le token d'authentification
+    */
    loginStandard(loginCredentials:FormLoginModel): any{
       const value = super.login(loginCredentials,`${BaseService.baseApi}/${this.currentRoute}/login`);
       return value.pipe(
@@ -34,6 +39,11 @@ export class StandardAuth extends AuthBaseService {
       )
     }
 
+    /**
+     * Enregistre un nouvel utilisateur
+     * @param form - Données d'inscription
+     * @returns Observable avec le token d'authentification
+     */
     register(form:FormRegisterModel){
         return this.http.post<any>(`${BaseService.baseApi}/${this.currentRoute}/register`,{...form,...this.company.subdomainREQ})
         .pipe(
@@ -56,6 +66,11 @@ export class StandardAuth extends AuthBaseService {
         );
   }
 
+  /**
+   * Demande de réinitialisation de mot de passe
+   * @param data - Email de l'utilisateur
+   * @returns Observable avec le message de confirmation
+   */
   resetPassword(data:{email:string}){
     return this.http.post<any>(`${BaseService.baseApi}/${this.currentRoute}/forgot-password`,{...data,...this.companyService.subdomainREQ}).pipe(
       catchError(BaseService.handleError)
@@ -66,6 +81,11 @@ export class StandardAuth extends AuthBaseService {
     );
   }
 
+  /**
+   * Confirme la réinitialisation de mot de passe
+   * @param data - Données de réinitialisation
+   * @returns Observable avec le message de confirmation
+   */
   confirmResetPassword(data:{email:string}){
     return this.http.post<any>(`${BaseService.baseApi}/${this.currentRoute}/reset-password`,data).pipe(
       catchError(BaseService.handleError)

@@ -17,6 +17,9 @@ export class TechnicianService extends BaseService {
     super();
   }
 
+  /**
+   * Initialise le service en chargeant les données si nécessaire
+   */
   async initialize(): Promise<void> {
     if (this.initialized) {
       return;
@@ -31,12 +34,19 @@ export class TechnicianService extends BaseService {
     }
   }
 
+  /**
+   * S'assure que le service est initialisé avant utilisation
+   */
   async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       await this.initialize();
     }
   }
 
+  /**
+   * Récupère tous les techniciens avec cache local
+   * @returns Promise avec la liste des techniciens
+   */
   override get(): Promise<Technician[]> {
     if (this.technicians.length > 0) {
       return lastValueFrom(of(this.technicians));
@@ -110,15 +120,30 @@ export class TechnicianService extends BaseService {
     );
   }
 
+  /**
+   * Récupère un technicien par son ID (version asynchrone)
+   * @param technicianId - ID du technicien
+   * @returns Promise avec le technicien
+   */
   async getTechnicianById(technicianId: number): Promise<Technician | undefined> {
     await this.ensureInitialized();
     return this.technicians.find(technician => technician.id === technicianId);
   }
 
+  /**
+   * Récupère un technicien par son ID (version synchrone)
+   * @param technicianId - ID du technicien
+   * @returns Le technicien 
+   */
   getTechnicianByIdSync(technicianId: number): Technician | undefined {
     return this.technicians.find(technician => technician.id === technicianId);
   }
 
+  /**
+   * Récupère les techniciens d'une zone géographique (version asynchrone)
+   * @param geographicalZoneId - ID de la zone géographique
+   * @returns Promise avec la liste des techniciens de la zone
+   */
   async getTechniciansByZone(geographicalZoneId: number): Promise<Technician[]> {
     await this.ensureInitialized();
     return this.technicians.filter(technician => 
@@ -126,17 +151,28 @@ export class TechnicianService extends BaseService {
     );
   }
 
+  /**
+   * Récupère les techniciens d'une zone géographique (version synchrone)
+   * @param geographicalZoneId - ID de la zone géographique
+   * @returns Liste des techniciens de la zone
+   */
   getTechniciansByZoneSync(geographicalZoneId: number): Technician[] {
     return this.technicians.filter(technician => 
       technician.geographical_zone_id === geographicalZoneId
     );
   }
 
+  /**
+   * Réinitialise le sujet de chargement des techniciens
+   */
   resetTechniciansLoaded(): void {
     this.techniciansLoaded = new ReplaySubject<boolean>(0);
     this.initialized = false;
   }
 
+  /**
+   * Recharge tous les techniciens depuis l'API
+   */
   async reload(): Promise<void> {
     this.technicians = [];
     this.initialized = false;
@@ -144,6 +180,9 @@ export class TechnicianService extends BaseService {
     await this.initialize();
   }
 
+  /**
+   * Efface le cache des techniciens
+   */
   resetCache(): void {
     this.technicians = [];
     this.initialized = false;

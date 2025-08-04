@@ -72,15 +72,25 @@ export class PlanningModelsPage implements OnInit {
     // Implement sorting logic similar to technician-list
   }
 
+  /**
+   * Valide qu'au moins un jour est sélectionné dans le formulaire
+   * @param {AbstractControl} control - Contrôle du formulaire des jours
+   * @returns {ValidationErrors | null} Erreur si aucun jour n'est sélectionné
+   */
   atLeastOneDaySelected(control: AbstractControl): ValidationErrors | null {
     const days = control.value;
     const isAtLeastOneSelected = Object.values(days).some(value => value === true);
     return isAtLeastOneSelected ? null : { noDaySelected: false };
   }
 
+  /**
+   * Charge un modèle existant pour édition
+   * @param {PlanningModel} model - Le modèle à charger
+   */
   loadModelForEdit(model: PlanningModel) {
     this.selectedModel = model;
 
+    // Convertit les heures en format décimal pour l'affichage
     const startTimeParts = model.start_time.split(':');
     const endTimeParts = model.end_time.split(':');
 
@@ -98,10 +108,13 @@ export class PlanningModelsPage implements OnInit {
     });
   }
 
+  /**
+   * Soumet le formulaire pour créer ou modifier un modèle de planification
+   */
   onSubmit() {
     if (this.planningForm.valid) {
       if (this.selectedModel) {
-        // Update existing model
+        // Met à jour un modèle existant
         let modelData = this.planningForm.value;
         modelData.slot_duration = modelData.slot_duration + ' hours';
         const $resultObs = this.planningService.update({ id: this.selectedModel.id, ...modelData });
@@ -111,7 +124,6 @@ export class PlanningModelsPage implements OnInit {
             console.log("Model updated:", result);
             this.messageService.showToast(result.message, Message.success);
             this.planningService.allPlanningModels = [];
-            // this.selectedModel = null;
           },
           error: (err) => {
             console.log("Error updating model:", err);
@@ -119,6 +131,7 @@ export class PlanningModelsPage implements OnInit {
           }
         });
       } else {
+        // Crée un nouveau modèle
         const slot_duration = this.planningForm.value.slot_duration + ' hours';
         this.planningForm.patchValue({ slot_duration });
         const resultObs$ = this.planningService.create(this.planningForm.value);

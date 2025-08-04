@@ -24,7 +24,12 @@ export class GlobalService {
   userRole = new BehaviorSubject<'client' | 'technician' | 'admin' | 'superadmin' | null>(null)
   constructor() { }
 
-
+  /**
+   * Charge toutes les données nécessaires pour l'application
+   * @param bicycleService - Service de gestion des vélos
+   * @param technicianService - Service de gestion des techniciens
+   * @param interventionService - Service de gestion des interventions
+   */
   loadAllData(bicycleService:BicycleService,technicianService:TechnicianService,interventionService:InterventionService){
     bicycleService.get().subscribe()
     technicianService.get();  

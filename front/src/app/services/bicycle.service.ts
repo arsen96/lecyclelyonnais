@@ -42,6 +42,10 @@ export class BicycleService extends BaseService{
     );
   }
 
+  /**
+   * Récupère les vélos de l'utilisateur connecté avec transformation des données
+   * @returns Observable des vélos utilisateur (avec cache local)
+   */
   getUserBicycles() {
     if(this.userBicycles.length > 0){
       return of(this.userBicycles);
@@ -72,6 +76,9 @@ export class BicycleService extends BaseService{
     );
   }
 
+  /**
+   * Réinitialise le sujet de chargement des vélos
+   */
   resetBicyclesLoaded() {
     this.bicyclesLoaded = new ReplaySubject<boolean>(0);
   }

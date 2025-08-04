@@ -39,6 +39,9 @@ export class AuthBaseService {
     this.unauthenticated();
   }
 
+  /**
+   * Initialise le service d'authentification
+   */
   async initialize(): Promise<void> {
     if (this.initialized) {
       return;
@@ -55,6 +58,9 @@ export class AuthBaseService {
     }
   }
 
+  /**
+   * S'assure que le service est initialisé
+   */
   async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       await this.initialize();
@@ -70,6 +76,10 @@ export class AuthBaseService {
     localStorage.setItem("access_token", token);
   }
 
+  /**
+   * Vérifie si l'utilisateur est authentifié via le token JWT
+   * @returns true si le token est valide, false sinon
+   */
   public checkIsAuthenicated() {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -96,6 +106,12 @@ export class AuthBaseService {
     return false;
   }
 
+  /**
+   * Authentifie l'utilisateur avec les credentials fournis
+   * @param loginCredentials - Credentials de connexion
+   * @param endpoint - Endpoint d'authentification
+   * @returns Observable avec le token d'authentification
+   */
   login(loginCredentials: any, endpoint: string): Observable<string> {
     if (!this.tokenObs) {
       this.tokenObs = this.http.post<BearerToken>(endpoint, loginCredentials)
@@ -120,6 +136,10 @@ export class AuthBaseService {
     return this.tokenObs;
   }
 
+  /**
+   * Récupère les informations de l'utilisateur connecté
+   * @returns Promise avec les données utilisateur
+   */
   async getUser(): Promise<any> {
     try {
       const response = await lastValueFrom(this.http.get(`${BaseService.baseApi}/auth/user`)
@@ -137,6 +157,11 @@ export class AuthBaseService {
     }
   }
 
+  /**
+   * Décode un token JWT manuellement
+   * @param token - Token JWT à décoder
+   * @returns Payload décodé ou null si erreur
+   */
   decodeJWT(token: string) {
     try {
       var base64Url = token.split('.')[1];
@@ -154,7 +179,7 @@ export class AuthBaseService {
 
   logout() {
     this.tokenObs = null;
-    this.initialized = false; // ✅ Reset de l'initialisation
+    this.initialized = false;
     const role = this.globalService.userRole.getValue();
     console.log("logout")
     console.trace()
@@ -171,6 +196,10 @@ export class AuthBaseService {
     this.loadingService.setLoading(false);
   }
 
+  /**
+   * Gère la déconnexion automatique en cas de déconnexion réseau
+   * @param force - Force la déconnexion même si pas authentifié avant
+   */
   public unauthenticated(force = false): void {
     BaseService.$disconnect.subscribe((result) => {
       if (result) {

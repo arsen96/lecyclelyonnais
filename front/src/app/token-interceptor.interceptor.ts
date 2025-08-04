@@ -4,7 +4,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {/*  */
    const token = localStorage.getItem("access_token");
    let authReq = req;
    if(token){
-    // Clone the request and add the authorization header
+    // Clone la requête et ajoute l'en-tête d'authentification
        authReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
@@ -13,7 +13,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {/*  */
    }
   
 
-  // Pass the cloned request with the updated header to the next handler
+  // Passe la requête clonée avec le nouvel en-tête de l'authentification au prochain gestionnaire
   return next(authReq);
 };
 

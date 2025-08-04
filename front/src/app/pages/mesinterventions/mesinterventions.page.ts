@@ -54,12 +54,24 @@ export class MesinterventionsPage implements OnInit {
     return FilterType;
   }
 
+  /**
+   * Charge et trie les interventions du technicien par statut temporel
+   * @returns {Promise<void>}
+   */
   async ionViewWillEnter() {
     const success = await this.interventionService.interventionsLoaded;
     if (success) {
       this.technicianInterventions = await this.interventionService.getInterventionsByTechnician(this.globalService.user.getValue().id);
       const now = new Date();
-      this.pastInterventions = this.technicianInterventions.filter(intervention => new Date(intervention.appointment_end) < now || intervention.status === 'completed' || intervention.status === 'canceled');
+      
+      // Filtre les interventions passées (terminées ou annulées)
+      this.pastInterventions = this.technicianInterventions.filter(intervention => 
+        new Date(intervention.appointment_end) < now || 
+        intervention.status === 'completed' || 
+        intervention.status === 'canceled'
+      );
+      
+      // Filtre les interventions en cours (dans la plage horaire actuelle)
       this.ongoingInterventions = this.technicianInterventions.filter(intervention => {
         const start = new Date(intervention.appointment_start);
         const end = new Date(intervention.appointment_end);
@@ -67,13 +79,14 @@ export class MesinterventionsPage implements OnInit {
         return isOngoing;
       });
 
+      // Filtre les interventions à venir (non annulées et pas dans le passé)
       this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
         const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';
         const isNotInPast = !this.pastInterventions.some(pastIntervention => pastIntervention.id === intervention.id);
         return isUpcoming && isNotInPast;
       });
     
-      
+      // Met à jour l'affichage des sections selon le contenu
       this.displayPastInterventions = this.pastInterventions.length > 0;
       this.displayOngoingInterventions = this.ongoingInterventions.length > 0;
       this.displayUpcomingInterventions = this.upcomingInterventions.length > 0;
@@ -85,6 +98,11 @@ export class MesinterventionsPage implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * Ouvre une modal pour afficher les photos en plein écran
+   * @param {string[]} photos - Liste des URLs des photos
+   * @param {number} index - Index de la photo à afficher en premier
+   */
   async openImageModal(photos: string[], index: number) {
     photos = photos.map(photo => BaseService.baseApi + '/'+ photo);
     const modal = await this.modalController.create({
@@ -97,6 +115,10 @@ export class MesinterventionsPage implements OnInit {
     return await modal.present();
   }
 
+  /**
+   * Demande confirmation avant d'annuler une intervention
+   * @param {Intervention} intervention - L'intervention à annuler
+   */
   async confirmCancel(intervention: Intervention) {
     const alert = await this.alertController.create({
       header: "Confirmer l'annulation",
@@ -121,6 +143,10 @@ export class MesinterventionsPage implements OnInit {
     await alert.present();
   }
 
+  /**
+   * Annule une intervention et met à jour son statut
+   * @param {Intervention} intervention - L'intervention à annuler
+   */
   cancelIntervention(intervention: Intervention) {
     console.log('Intervention annulée:', intervention);
     const obs$ = this.interventionService.manageEndIntervention(intervention.id, true, this.newComment);
@@ -138,6 +164,11 @@ export class MesinterventionsPage implements OnInit {
   }
 
 
+  /**
+   * Gère la sélection de fichiers photos pour une intervention
+   * @param {Event} event - Événement de sélection de fichier
+   * @param {Intervention} intervention - L'intervention concernée
+   */
   onFileSelected(event: Event, intervention: Intervention) {
     const input = event.target as HTMLInputElement;
     if (input.files) {
@@ -147,6 +178,11 @@ export class MesinterventionsPage implements OnInit {
     }
   }
 
+  /**
+   * Supprime une photo de la liste des photos uploadées
+   * @param {Intervention} intervention - L'intervention concernée
+   * @param {number} index - Index de la photo à supprimer
+   */
   removePhoto(intervention: Intervention, index: number) {
     intervention.uploadedPhotos.splice(index, 1);
   }
@@ -156,6 +192,10 @@ export class MesinterventionsPage implements OnInit {
   }
 
 
+  /**
+   * Marque une intervention comme terminée avec les photos sélectionnées
+   * @param {Intervention} intervention - L'intervention à terminer
+   */
   async markAsDone(intervention: Intervention) {
     const photos = await this.getSelectedPhotos(intervention);
     const obs$ = this.interventionService.manageEndIntervention(intervention.id, false, this.newComment, photos);
@@ -171,6 +211,11 @@ export class MesinterventionsPage implements OnInit {
     });
   }
 
+  /**
+   * Convertit les URLs des photos en objets File pour l'upload
+   * @param {Intervention} intervention - L'intervention contenant les photos
+   * @returns {Promise<File[]>} Liste des fichiers photos
+   */
   async getSelectedPhotos(intervention: Intervention): Promise<File[]> {
     let photoPromises = []
     if(intervention.uploadedPhotos){
@@ -188,9 +233,16 @@ export class MesinterventionsPage implements OnInit {
     return Promise.all(photoPromises);
   }
 
+  /**
+   * Met à jour les listes d'interventions après modification d'un statut
+   */
   private updateInterventionLists() {
     const now = new Date();
-    this.pastInterventions = this.technicianInterventions.filter(intervention => new Date(intervention.appointment_end) < now || intervention.status === 'completed' || intervention.status === 'canceled');
+    this.pastInterventions = this.technicianInterventions.filter(intervention => 
+      new Date(intervention.appointment_end) < now || 
+      intervention.status === 'completed' || 
+      intervention.status === 'canceled'
+    );
     this.ongoingInterventions = this.technicianInterventions.filter(intervention => {
         const start = new Date(intervention.appointment_start);
         const end = new Date(intervention.appointment_end);
@@ -207,6 +259,10 @@ export class MesinterventionsPage implements OnInit {
     this.displayUpcomingInterventions = this.upcomingInterventions.length > 0;
   }
 
+  /**
+   * Filtre les interventions selon le type et la période
+   * @param {string} filterType - Type de filtre (past, ongoing, upcoming)
+   */
   filterInterventions(filterType: string) {
     const now = new Date();
 

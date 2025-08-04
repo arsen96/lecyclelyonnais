@@ -13,6 +13,12 @@ export abstract class BaseService implements CRUD<any> {
   private static disconnect = new ReplaySubject<Boolean>(1);
   public static $disconnect = BaseService.disconnect.asObservable();
   constructor() { }
+  
+  /**
+   * Gère les erreurs HTTP et déclenche la déconnexion si token invalide
+   * @param error - Erreur HTTP à traiter
+   * @returns Observable avec le message d'erreur formaté
+   */
   public static handleError(error: HttpErrorResponse) {
     let errorMessage: string | Array<string> = 'Une erreur inconnue est survenue!';
     console.log("erreur",error)

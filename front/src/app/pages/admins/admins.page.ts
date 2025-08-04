@@ -53,6 +53,9 @@ export class AdminsPage implements OnInit {
     this.loadCompanies();
   }
 
+  /**
+   * Charge les détails d'un admin existant pour édition
+   */
   loadAdminDetails(adminId: number) {
     this.adminService.get().then((res: any) => {
       this.selectedAdmin = this.adminService.allAdmins.find(admin => admin.id === adminId);
@@ -73,6 +76,9 @@ export class AdminsPage implements OnInit {
     this.resetPasswordMode = false;
   }
 
+  /**
+   * Met à jour un admin existant
+   */
   updateAdmin() {
     if (this.adminForm.valid) {
       const updatedAdmin = { id: this.selectedAdmin.id, ...this.adminForm.value };
@@ -96,6 +102,9 @@ export class AdminsPage implements OnInit {
     }
   }
 
+  /**
+   * Génère un mot de passe aléatoire
+   */
   generatePassword() {
     const newPassword = Math.random().toString(36).slice(-8);
     this.adminForm.patchValue({ password: newPassword });
@@ -106,6 +115,9 @@ export class AdminsPage implements OnInit {
     this.messageService.showMessage(error, Message.danger);
   }
 
+  /**
+   * Gère la soumission du formulaire (création/mise à jour d'admin)
+   */
   async onSubmitAdmin() {
     if (this.selectedAdmin) {
       this.updateAdmin();
@@ -131,6 +143,9 @@ export class AdminsPage implements OnInit {
     this.messageService.clearMessage();
   }
 
+  /**
+   * Active le mode de réinitialisation de mot de passe
+   */
   enablePasswordReset() {
     this.resetPasswordMode = true;
     this.adminForm.patchValue({ password: '' });

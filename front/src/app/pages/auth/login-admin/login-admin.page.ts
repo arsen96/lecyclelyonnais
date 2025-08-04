@@ -36,6 +36,9 @@ export class LoginAdminPage implements OnInit {
     });
   }
 
+  /**
+   * Soumet les données du formulaire de connexion.
+   */
   onSubmit() {
     this.formSubmitted = true;
     if (this.loginForm.valid) {

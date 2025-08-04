@@ -40,6 +40,9 @@ export class CompanyListPage implements OnInit {
     return UserRole
   }
 
+  /**
+   * Charge et filtre la liste des entreprises
+   */
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
     this.companyService.get().then(res => {
@@ -60,6 +63,9 @@ export class CompanyListPage implements OnInit {
 
   }
 
+  /**
+   * Applique un filtre de recherche sur le tableau
+   */
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -77,6 +83,10 @@ export class CompanyListPage implements OnInit {
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
+  /**
+   * Supprime les entreprises sélectionnées
+   * @param elementId - ID optionnel d'une entreprise spécifique
+   */
   deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
     console.log('Deleting items with IDs:', selectedIds);
@@ -97,6 +107,9 @@ export class CompanyListPage implements OnInit {
     });
   }
 
+  /**
+   * Trie les données du tableau selon la colonne et direction
+   */
   sortData(sort: any) {
     if (!sort.active || sort.direction === '') {
       return;

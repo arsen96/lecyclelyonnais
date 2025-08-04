@@ -28,6 +28,9 @@ export class CompanyService extends BaseService {
     this.setupNavigationSubscription();
   }
 
+  /**
+   * Initialise le service en chargeant les données si nécessaire
+   */
   async initialize(): Promise<void> {
     if (this.initialized) {
       return;
@@ -42,14 +45,18 @@ export class CompanyService extends BaseService {
     }
   }
 
-  // S'assurer que le service est initialisé
+  /**
+   * S'assure que le service est initialisé avant utilisation
+   */
   async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       await this.initialize();
     }
   }
 
-  // Configuration des événements de navigation (synchrone)
+  /**
+   * Configure la surveillance des changements de navigation pour vérifier les sous-domaines
+   */
   private setupNavigationSubscription(): void {
     this.router.events.subscribe(async (event) => {
       if (event instanceof NavigationEnd) {
@@ -148,12 +155,20 @@ export class CompanyService extends BaseService {
     return { domain: this.currentSubdomain };
   }
 
+  /**
+   * Extrait le sous-domaine de l'URL actuelle
+   * @returns Sous-domaine ou null si localhost
+   */
   getSubdomain(): string | null {
     const host = window.location.hostname;
     const subdomain = host.split('.')[0];
     return subdomain !== 'localhost' ? subdomain : null;
   }
 
+  /**
+   * Récupère la liste des sous-domaines autorisés
+   * @returns Promise avec la liste des sous-domaines
+   */
   async allowedSubdomains(): Promise<(string | null)[]> {
     try {
       await this.ensureInitialized();
@@ -170,6 +185,10 @@ export class CompanyService extends BaseService {
     }
   }
 
+  /**
+   * Vérifie si le sous-domaine actuel est autorisé
+   * @returns Promise avec true si autorisé, false sinon
+   */
   async isAllowedSubdomain(): Promise<boolean> {
     try {
       const allowedSubdomains = await this.allowedSubdomains();
@@ -186,6 +205,9 @@ export class CompanyService extends BaseService {
     }
   }
 
+  /**
+   * Applique la couleur de thème de l'entreprise actuelle
+   */
   setToolbarBackgroundColor(): void {
     if (this.currentCompany && this.currentCompany.theme_color) {
       document.documentElement.style.setProperty('--ion-toolbar-background', this.currentCompany.theme_color);

@@ -45,9 +45,13 @@ export class CompanyPage implements OnInit {
     console.log("this.companies",this.companyService.companies)
   }
 
+  /**
+   * Gère la soumission du formulaire (création/mise à jour d'entreprise)
+   */
   onSubmit() {
     if (this.companyForm.valid) {
       if (this.companySelected) {
+        // Mode édition
         this.companyService.update({ id: this.companyId, ...this.companyForm.value }).then((res) => {
           this.messageService.showMessage('Entreprise mise à jour avec succès', Message.success);
           this.companyService.companies = new Array<Company>(); 
@@ -61,6 +65,7 @@ export class CompanyPage implements OnInit {
           this.messageService.showMessage(err, Message.danger);
         });
       } else {
+        // Mode création
         this.companyService.create(this.companyForm.value).then((res) => {
           this.companyService.companies = new Array<Company>(); 
           this.router.navigate(['/company-list']);

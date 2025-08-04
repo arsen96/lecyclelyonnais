@@ -41,6 +41,9 @@ export class OauthService extends AuthBaseService{
     oAuthService.configure(googleAuthConfig);
    }
 
+   /**
+    * Lance le processus d'authentification OAuth avec Google
+    */
    public loginOauth(){
     this.oAuthService.loadDiscoveryDocumentAndTryLogin().then(() => {
       this.oAuthService.tryLogin().then(() => {
@@ -56,6 +59,11 @@ export class OauthService extends AuthBaseService{
    }
    // un tehcnicien = un zone
 
+  /**
+   * Authentifie l'utilisateur OAuth via l'API backend
+   * @param email - Email de l'utilisateur OAuth
+   * @returns Promise avec le token d'authentification
+   */
   async loginOauthApi(email:string): Promise<string | null>{
     const oauthValue = { email }
     return await lastValueFrom(super.login(oauthValue,`${BaseService.baseApi}/auth/oauth`));

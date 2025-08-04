@@ -19,6 +19,10 @@ export class AdminService extends BaseService {
     super();
   }
 
+  /**
+   * Récupère tous les admins sauf l'utilisateur connecté
+   * @returns Promise avec la liste des admins filtrée
+   */
   override get():Promise<Admin[]> {
     return new Promise<Admin[]>((resolve, reject) => { 
       if(this.allAdmins.length > 0) {
@@ -61,6 +65,12 @@ export class AdminService extends BaseService {
     )
   }
 
+  /**
+   * Authentifie un administrateur et configure la session
+   * @param email - Email de l'administrateur
+   * @param password - Mot de passe de l'administrateur
+   * @returns Observable avec les données de l'admin connecté
+   */
   login(email: string, password: string): Observable<Admin> {
     return this.http.post(`${BaseService.baseApi}/${this.currentUrl}/login`, { email, password,...this.companyService.subdomainREQ }).pipe(
       map((data:any) => {

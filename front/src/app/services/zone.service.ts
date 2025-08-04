@@ -16,6 +16,12 @@ export class ZoneService extends BaseService{
     super();
   }
 
+  /**
+   * Crée une nouvelle zone géographique avec données WKT
+   * @param wkt - Données géospatiales au format WKT
+   * @param data - Données de configuration de la zone
+   * @returns Observable avec la zone créée
+   */
   override create(wkt: string, data:{zoneTitle:string,zoneStartTime:string,zoneEndTime:string,zoneSlotDuration:number}):Observable<any> {
     return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/save`, { wkt, ...data });
   }
@@ -27,6 +33,10 @@ export class ZoneService extends BaseService{
     );
   }
 
+  /**
+   * Récupère toutes les zones avec parsing des données GeoJSON
+   * @returns Promise avec les zones enrichies
+   */
   override get(): Promise<Zones[]> {
     if (this.allZones.length > 0) {
       return lastValueFrom(of(this.allZones));
@@ -57,11 +67,23 @@ export class ZoneService extends BaseService{
   }
   
 
+  /**
+   * Retire un technicien d'une zone géographique
+   * @param zoneId - ID de la zone
+   * @param technicianId - ID du technicien à retirer
+   */
   removeTechnicianFromZone(zoneId:number, technicianId:number): Observable<void> {
     return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/removeTechnicianFromZone`, { zoneId, technicianId }).pipe(
       catchError(BaseService.handleError.bind(this))
     );
   }
+  
+  /**
+   * Ajoute des techniciens à une zone géographique
+   * @param zoneId - ID de la zone
+   * @param technicianIds - IDs des techniciens à ajouter
+   * @returns Observable avec la réponse de l'API
+   */
   addTechnicianToZone(zoneId:number, technicianIds:number[]) {
     return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/addTechnicianToZone`, { technician_ids: technicianIds, zone_id: zoneId }).pipe(
       map((res: any) => {
@@ -80,6 +102,11 @@ export class ZoneService extends BaseService{
     );
   }
 
+  /**
+   * Vérifie si une adresse se trouve dans une zone géographique
+   * @param address - Adresse à vérifier
+   * @returns Observable avec true si dans la zone, false sinon
+   */
   isAddressInZone(address: string): Observable<boolean> {
     return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/isAddressInZone`, { address }).pipe(
       catchError(BaseService.handleError.bind(this))

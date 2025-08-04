@@ -36,6 +36,10 @@ export class InterventionsPage implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * Charge les interventions de l'utilisateur et les trie par période
+   * Attend que l'utilisateur soit disponible avant de charger les données
+   */
   async ionViewWillEnter(){
     const success = await this.interventionService.interventionsLoaded;
     if (!success) {
@@ -44,7 +48,7 @@ export class InterventionsPage implements OnInit, OnDestroy {
       return;
     }
 
-    // Wait for user to be available
+    // Attend que l'utilisateur soit disponible
     this.userSubscription = this.globalService.user.pipe(
       filter(user => user !== null && user.id !== undefined),
       take(1)
@@ -60,11 +64,15 @@ export class InterventionsPage implements OnInit, OnDestroy {
       try {
         this.userInterventions = await this.interventionService.getInterventionsByUser(user.id);
         const now = new Date();
+        
+        // Filtre les interventions passées
         this.pastInterventions = this.userInterventions.filter(intervention => 
           new Date(intervention.appointment_end) < now || 
           intervention.status === 'completed' || 
           intervention.status === 'canceled'
         );
+        
+        // Filtre les interventions à venir
         this.upcomingInterventions = this.userInterventions.filter(intervention => {
           const isUpcom = new Date(intervention.appointment_end) >= now;
           const isPast = this.pastInterventions.some(item => item.id === intervention.id);
@@ -83,10 +91,10 @@ export class InterventionsPage implements OnInit, OnDestroy {
     }
   }
 
-  confirmCancel(intervention){
-    this.cancelIntervention(intervention);
-  }
-
+  /**
+   * Annule une intervention et met à jour les listes
+   * @param {Intervention} intervention - L'intervention à annuler
+   */
   cancelIntervention(intervention: Intervention) {
     console.log('Intervention annulée:', intervention);
     const obs$ = this.interventionService.manageEndIntervention(intervention.id, true, null);
@@ -102,6 +110,11 @@ export class InterventionsPage implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Ouvre une modal pour afficher les photos en plein écran
+   * @param {string[]} photos - Liste des URLs des photos
+   * @param {number} index - Index de la photo à afficher en premier
+   */
   async openImageModal(photos: string[], index: number) {
     photos = photos.map(photo => BaseService.baseApi + '/' + photo);
     const modal = await this.modalController.create({

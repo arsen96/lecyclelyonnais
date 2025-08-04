@@ -37,6 +37,9 @@ export class AdminsListPage implements OnInit {
     });
   }
 
+  /**
+   * Charge et filtre les données des administrateurs selon le rôle utilisateur.
+   */
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
     this.adminService.get().then(() => {
@@ -60,6 +63,9 @@ export class AdminsListPage implements OnInit {
     });
   }
 
+  /**
+   * Initialise le paginateur après chargement des données.
+   */
   async ngAfterViewInit() {
     await this.adminsLoaded;
     this.dataSource.paginator = this.paginator;
@@ -67,23 +73,37 @@ export class AdminsListPage implements OnInit {
 
   ngOnInit() {}
 
+  /**
+   * Applique un filtre sur le tableau.
+   * @param event - L'événement de saisie contenant la valeur du filtre
+   */
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+  /**
+   * Vérifie si tous les éléments sont sélectionnés.
+   */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
+  /**
+   * Bascule la sélection de tous les éléments.
+   */
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
+  /**
+   * Supprime les administrateurs sélectionnés.
+   * @param elementId - ID optionnel de l'élément à supprimer. Si non fourni, supprime tous les éléments sélectionnés
+   */
   deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
     const zoneRemoved$ = this.adminService.delete(selectedIds);
@@ -101,6 +121,10 @@ export class AdminsListPage implements OnInit {
     });
   }
 
+  /**
+   * Trie les données du tableau.
+   * @param sort - L'objet de tri contenant la colonne active et la direction
+   */
   sortData(sort: any) {
     if (!sort.active || sort.direction === '') {
       return;

@@ -62,6 +62,10 @@ export class UsersPage implements OnInit {
     });
   }
 
+  /**
+   * Charge les détails d'un utilisateur pour édition
+   * @param {number} userId - ID de l'utilisateur à charger
+   */
   loadUserDetails(userId: number) {
     this.clientService.get().then((res: any) => {
       this.selectedUser = this.clientService.allClients.find(user => user.id === userId);
@@ -74,13 +78,16 @@ export class UsersPage implements OnInit {
           address: this.selectedUser.address
         });
 
-        // Ensure password validators are cleared
+        // Supprime les validations du mot de passe en mode édition
         this.registrationForm.get('password').clearValidators();
         this.registrationForm.get('password').updateValueAndValidity();
       }
     });
   } 
 
+  /**
+   * Met à jour un utilisateur existant
+   */
   updateUser() {
     if (this.registrationForm.valid) {
       const updatedUser = { id: this.selectedUser.id, ...this.registrationForm.value };
@@ -89,7 +96,6 @@ export class UsersPage implements OnInit {
           next: (result) => {
             this.messageService.showToast(result.message, Message.success);
             this.clientService.allClients = [];
-            // this.globalService.user
             this.globalService.user.next(result.data);
             const link = this.globalService.userRole.getValue() === UserRole.CLIENT ? 'actions' : 'users-list';
 
@@ -108,6 +114,10 @@ export class UsersPage implements OnInit {
     }
   }
 
+  /**
+   * Valide et met à jour l'adresse depuis Google Places
+   * @param {any} place - Objet place de Google Places API
+   */
   handleAddressChange(place: any) {
     if (place.geometry) {
       console.log(place);
@@ -126,6 +136,9 @@ export class UsersPage implements OnInit {
     this.messageService.showMessage(error, Message.danger);
   }
 
+  /**
+   * Soumet le formulaire pour créer un utilisateur ou mettre à jour un existant
+   */
   async onSubmitRegister() {
     if (this.selectedUser) {
       this.updateUser();

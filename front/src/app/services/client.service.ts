@@ -15,6 +15,10 @@ export class ClientService extends BaseService {
     super();
   }
 
+  /**
+   * Récupère tous les clients avec cache local
+   * @returns Promise résolue quand les clients sont chargés
+   */
   override get():Promise<any>{
     return new Promise((resolve, reject) => {
       if(this.allClients.length > 0){

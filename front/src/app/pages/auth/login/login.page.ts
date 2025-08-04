@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faLinkedin, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { OauthService } from 'src/app/services/auth/oauth.service';
@@ -32,58 +32,63 @@ export class FormLoginModel {
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage{
-  // public globalService = inject(GlobalService);
-  public standardAuthService = inject(StandardAuth)
+
+/**
+ * Composant de page de connexion et d'inscription.
+ */
+export class LoginPage {
+  public standardAuthService = inject(StandardAuth);
   public loaderService = inject(LoadingService);
-  public oauthService = inject(OauthService)
-  public router = inject(Router)
+  public oauthService = inject(OauthService);
+  public router = inject(Router);
   cdr = inject(ChangeDetectorRef);
-  formBuilder = inject(FormBuilder)
-  public globalService = inject(GlobalService)
-  cookieService = inject(CookieService)
-  faGoogle = faGoogle
-  faLinkedin = faLinkedin
+  formBuilder = inject(FormBuilder);
+  public globalService = inject(GlobalService);
+  cookieService = inject(CookieService);
+  faGoogle = faGoogle;
+  faLinkedin = faLinkedin;
+
   modelLogin: FormLoginModel = { email: "", password: "" };
-  loginForm: FormGroup; 
+  loginForm: FormGroup;
+
   public error = {
     type: 'login'
-  }
-  public interventionService = inject(InterventionService)  
+  };
+
+  public interventionService = inject(InterventionService);
   registrationForm: FormGroup;
   addressValidated = false;
+
   @Input() isStepper = false;
   @Output() stepperAuthentication = new EventEmitter<boolean>();
+  public bicycleService = inject(BicycleService);
+  public technicianService = inject(TechnicianService);
+  public companyService = inject(CompanyService);
 
-  public bicycleService = inject(BicycleService)  
 
-  public technicianService = inject(TechnicianService)  
-  public companyService = inject(CompanyService)
-    
   constructor(public route: ActivatedRoute, public messageService: MessageService) {
     this.route.fragment.subscribe(async (fragment) => {
       if (fragment) {
         const fragmentParams = new URLSearchParams(fragment);
         const accessToken = fragmentParams.get('id_token') as string;
         const result = this.oauthService.decodeJWT(accessToken);
-
         if (result.email_verified) {
           this.loaderService.setLoading(true);
-            try{
-              await this.oauthService.loginOauthApi(result.email);
-              this.router.navigateByUrl("home").then(() => {
-                this.globalService.isAuthenticated.next(true)
-                this.loaderService.setLoading(false)
-              })
-            }catch(err){
-              this.oauthService.oAuthService.logOut(true);
-              this.loaderService.setLoading(false)
-              this.displayError(err,'login')
-            }
+          try {
+            await this.oauthService.loginOauthApi(result.email);
+            this.router.navigateByUrl("home").then(() => {
+              this.globalService.isAuthenticated.next(true);
+              this.loaderService.setLoading(false);
+            });
+          } catch (err) {
+            this.oauthService.oAuthService.logOut(true);
+            this.loaderService.setLoading(false);
+            this.displayError(err, 'login');
+          }
         }
       }
-    })
-    
+    });
+
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -97,85 +102,95 @@ export class LoginPage{
       phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       address: ['', Validators.minLength(2)]
     });
-
   }
 
+  /**
+   * Retourne les contrôles du formulaire de connexion pour afficher dans le template
+   */
   get loginControls() {
     return this.loginForm.controls;
   }
+
 
   get f() {
     return this.registrationForm.controls;
   }
 
-
+  /**
+   * Soumet les données du formulaire de connexion.
+   */
   async onSubmitLogin() {
     if (this.loginForm.valid) {
       const loginData = this.loginForm.value;
-      const login$ = this.standardAuthService.loginStandard({...loginData,...this.companyService.subdomainREQ});
+      const login$ = this.standardAuthService.loginStandard({ ...loginData, ...this.companyService.subdomainREQ });
       const result = this.loaderService.showLoaderUntilCompleted(login$);
-      result.subscribe(
-        {
-          next: () => {
-            console.log("useruseruseruser 2")
-            if(this.isStepper){
-              this.stepperAuthentication.emit(true)
-            }else{
-              this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
-               this.router.navigateByUrl("list-zones")
-            }
-          }, error: (err) => {
-            this.displayError(err,'login')
-            console.log("login error", err)
+      result.subscribe({
+        next: () => {
+          if (this.isStepper) {
+            this.stepperAuthentication.emit(true);
+          } else {
+            this.globalService.loadAllData(this.bicycleService, this.technicianService, this.interventionService);
+            this.router.navigateByUrl("list-zones");
           }
+        }, error: (err) => {
+          this.displayError(err, 'login');
+          console.log("login error", err);
         }
-      )
+      });
     }
-
   }
 
-
+  /**
+   * Affiche une erreur.
+   * @param err - Message d'erreur à afficher.
+   * @param type - Type d'erreur (login ou register).
+   */
   displayError(err: string, type?: 'login' | 'register') {
     if (type) {
-      this.error.type = type
+      this.error.type = type;
     }
-    this.messageService.showMessage(err, Message.danger)
+    this.messageService.showMessage(err, Message.danger);
   }
 
-
-
+  /**
+   * Soumet les données du formulaire d'inscription.
+   */
   async onSubmitRegister() {
     if (this.registrationForm.valid && !(this.addressValidated && this.registrationForm.controls['address'].hasValidator(Validators.required))) {
       const register$ = this.standardAuthService.register(this.registrationForm.value);
       const result = this.loaderService.showLoaderUntilCompleted(register$);
       result.subscribe({
         next: (res) => {
-          if(this.isStepper){
-            this.stepperAuthentication.emit(true)
-          }else{
-            this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
-            this.router.navigateByUrl("list-zones")
+          if (this.isStepper) {
+            this.stepperAuthentication.emit(true);
+          } else {
+            this.globalService.loadAllData(this.bicycleService, this.technicianService, this.interventionService);
+            this.router.navigateByUrl("list-zones");
           }
         }, error: (err) => {
-          this.displayError(err, 'register')
-          console.log("register error", err)
+          this.displayError(err, 'register');
+          console.log("register error", err);
         }
-      })
+      });
     } else {
       this.messageService.showMessage('Veuillez sélectionner une adresse valide.', Message.danger);
     }
   }
 
+ 
   onGoogleLogin() {
     this.oauthService.loginOauth();
   }
 
 
-
   ionViewWillLeave() {
-    this.messageService.clearMessage()
+    this.messageService.clearMessage();
   }
 
+  /**
+   * Gère le changement d'adresse dans le formulaire d'inscription.
+   * @param place - Objet contenant les informations sur le lieu.
+   */
   handleAddressChange(place: any) {
     if (place.geometry) {
       console.log(place);
@@ -183,5 +198,4 @@ export class LoginPage{
       this.addressValidated = true;
     }
   }
-
 }

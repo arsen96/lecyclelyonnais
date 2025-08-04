@@ -43,6 +43,7 @@ export class TechnicianPage implements OnInit {
       email: ['kubatarsen@gmail.com', [Validators.required, Validators.email]],
       password: ['', [
         control => {
+          // Validation conditionnelle du mot de passe selon le mode (création/édition)
           if (!this.technicianSelected && (!control.value || control.value.length < 8)) {
             return { required: true, minlength: true };
           }

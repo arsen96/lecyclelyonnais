@@ -94,6 +94,9 @@ export class LeafletPage {
     });
   }
 
+  /**
+   * Configure les outils de dessin Leaflet selon le mode (création/édition)
+   */
   async configLeafletDraw() {
     if (this.zoneIdSelected) {
       await this.editeMap();
@@ -121,6 +124,7 @@ export class LeafletPage {
       this.map.addControl(this.drawControl);
     }
 
+    // Gère la création d'une nouvelle zone
     this.map.on('draw:created', async (event: any) => {
       if (this.zoneSelected) return;
       const layer = event.layer;
@@ -130,6 +134,7 @@ export class LeafletPage {
       coordinates.push(coordinates[0]);
       const polygon = turf.polygon([coordinates]);
 
+      // Vérifie la taille de la zone (max 200 km²)
       const areaInSquareKilometers = turf.area(polygon) / 1000000;
       if (areaInSquareKilometers > 200) {
         this.messageService.showToast("La zone que vous avez dessinée est trop grande.", Message.danger); 
@@ -187,6 +192,11 @@ export class LeafletPage {
     return data;
   }
 
+  /**
+   * Convertit une couche Leaflet en format WKT (Well-Known Text)
+   * @param {Layer} layer - La couche Leaflet à convertir
+   * @returns {string} Représentation WKT du polygone
+   */
   public convertToWKT(layer: Layer): string {
     const coords = [];
     if (layer instanceof Polygon) {
@@ -224,6 +234,9 @@ export class LeafletPage {
     this.resetDrawing();
   }
 
+  /**
+   * Charge et affiche une zone existante sur la carte
+   */
   async editeMap() {
     try {
       await this.zoneService.get();
@@ -268,6 +281,10 @@ export class LeafletPage {
     return await modal.present();
   }
 
+  /**
+   * Supprime un technicien d'une zone
+   * @param {number} technicianId - ID du technicien à supprimer
+   */
   removeTechnician(technicianId: number) {
     this.zoneService.removeTechnicianFromZone(this.zoneIdSelected, technicianId).subscribe({
       next: (res: any) => {

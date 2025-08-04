@@ -27,6 +27,9 @@ export class InterventionService {
     this.interventionLoad();
   }
 
+  /**
+   * Initialise le service en chargeant les données si nécessaire
+   */
   async initialize(): Promise<void> {
     if (this.initialized) {
       return;
@@ -41,6 +44,9 @@ export class InterventionService {
     }
   }
 
+  /**
+   * S'assure que le service est initialisé avant utilisation
+   */
   async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       await this.initialize();
@@ -53,6 +59,10 @@ export class InterventionService {
     );
   }
 
+  /**
+   * Récupère toutes les interventions avec enrichissement des données
+   * @returns Promise avec les interventions enrichies (vélo et technicien)
+   */
   async get(): Promise<Intervention[]> {
     try {
       console.log("Loading interventions...");
@@ -113,11 +123,21 @@ export class InterventionService {
     }
   }
 
+  /**
+   * Récupère les interventions d'un client spécifique
+   * @param clientId - ID du client
+   * @returns Promise avec les interventions du client
+   */
   async getInterventionsByUser(clientId: number): Promise<Intervention[]> {
     await this.ensureInitialized();
     return this.allInterventions.filter((intervention) => intervention.client_id === clientId);
   }
 
+  /**
+   * Récupère les interventions d'un technicien spécifique
+   * @param technicianId - ID du technicien
+   * @returns Promise avec les interventions du technicien
+   */
   async getInterventionsByTechnician(technicianId: number): Promise<Intervention[]> {
     await this.ensureInitialized();
     return this.allInterventions.filter((intervention) => intervention.technician?.id === technicianId);
@@ -127,6 +147,13 @@ export class InterventionService {
     return this.http.post(`${BaseService.baseApi}/bicycles/upload-photos`, formData);
   }
 
+  /**
+   * Gère la fin d'une intervention (annulation ou finalisation)
+   * @param interventionId - ID de l'intervention
+   * @param isCanceled - Si l'intervention est annulée
+   * @param comment - Commentaire sur l'intervention
+   * @param photos - Photos optionnelles de l'intervention
+   */
   manageEndIntervention(interventionId: number, isCanceled: boolean, comment: string, photos?: File[]) {
     const formData = new FormData();
 
@@ -147,6 +174,9 @@ export class InterventionService {
     });
   }
 
+  /**
+   * Recharge toutes les interventions depuis l'API
+   */
   async reload(): Promise<void> {
     this.allInterventions = [];
     this.initialized = false;
@@ -154,6 +184,9 @@ export class InterventionService {
     await this.initialize();
   }
 
+  /**
+   * Efface le cache des interventions
+   */
   resetCache(): void {
     this.allInterventions = [];
     this.initialized = false;
