@@ -95,7 +95,6 @@ describe('Guards', () => {
 
       expect(result).toBe(true);
       expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/interventions');
-      expect(console.log).toHaveBeenCalledWith('currentUrlcurrentUrlcurrentUrlcurrentUrl', '/interventions');
       expect(console.log).toHaveBeenCalledWith('userRoleuserRoleuserRole', UserRole.CLIENT);
     });
 

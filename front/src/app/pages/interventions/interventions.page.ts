@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ImageModalComponent } from 'src/app/components/image-modal/image-modal.component';
@@ -8,13 +8,15 @@ import { GlobalService } from 'src/app/services/global.service';
 import { InterventionService } from 'src/app/services/intervention.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { Message, MessageService } from 'src/app/services/message.service';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-interventions',
   templateUrl: './interventions.page.html',
   styleUrls: ['./interventions.page.scss'],
 })
-export class InterventionsPage implements OnInit {
+export class InterventionsPage implements OnInit, OnDestroy {
 
   public interventionService = inject(InterventionService)
   public router = inject(Router)
@@ -26,6 +28,7 @@ export class InterventionsPage implements OnInit {
   upcomingInterventions: Intervention[] = [];
 
   public loadingService = inject(LoadingService)
+  private userSubscription: Subscription;
 
   constructor() { }
 
@@ -40,19 +43,44 @@ export class InterventionsPage implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    const user = this.globalService.user.getValue();
-    console.log("user", user.id)
 
-    console.log("this.allInterventions",this.interventionService.allInterventions)
-    this.userInterventions = await this.interventionService.getInterventionsByUser(this.globalService.user.getValue().id);
-    const now = new Date();
-    this.pastInterventions = this.userInterventions.filter(intervention => new Date(intervention.appointment_end) < now || intervention.status === 'completed' || intervention.status === 'canceled');
-    this.upcomingInterventions = this.userInterventions.filter(intervention => {
-      const isUpcom = new Date(intervention.appointment_end) >= now;
-      const isPast = this.pastInterventions.some(item => item.id === intervention.id);
-      return isUpcom && !isPast
+    // Wait for user to be available
+    this.userSubscription = this.globalService.user.pipe(
+      filter(user => user !== null && user.id !== undefined),
+      take(1)
+    ).subscribe(async (user) => {
+      console.log("useruseruseruser", user)
+      if (!user || !user.id) {
+        console.error('User not found or user ID is missing');
+        this.messageService.showToast("Utilisateur non trouvé", Message.danger);
+        this.router.navigate(['/login']);
+        return;
+      }
+
+      try {
+        this.userInterventions = await this.interventionService.getInterventionsByUser(user.id);
+        const now = new Date();
+        this.pastInterventions = this.userInterventions.filter(intervention => 
+          new Date(intervention.appointment_end) < now || 
+          intervention.status === 'completed' || 
+          intervention.status === 'canceled'
+        );
+        this.upcomingInterventions = this.userInterventions.filter(intervention => {
+          const isUpcom = new Date(intervention.appointment_end) >= now;
+          const isPast = this.pastInterventions.some(item => item.id === intervention.id);
+          return isUpcom && !isPast
+        });
+      } catch (error) {
+        console.error('Error loading interventions:', error);
+        this.messageService.showToast("Erreur lors du chargement des interventions", Message.danger);
+      }
     });
-    console.log("this.upcomingInterventions",this.upcomingInterventions)
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 
   confirmCancel(intervention){
@@ -65,8 +93,6 @@ export class InterventionsPage implements OnInit {
     this.loadingService.showLoaderUntilCompleted(obs$).subscribe({
         next: (response: any) => {
           this.messageService.showToast(response.message, Message.success);
-          // this.interventionService.allInterventions = this.interventionService.allInterventions.filter((uI) => uI.id != intervention.id);
-          // this.pastInterventions = this.userInterventions.filter((uI) => uI.id !== intervention.id);
           this.pastInterventions.push(intervention)
           this.upcomingInterventions = this.upcomingInterventions.filter((uI) => uI.id !== intervention.id);
         },

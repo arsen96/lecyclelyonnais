@@ -27,6 +27,7 @@ export class StandardAuth extends AuthBaseService {
           this.bicycleService.userBicycles = [];
           const user = data.data.user;
           this.globalService.user.next(user);
+          console.log("useruseruseruser",user)
           this.globalService.userRole.next(user.role);
           return data.token;
         })

@@ -8,7 +8,7 @@ import { CRUD } from '../models/crud';
 })
 export abstract class BaseService implements CRUD<any> {
   public static currentRoute:string;
-  public static baseApi = "http://localhost:3000";
+  public static baseApi = "http://161.97.116.21:3000";
   public http:HttpClient = inject(HttpClient)
   private static disconnect = new ReplaySubject<Boolean>(1);
   public static $disconnect = BaseService.disconnect.asObservable();
@@ -33,7 +33,7 @@ export abstract class BaseService implements CRUD<any> {
         errorMessage = message;
       }
     }
-
+    console.log("errorMessage",errorMessage)
     if(errorMessage === 'invalidtoken'){
       BaseService.disconnect.next(true);
     }

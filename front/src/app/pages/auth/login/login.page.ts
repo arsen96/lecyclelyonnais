@@ -117,11 +117,12 @@ export class LoginPage{
       result.subscribe(
         {
           next: () => {
+            console.log("useruseruseruser 2")
             if(this.isStepper){
               this.stepperAuthentication.emit(true)
             }else{
               this.globalService.loadAllData(this.bicycleService,this.technicianService,this.interventionService);
-              this.router.navigateByUrl("list-zones")
+               this.router.navigateByUrl("list-zones")
             }
           }, error: (err) => {
             this.displayError(err,'login')

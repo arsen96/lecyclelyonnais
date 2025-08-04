@@ -1,13 +1,13 @@
 
-# Étape de construction
-FROM node:18.17.1 AS build
+FROM node:20-alpine AS build
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-# Installer les dépendances du projet
 RUN npm install
-
-RUN npm install -g @ionic/cli
+RUN npm install -g @angular/cli @ionic/cli
 
 COPY . .
+EXPOSE 8100
+
+CMD ["ionic", "serve", "--host", "0.0.0.0", "--port", "8100"]
