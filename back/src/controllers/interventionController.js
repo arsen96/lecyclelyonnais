@@ -1,24 +1,35 @@
 const { trackBusinessMetric, logAuditEvent, asyncHandler, captureBusinessError } = require('../config/sentry');
-
 const pool = require('../config/db');
 const bicycleController = require('./bicycleController');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
-
+const sharp = require('sharp');
+const path = require('path');
 
 const filePathOperation = 'uploads/bicycles/';
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, filePathOperation);
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + file.originalname;
-        cb(null, uniqueName);
-    },
-});
 
-const upload = multer({ storage: storage }).array('photos');
+const optimizeImage = async (buffer, outputPath) => {
+    await sharp(buffer)
+        .resize(1200, 800, { fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(outputPath);
+};
+
+// Configuration Multer en mémoire pour optimisation
+const storage = multer.memoryStorage();
+
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, 
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Seules les images sont autorisées'), false);
+        }
+    }
+}).array('photos');
 
 const save = async (req, res) => {
     upload(req, res, async (err) => {
@@ -38,7 +49,6 @@ const save = async (req, res) => {
             const appointmentStart = isMaintenance ? new Date(new Date(maintenance.scheduleTimeStart).getTime() - 60 * 60 * 1000).toISOString() : new Date(new Date(repair.scheduleTimeStart).getTime() - 60 * 60 * 1000).toISOString();
             const appointmentEnd = isMaintenance ? new Date(new Date(maintenance.scheduleTimeEnd).getTime() - 60 * 60 * 1000).toISOString() : new Date(new Date(repair.scheduleTimeEnd).getTime() - 60 * 60 * 1000).toISOString();
 
-
             //Retrouver un technicien avec NOT EXISTS si aucune ligne ne correspond à la sous-requête
             const selectTechnicianQuery = `
                 SELECT id FROM technician 
@@ -56,10 +66,6 @@ const save = async (req, res) => {
                 LIMIT 1
             `;
 
-            // exemple Créneau  : 11:30 → 12:30
-            // 1 condition valide : 11:00 → 12:00 l'intervention commence avant le début du creneau demande et se termine apres le début.
-            //  2 condition valide : 11:00 → 13:00 l'intervention commence avant laa fin du creneau demande et se termine  apres la fin.
-            // 3 condition valide : intervention completement incluse
             const technicianResult = await pool.query(selectTechnicianQuery, [address.zone, appointmentStart, appointmentEnd]);
             const technicianId = technicianResult.rows[0]?.id;
             if (!technicianId) {
@@ -72,6 +78,8 @@ const save = async (req, res) => {
             const queryIntervention = 'INSERT INTO intervention (type, bicycle_id, technician_id, client_id, status, description, appointment_start, appointment_end, package) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
             const result = await pool.query(queryIntervention, [operation.operation, bicycle.id, technicianId, userId, "", description, appointmentStart, appointmentEnd, currentPackage]);
             const intervention = result.rows[0];
+            
+            // Optimiser et sauvegarder les photos
             if (photos) {
                 await uploadUserOperationPhotos(photos, intervention.id);
             }
@@ -111,20 +119,24 @@ const get = async (req, res) => {
           ...row,
           photos: row.photos.filter(photo => photo !== null),
           technician_photos: row.technician_photos.filter(photo => photo !== null),
-          client_info: row.client_info[0] // Assuming you want the first object in the array
+          client_info: row.client_info[0]
         };
       });
     res.status(200).send({ success: true, message: "Interventions récupérées avec succès", data});
 }
 
-
 const uploadUserOperationPhotos = async (files, interventionId) => {
     const query = 'INSERT INTO intervention_bicycle_photos (intervention_id, file_path) VALUES ($1, $2)';
     try {
         for (const file of files) {
-            const filePath = filePathOperation + file.filename;
-            console.log("filePath", filePath);
+            const fileName = `${Date.now()}-optimized.webp`;
+            const filePath = filePathOperation + fileName;
+            
+            await optimizeImage(file.buffer, filePath);
+            
+            // Sauvegarder en base
             await pool.query(query, [interventionId, filePath]);
+            console.log("Photo optimisée:", filePath);
         }
         return true;
     } catch (dbError) {
@@ -135,18 +147,14 @@ const uploadUserOperationPhotos = async (files, interventionId) => {
 
 const filePathIntervention = 'uploads/interventions/';
 
-const storageIntervention = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, filePathIntervention);
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${file.originalname}`;
-        cb(null, uniqueName);
-    },
-});
+const storageIntervention = multer.memoryStorage(); 
 
 const uploadInterventionPhotos = multer({ 
-    storage: storageIntervention 
+    storage: storageIntervention,
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+         cb(null, true);
+    }
 }).fields([
     { name: 'interventionPhotos', maxCount: 10 },
     { name: 'intervention_id', maxCount: 1 },
@@ -159,9 +167,15 @@ const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
     
     try {
         for (const file of files) {
-            const filePath = filePathIntervention + file.filename;
-            console.log("filePath", filePath);
+            const fileName = `${Date.now()}-tech-optimized.webp`;
+            const filePath = filePathIntervention + fileName;
+            
+            // Optimiser l'image
+            await optimizeImage(file.buffer, filePath);
+            
+            // Sauvegarder en base
             await pool.query(query, [interventionId, filePath]);
+            console.log("Photo technicien optimisée:", filePath);
         }
         return true; 
     } catch (dbError) {
@@ -170,13 +184,9 @@ const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
     }
 };
 
-/**
- * Mettre à jour une intervention
- */
 const manageEnd = async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-        captureBusinessError(err, 'intervention.manage_end.token_missing');
         return res.status(401).send({ success: false, message: "Token manquant" });
     }
 
@@ -190,10 +200,9 @@ const manageEnd = async (req, res) => {
             const { intervention_id, is_canceled, comment } = req.body;
             const isCanceled = is_canceled === 'true';
 
-            const photos = req.files['interventionPhotos'];
+            const photos = req.files && req.files['interventionPhotos'] ? req.files['interventionPhotos'] : [];
             try {
                 const currentStatus = isCanceled ? "canceled" : "completed";
-                console.log("currentStatus", currentStatus);
                 await pool.query('UPDATE intervention SET status = $1, comment = $2 WHERE id = $3', [currentStatus, comment, intervention_id]);
                 if (photos && photos.length > 0) {
                     await uploadTechnicianInterventionPhotos(photos, intervention_id);
@@ -226,4 +235,4 @@ module.exports = {
     uploadUserOperationPhotos,
     manageEnd,
     uploadTechnicianInterventionPhotos
-}   
+}
