@@ -2,6 +2,11 @@ const pool = require('../config/db');
 const planningModelService = require('./planningModelController');
 const {subdomainInfo} = require("../controllers/companyController")
 
+/**
+ * Crée une nouvelle zone géographique avec modèle de planning associé
+ * @param {Object} req.body - wkt (format géométrique)
+ * @returns {Object} ID de la zone créée
+ */
 const save = async (req, res) => {
   const { wkt, zoneTitle,domain } = req.body;
   const companyId = await subdomainInfo(domain);
@@ -32,6 +37,10 @@ const save = async (req, res) => {
 };
 
 // https://postgis.net/docs/manual-1.5/ch08.html
+/**
+ * Récupère les zones avec techniciens et modèles de planning associés
+ * @returns {Object} Zones avec données géographiques et planning
+ */
 const get = async (req, res) => {
   const { domain } = req.query;
   try {
@@ -108,6 +117,9 @@ const updateZone = async (req, res) => {
 
 
 
+/**
+ * Supprime plusieurs zones avec dissociation automatique des techniciens
+ */
 const deleteSelected = async (req, res) => {
   const { ids } = req.body;
   
@@ -165,7 +177,6 @@ const deleteSelected = async (req, res) => {
     });
   }
 }; 
-
 const removeTechnicianFromZone = async (req, res) => {
   const {technicianId } = req.body;
   try {
@@ -179,6 +190,9 @@ const removeTechnicianFromZone = async (req, res) => {
 };
 
 
+/**
+ * Ajoute des techniciens à une zone avec géocodage automatique de l'adresse
+ */
 const addTechnicianToZone = async (req, res) => {
   try {
     const { technician_ids, zone_id } = req.body;
@@ -210,6 +224,9 @@ const addTechnicianToZone = async (req, res) => {
 }
 
 
+/**
+ * Vérifie si une adresse se trouve dans une zone avec technicien disponible
+ */
 const isAddressInZone = async (req, res) => {
   try {
     const { address } = req.body;

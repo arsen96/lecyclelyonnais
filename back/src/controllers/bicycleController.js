@@ -1,5 +1,9 @@
 const pool = require('../config/db'); 
 
+/**
+ * Crée un nouveau vélo associé à une intervention
+ * @returns {Object} Vélo créé
+ */
 const save = async (req, res) => {
     const { brand, model, year, type } = JSON.parse(req.body.intervention).details;
     
@@ -36,6 +40,9 @@ const getUserBicycles = async (req, res) => {
     }
 }
 
+/**
+ * Supprime plusieurs vélos avec vérification des permissions utilisateur
+ */
 const deleteBicycles = async (req, res) => {
     try {
         const { ids } = req.body;

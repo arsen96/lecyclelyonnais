@@ -5,7 +5,7 @@ const {subdomainInfo} = require("../controllers/companyController")
 /**
  * Convertir une adresse en coordonnées géographiques et trouver l'ID de la zone géographique
  * @param {string} address - L'adresse à convertir
- * @returns {Promise<number|null>} - L'ID de la zone géographique ou null si non trouvé
+ * @returns {Promise<number|null>} - L'ID de la zone géographique
  */
 const getGeographicalZoneId = async (address) => {
   if (!address || address.length === 0) {
@@ -79,13 +79,8 @@ const getGeographicalZoneId = async (address) => {
 };
 
 /**
- * Créer un nouveau client
- * 
- * @param {*} req 
- * @param {*} res 
- * @returns obtenir le token de session
+ * Créer un nouveau technicien
  */
-
 const save = async (req, res) => {
   try {
     const { last_name, first_name, phone, address, password, email, domain } = req.body;
@@ -152,6 +147,9 @@ const update = async (req, res) => {
   }
 };
 
+/**
+ * Supprime plusieurs techniciens avec gestion des contraintes d'intégrité
+ */
 const deleteSelected = async (req, res) => {
   try {
     const { ids } = req.body;

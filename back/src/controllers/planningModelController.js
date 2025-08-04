@@ -1,6 +1,9 @@
 const pool = require('../config/db');
 const { subdomainInfo } = require("../controllers/companyController");
 
+/**
+ * Crée un nouveau modèle de planning avec formatage automatique des heures
+ */
 const save = async (req, res) => {
     const {domain} = req.body;
     const companyId = await subdomainInfo(domain);
@@ -21,6 +24,11 @@ const save = async (req, res) => {
     }
 }
 
+/**
+ * Formate une heure en format pour la base de données
+ * @param {string|number} time - Heure à formater
+ * @returns {string} Heure formatée
+ */
 function formatTime(time) {
     if (typeof time === 'string' && time.includes(':')) {
         return time;
@@ -36,6 +44,10 @@ function formatTime(time) {
 }
 
 
+/**
+ * Récupère les modèles de planning pour une entreprise
+ * @returns {Object} Liste des modèles de planning
+ */
 const get = async (req, res) => {
     const {domain} = req.query;
     const companyId = await subdomainInfo(domain);
@@ -45,6 +57,9 @@ const get = async (req, res) => {
 }
 
 
+/**
+ * Met à jour un modèle de planning existant
+ */
 const update = async (req, res) => {
     try{
         const startTime = formatTime(req.body.start_time);
@@ -59,6 +74,9 @@ const update = async (req, res) => {
     }
 }
 
+/**
+ * Supprime des modèles de planning avec nettoyage des associations de zones
+ */
 const deleteModel = async (req, res) => {
     try {
         const {domain} = req.body;
@@ -79,6 +97,9 @@ const deleteModel = async (req, res) => {
 }
 
 
+/**
+ * Ajoute des associations de modèles de planning pour une zone
+ */
 const addPlanningModel = async (req, res) => {
     const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
     const query = 'INSERT INTO planning_model_zones (zone_id, planning_model_id_maintenance,planning_model_id_repair) VALUES ($1, $2, $3)';
@@ -87,7 +108,10 @@ const addPlanningModel = async (req, res) => {
 
 
 
-  const updateZonePlanningModel = async (req, res) => {
+  /**
+ * Met à jour les associations de modèles de planning pour une zone
+ */
+const updateZonePlanningModel = async (req, res) => {
     const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
 
     try {

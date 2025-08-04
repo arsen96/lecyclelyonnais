@@ -1,5 +1,9 @@
 const pool = require('../config/db');
 
+/**
+ * Récupère les entreprises avec filtrage optionnel par domaine
+ * @returns {Object} Liste des entreprises
+ */
 const getCompanies = async (req, res) => {
   const {domain} = req.query;
   let result;
@@ -21,6 +25,9 @@ const getCompanies = async (req, res) => {
 };
 
 
+/**
+ * Crée une nouvelle entreprise avec gestion des contraintes d'unicité
+ */
 const createCompany = async (req, res) => {
   try {
     const { name, email, subdomain, theme_color, phone } = req.body;
@@ -38,6 +45,10 @@ const createCompany = async (req, res) => {
   }
 };
 
+/**
+ * Récupère l'ID de l'entreprise basé sur le sous-domaine
+ * @param {string} subdomain - Sous-domaine de l'entreprise
+ */
 const subdomainInfo = async (subdomain) => {
   let result;
   const currentSubdomain = null;
@@ -51,6 +62,9 @@ const subdomainInfo = async (subdomain) => {
   return result.rows[0]?.id ?? null;
 }
 
+/**
+ * Met à jour un administrateur existant avec vérification d'unicité email
+ */
 const updateCompany = async (req, res) => {
   try {
     const { id, name, email, subdomain, theme_color, phone } = req.body;
@@ -66,6 +80,9 @@ const updateCompany = async (req, res) => {
   }
 };
 
+/**
+ * Supprime plusieurs entreprises avec gestion des dépendances
+ */
 const deleteCompanies = async (req, res) => {
   try {
     const { ids } = req.body;

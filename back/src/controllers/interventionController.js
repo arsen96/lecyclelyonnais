@@ -9,6 +9,11 @@ const path = require('path');
 const filePathOperation = 'uploads/bicycles/';
 
 
+/**
+ * Optimise une image avec Sharp (redimensionnement et compression WebP)
+ * @param {Buffer} buffer - Buffer de l'image source
+ * @param {string} outputPath - Chemin de sortie pour l'image optimisée
+ */
 const optimizeImage = async (buffer, outputPath) => {
     await sharp(buffer)
         .resize(1200, 800, { fit: 'inside', withoutEnlargement: true })
@@ -31,6 +36,10 @@ const upload = multer({
     }
 }).array('photos');
 
+/**
+ * Crée une nouvelle intervention avec attribution automatique de technicien
+ * @returns {Object} Intervention créée avec technicien assigné
+ */
 const save = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
@@ -94,6 +103,10 @@ const save = async (req, res) => {
     });
 }
 
+/**
+ * Récupère toutes les interventions avec photos et informations client
+ * @returns {Object} Liste des interventions avec données complètes
+ */
 const get = async (req, res) => {
     const query =
     `SELECT 
@@ -125,6 +138,11 @@ const get = async (req, res) => {
     res.status(200).send({ success: true, message: "Interventions récupérées avec succès", data});
 }
 
+/**
+ * Sauvegarde et optimise les photos d'intervention utilisateur
+ * @param {Array} files - Fichiers photos à traiter
+ * @param {number} interventionId - ID de l'intervention
+ */
 const uploadUserOperationPhotos = async (files, interventionId) => {
     const query = 'INSERT INTO intervention_bicycle_photos (intervention_id, file_path) VALUES ($1, $2)';
     try {
@@ -184,6 +202,9 @@ const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
     }
 };
 
+/**
+ * Finalise une intervention (complétée ou annulée) avec photos technicien
+ */
 const manageEnd = async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {

@@ -3,6 +3,12 @@ const pool = require("../config/db");
 const jwt = require('jsonwebtoken');
 const { subdomainInfo } = require("../controllers/companyController");
 
+/**
+ * Génère un token JWT pour l'authentification admin
+ * @param {Object} user - Objet utilisateur admin
+ * @param {string} role - Rôle de l'administrateur
+ * @returns {string} Token JWT signé
+ */
 const generateToken = (user,role) => {
   return jwt.sign({ id: user.id, email: user.email,role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
@@ -20,6 +26,9 @@ const getAdmins = async (req, res) => {
     }
 }
 
+/**
+ * Crée un nouvel administrateur avec vérification d'unicité email
+ */
 const createAdmin = async (req, res) => {
     const { first_name, last_name, email, password,domain, company_id } = req.body;
     let companyId;
@@ -59,6 +68,10 @@ const createAdmin = async (req, res) => {
     }
 }
 
+/**
+ * Met à jour un administrateur existant avec vérification d'unicité email
+ * @returns {Object} Confirmation de mise à jour
+ */
 const updateAdmin = async (req, res) => {   
     const { id, first_name, last_name, email, password, role } = req.body;
     try {
@@ -109,6 +122,10 @@ const deleteAdmin = async (req, res) => {
     }
 }
 
+/**
+ * Authentification administrateur avec vérification multi-entreprise
+ * @returns {Object} Token JWT et données administrateur
+ */
 const loginAdmin = async (req, res) => {
   const { email, password, domain } = req.body;
 
