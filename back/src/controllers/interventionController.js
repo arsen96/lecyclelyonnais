@@ -1,7 +1,10 @@
+const { trackBusinessMetric, logAuditEvent, asyncHandler, captureBusinessError } = require('../config/sentry');
+
 const pool = require('../config/db');
 const bicycleController = require('./bicycleController');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
+
 
 const filePathOperation = 'uploads/bicycles/';
 
@@ -20,6 +23,7 @@ const upload = multer({ storage: storage }).array('photos');
 const save = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
+            captureBusinessError(err, 'intervention.create.upload_failed');
             return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
         }
 
@@ -71,9 +75,11 @@ const save = async (req, res) => {
             if (photos) {
                 await uploadUserOperationPhotos(photos, intervention.id);
             }
-            
             res.status(200).send({ success: true, message: "Intervention créée avec succès", data: intervention });
         } catch (error) {
+            captureBusinessError(error, 'intervention.create.failed', {
+                tags: { user_id: userId, operation_type: operation.operation }
+            });
             console.error("Erreur lors de la création de l'intervention", error);
             res.status(500).send({ success: false, message: "Erreur lors de la création de l'intervention", error: error.message });
         }
@@ -170,12 +176,14 @@ const uploadTechnicianInterventionPhotos = async (files, interventionId) => {
 const manageEnd = async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
+        captureBusinessError(err, 'intervention.manage_end.token_missing');
         return res.status(401).send({ success: false, message: "Token manquant" });
     }
 
     try {
         uploadInterventionPhotos(req, res, async (err) => {
             if (err) {
+                captureBusinessError(err, 'intervention.manage_end.upload_failed');
                 return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
             }
 
@@ -190,13 +198,23 @@ const manageEnd = async (req, res) => {
                 if (photos && photos.length > 0) {
                     await uploadTechnicianInterventionPhotos(photos, intervention_id);
                 }
+                const action = isCanceled ? 'intervention.canceled' : 'intervention.completed';
+                trackBusinessMetric(action, 1, {
+                    intervention_id,
+                    has_photos: photos ? photos.length > 0 : false
+                });
+                console.log("Intervention a été complétée");
                 res.status(200).send({ success: true, message: is_canceled ? "Intervention annulée" : "Intervention a été complétée" });
             } catch (error) {
+                captureBusinessError(error, 'intervention.manage_end.failed', {
+                    tags: { intervention_id, action: isCanceled ? 'cancel' : 'complete' }
+                });
                 console.error("Erreur lors de l'annulation de l'intervention", error);
                 res.status(500).send({ success: false, message: "Erreur lors de l'annulation de l'intervention" });
             }
         });
     } catch (error) {
+        captureBusinessError(error, 'intervention.manage_end.auth_failed');
         console.error("Token verification error:", error);
         res.status(401).send({ success: false, message: "Token invalide" });
     }
