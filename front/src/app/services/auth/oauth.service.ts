@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import {Subject,lastValueFrom,} from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from 'src/environments/environment';
 import { AuthBaseService } from './auth-base.service';
 import { BaseService } from '../base.service';
 
