@@ -65,7 +65,7 @@ const routes: Routes = [
   {
     path: 'actions',
     loadChildren: () => import('./pages/user/actions/actions.module').then( m => m.ActionsPageModule),
-    canActivate: [manageAccessGuard],
+    canActivate: [],
     data: { roles: [UserRole.CLIENT] }
   },
   {
