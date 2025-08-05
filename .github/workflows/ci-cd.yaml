@@ -144,9 +144,8 @@ jobs:
   test-e2e:
     name: 🔍 Tests E2E Cypress
     runs-on: ubuntu-latest
-    needs: [test-api, test-frontend]  # Attend que API et Frontend soient OK
-    if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
-
+    # needs: [test-api, test-frontend] 
+    # if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
     steps:
       - name: 📥 Récupérer le code
         uses: actions/checkout@v4
