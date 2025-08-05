@@ -77,7 +77,9 @@ export const testData = {
   
   export const verifyCurrentStep = (stepIndex: number) => {
     // verifier si  attribut aria-selected est true
-    cy.get(`mat-step-header:nth-child(${stepIndex + 1})`).should('have.attr', 'aria-selected', 'true');
+    cy.get('.mat-horizontal-stepper-header-container mat-step-header')
+    .eq(stepIndex)
+    .should('have.attr', 'aria-selected', 'true');
   };
   
   export const verifyFormError = (message: string) => {
