@@ -33,12 +33,12 @@ jobs:
         
       - name: 🔧 Créer les fichiers environment Angular/Ionic
         run: |
-          # Vérifier si le dossier src/environments existe (projet Angular/Ionic)
-          if [ -d "src" ]; then
-            mkdir -p src/environments
+          # Vérifier si le dossier front/src/environments existe (projet Angular/Ionic)
+          if [ -d "front/src" ]; then
+            mkdir -p front/src/environments
             
             # Environment de développement
-            cat > src/environments/environment.ts << EOF
+            cat > front/src/environments/environment.ts << EOF
           export const environment = {
             production: false,
             GOOGLE_CLIENT_ID: '${{ secrets.GOOGLE_CLIENT_ID }}',
@@ -51,7 +51,7 @@ jobs:
           EOF
             
             # Environment de production
-            cat > src/environments/environment.prod.ts << EOF
+            cat > front/src/environments/environment.prod.ts << EOF
           export const environment = {
             production: true,
             GOOGLE_CLIENT_ID: '${{ secrets.GOOGLE_CLIENT_ID }}',
@@ -59,11 +59,15 @@ jobs:
             test_authToken: '${{ secrets.TEST_AUTHTOKEN }}',
             test_userRole: 'admin',    
             test_access_token: '${{ secrets.TEST_ACCESS_TOKEN }}',
-            test_clientBasicAuth: '${{ secrets.TEST_CLIENTBASICAUTH }}'    
+            test_clientBasicAuth: '${{ secrets.TEST_CLIENTBASICAUTH }}'   
           };
           EOF
             
-            echo "✅ Fichiers environment Angular/Ionic créés"
+            echo "✅ Fichiers environment Angular/Ionic créés dans le dossier front"
+          elif [ -d "src" ]; then
+            # Fallback: vérifier à la racine si pas de dossier front
+            mkdir -p src/environments
+            echo "⚠️ Structure de projet détectée à la racine"
           else
             echo "ℹ️ Pas de projet Angular/Ionic détecté"
           fi
