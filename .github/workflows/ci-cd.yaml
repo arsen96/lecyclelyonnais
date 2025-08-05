@@ -139,7 +139,7 @@ jobs:
         continue-on-error: true
 
   # ===================================
-  # JOB 4: Tests E2E Cypress (optionnel)
+  # JOB 4: Tests E2E Cypress
   # ===================================
   test-e2e:
     name: 🔍 Tests E2E Cypress
