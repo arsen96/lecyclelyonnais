@@ -94,7 +94,7 @@ export const testZones = {
   // Configuration des mocks pour les APIs
   export const setupZoneMocks = () => {
     // Mock récupération des zones
-    cy.intercept('GET', '**zones/get?domain=null', {
+    cy.intercept('GET', '**zones/get', {
       statusCode: 200,
       body: {
         success: true,
