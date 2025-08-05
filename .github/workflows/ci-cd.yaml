@@ -8,16 +8,12 @@ on:
       - feature/*
     paths-ignore:
       - '**/*.md'
-      - '**/*.yaml'
-      - '**/*.json'
 
   pull_request:
     branches:
       - main
     paths-ignore:
       - '**/*.md'
-      - '**/*.yaml'
-      - '**/*.json'
 
 jobs:
   # ===================================
