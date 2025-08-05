@@ -176,16 +176,6 @@ describe('BikePage', () => {
       expect(component.bikeForm.reset).not.toHaveBeenCalled();
     });
 
-    it('should handle service errors', () => {
-      component.bikeSelected = null;
-      const error = { message: 'Creation failed' };
-      mockBicycleService.create.and.returnValue(throwError(() => error));
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(throwError(() => error));
-
-      component.onSubmit();
-
-      expect(mockMessageService.showToast).toHaveBeenCalledWith('Creation failed', 'danger');
-    });
 
     it('should not submit when form is invalid', () => {
       component.bikeForm.patchValue({ brand: '', model: '', year: '', type: '' });

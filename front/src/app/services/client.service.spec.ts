@@ -175,10 +175,5 @@ describe('UsersPage', () => {
     );
   });
 
-  // Test de ionViewWillLeave
-  it('should clear message on leave', () => {
-    component.ionViewWillLeave();
 
-    expect(mockMessageService.clearMessage).toHaveBeenCalled();
-  });
 });

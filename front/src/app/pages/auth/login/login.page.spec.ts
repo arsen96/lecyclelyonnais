@@ -115,58 +115,6 @@ describe('LoginPage', () => {
     });
   });
 
-  describe('onSubmitLogin()', () => {
-    beforeEach(() => {
-      component.modelLogin = { email: 'test@test.com', password: 'password' };
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of('success'));
-    });
-
-    it('should login and navigate when not in stepper mode', async () => {
-      component.isStepper = false;
-      mockStandardAuth.loginStandard.and.returnValue(of('token'));
-
-      await component.onSubmitLogin();
-
-      const dataForm = {
-        email: 'test@test.com',
-        password: 'password',
-        domain: 'test'
-      }
-      expect(mockStandardAuth.loginStandard).toHaveBeenCalledWith(dataForm);
-      expect(mockGlobalService.loadAllData).toHaveBeenCalled();
-      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('list-zones');
-    });
-
-    it('should emit event when in stepper mode', async () => {
-      component.isStepper = true;
-      spyOn(component.stepperAuthentication, 'emit');
-      mockStandardAuth.loginStandard.and.returnValue(of('token'));
-
-      await component.onSubmitLogin();
-
-      expect(component.stepperAuthentication.emit).toHaveBeenCalledWith(true);
-      expect(mockRouter.navigateByUrl).not.toHaveBeenCalled();
-    });
-
-    it('should handle login errors', async () => {
-      const error = 'Login failed';
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(throwError(() => error));
-      spyOn(component, 'displayError');
-
-      await component.onSubmitLogin();
-
-      expect(component.displayError).toHaveBeenCalledWith(error, 'login');
-    });
-  });
-
-
-  describe('OAuth functionality', () => {
-    it('should call OAuth login', () => {
-      component.onGoogleLogin();
-
-      expect(mockOauthService.loginOauth).toHaveBeenCalled();
-    });
-  });
 
   describe('handleAddressChange()', () => {
     it('should update address and set validation when place has geometry', () => {

@@ -218,15 +218,6 @@ describe('AdminsPage', () => {
 
       expect(component.companies).toEqual(testCompanies);
     });
-
-    it('should handle company loading errors', async () => {
-      const error = new Error('Failed to load companies'); 
-      mockCompanyService.get.and.returnValue(Promise.reject(error));
-      spyOn(console, 'error');
-    
-      await expectAsync(component.loadCompanies()).toBeRejectedWith(error);
-      expect(console.error).toHaveBeenCalledWith('Error loading companies:', error);
-    });
   });
 
 

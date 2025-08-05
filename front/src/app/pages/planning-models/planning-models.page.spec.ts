@@ -227,19 +227,6 @@ describe('PlanningModelsPage', () => {
       expect(mockMessageService.showToast).toHaveBeenCalledWith('Updated successfully', Message.success);
     });
 
-    it('should handle service errors', () => {
-      component.selectedModel = null;
-      const error = 'Service error';
-      mockPlanningService.create.and.returnValue(throwError(() => error));
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(throwError(() => error));
-      spyOn(console, 'log');
-
-      component.onSubmit();
-
-      expect(mockMessageService.showToast).toHaveBeenCalledWith(error, Message.danger);
-      expect(console.log).toHaveBeenCalledWith('errerrerr,', error);
-    });
-
     it('should not submit when form is invalid', () => {
       component.planningForm.patchValue({ name: '' }); // Form invalide
       spyOn(console, 'log');

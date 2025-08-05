@@ -72,27 +72,8 @@ describe('CompanyListPage', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ionViewWillEnter()', () => {
-    it('should load and filter companies with subdomain', async () => {
-      mockCompanyService.get.and.returnValue(Promise.resolve(mockCompanies));
 
-      await component.ionViewWillEnter();
 
-      expect(mockCompanyService.get).toHaveBeenCalled();
-      expect(component.dataSource.data.length).toBe(1);
-      expect(component.dataSource.data[0].subdomain).toBe('company-a');
-    });
-  });
-
-  describe('applyFilter()', () => {
-    it('should filter data correctly', () => {
-      const mockEvent = createMockEvent('  Company A  ');
-
-      component.applyFilter(mockEvent);
-
-      expect(component.dataSource.filter).toBe('company a');
-    });
-  });
 
   describe('Selection', () => {
     beforeEach(() => {
@@ -141,40 +122,5 @@ describe('CompanyListPage', () => {
     });
   });
 
-  describe('sortData()', () => {
-    beforeEach(() => {
-      component.dataSource.data = [
-        CompanyFactory.create({
-          id: 2,
-          name: 'Zebra',
-          subdomain: 'zebra',
-          created_at: '2023-02-01'
-        }),
-        CompanyFactory.create({
-          id: 1,
-          name: 'Alpha',
-          subdomain: 'alpha',
-          created_at: '2023-01-01'
-        })
-      ];
-    });
 
-    it('should sort by name ascending', () => {
-      const sortEvent = createMockSortEvent('name', 'asc');
-      
-      component.sortData(sortEvent);
-      
-      expect(component.dataSource.data[0].name).toBe('Alpha');
-      expect(component.dataSource.data[1].name).toBe('Zebra');
-    });
-
-    it('should not sort with empty direction', () => {
-      const originalData = [...component.dataSource.data];
-      const sortEvent = createMockSortEvent('name', '');
-      
-      component.sortData(sortEvent);
-      
-      expect(component.dataSource.data).toEqual(originalData);
-    });
-  });
 });

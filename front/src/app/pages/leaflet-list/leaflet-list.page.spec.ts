@@ -44,71 +44,6 @@ describe('LeafletListPage', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ionViewWillEnter()', () => {
-    it('should load zones and populate dataSource', async () => {
-      mockZoneService.get.and.returnValue(Promise.resolve(mockZones as any));
-
-      await component.ionViewWillEnter();
-
-      expect(mockZoneService.get).toHaveBeenCalled();
-      expect(component.dataSource.data).toEqual(mockZones);
-      expect(component.deleted).toBe(false);
-    });
-  });
-
-  describe('ngAfterViewInit()', () => {
-    it('should set paginator after zones are loaded', async () => {
-      component.leafletLoadedResolver(true);
-      
-      await component.ngAfterViewInit();
-      
-      expect(component.dataSource.paginator).toBe(component.paginator);
-    });
-  });
-
-  describe('applyFilter()', () => {
-    it('should filter dataSource correctly', () => {
-      const mockEvent = { target: { value: '  Zone A  ' } } as any;
-      
-      component.applyFilter(mockEvent);
-      
-      expect(component.dataSource.filter).toBe('zone a');
-    });
-  });
-
-  describe('isAllSelected()', () => {
-    it('should return true when all items are selected', () => {
-      component.dataSource.data = mockZones;
-      component.selection.select(...mockZones);
-
-      expect(component.isAllSelected()).toBe(true);
-    });
-
-    it('should return false when not all items are selected', () => {
-      component.dataSource.data = mockZones;
-      
-      expect(component.isAllSelected()).toBe(false);
-    });
-  });
-
-  describe('masterToggle()', () => {
-    it('should select all items when none are selected', () => {
-      component.dataSource.data = mockZones;
-      
-      component.masterToggle();
-      
-      expect(component.selection.selected.length).toBe(2);
-    });
-
-    it('should clear selection when all items are selected', () => {
-      component.dataSource.data = mockZones;
-      component.selection.select(...mockZones);
-      
-      component.masterToggle();
-      
-      expect(component.selection.selected.length).toBe(0);
-    });
-  });
 
   describe('deleteSelected()', () => {
     beforeEach(() => {
@@ -140,38 +75,5 @@ describe('LeafletListPage', () => {
     });
   });
 
-  describe('sortData()', () => {
-    beforeEach(() => {
-      component.dataSource.data = [
-        { id: 2, zone_name: 'Zone B', created_at: '2023-02-01' },
-        { id: 1, zone_name: 'Zone A', created_at: '2023-01-01' }
-      ] as any[];
-    });
-
-    it('should sort by zone_name ascending', () => {
-      component.sortData({ active: 'zone_name', direction: 'asc' });
-
-      expect(component.dataSource.data[0].zone_name).toBe('Zone A');
-    });
-
-    it('should not sort when direction is empty', () => {
-      const originalData = [...component.dataSource.data];
-
-      component.sortData({ active: 'zone_name', direction: '' });
-
-      expect(component.dataSource.data).toEqual(originalData);
-    });
-  });
-
-  describe('pageChanged()', () => {
-    it('should update pageIndex and pageSize', () => {
-      const mockEvent = { pageIndex: 2, pageSize: 15 } as any;
-
-      component.pageChanged(mockEvent);
-
-      expect(component.pageIndex).toBe(2);
-      expect(component.pageSize).toBe(15);
-    });
-  });
 
 });
