@@ -36,6 +36,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: ./back/package-lock.json
           
       - name: 📦 Installer les dépendances
         run: npm ci
@@ -98,7 +99,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          
+          cache-dependency-path: ./back/package-lock.json
       - name: 📦 Installer les dépendances
         run: npm ci
         
