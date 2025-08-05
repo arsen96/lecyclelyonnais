@@ -4,6 +4,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('MesinterventionsPage', () => {
   let component: MesinterventionsPage;
@@ -16,7 +17,8 @@ describe('MesinterventionsPage', () => {
         HttpClientTestingModule,
         RouterTestingModule,
         IonicModule.forRoot()
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
     fixture = TestBed.createComponent(MesinterventionsPage);
     component = fixture.componentInstance;

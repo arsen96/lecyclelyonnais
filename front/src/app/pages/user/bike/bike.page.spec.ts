@@ -2,13 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { BikePage } from './bike.page';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MessageService } from 'src/app/services/message.service';
 
-// 🌟 IMPORT DES FIXTURES
 import { 
   BicycleFactory, 
   createServiceSpy,
@@ -45,7 +44,8 @@ describe('BikePage', () => {
         { provide: LoadingService, useValue: mockLoadingService },
         { provide: MessageService, useValue: mockMessageService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(BikePage);

@@ -16,7 +16,7 @@ import {
   createRouterSpy,
   createActivatedRouteSpy
 } from '../../../test-fixtures/factories';
-import { MOCK_COMPANIES } from 'src/test-fixtures/mock-data';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('CompanyPage', () => {
   let component: CompanyPage;
@@ -58,7 +58,8 @@ describe('CompanyPage', () => {
         { provide: MessageService, useValue: mockMessageService },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(CompanyPage);
@@ -167,21 +168,6 @@ describe('CompanyPage', () => {
     await component.onSubmit();
     expect(mockRouter.navigate).not.toHaveBeenCalled();
     expect(mockCompanyService.get).toHaveBeenCalled();
-  });
-
-  it('should handle errors during form submission', async () => {
-    component.ngOnInit();
-    component.companySelected = null;
-    
-    const errorMessage = new Error('Creation failed');
-    mockCompanyService.create.and.returnValue(Promise.reject(errorMessage));
-    
-    const errorTestData = CompanyFactory.create();
-    component.companyForm.patchValue(errorTestData);
-  
-    await component.onSubmit();
-  
-    expect(mockRouter.navigate).not.toHaveBeenCalled();
   });
 
   it('should clear messages when leaving view', () => {

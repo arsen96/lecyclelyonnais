@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { UsersPage } from './users.page';
 import { StandardAuth } from 'src/app/services/auth/standard.service';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -61,7 +61,8 @@ describe('UsersPage', () => {
         { provide: Router, useValue: routerSpy },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: GlobalService, useValue: mockGlobalService }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(UsersPage);

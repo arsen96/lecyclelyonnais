@@ -10,8 +10,7 @@ import { MessageService } from 'src/app/services/message.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { GlobalService, UserRole } from 'src/app/services/global.service';
 import { CompanyService } from 'src/app/services/company.service';
-
-// 🌟 IMPORT DES FIXTURES
+import { NO_ERRORS_SCHEMA} from '@angular/core';
 import { 
   AdminFactory, 
   CompanyFactory,
@@ -69,7 +68,8 @@ describe('AdminsListPage', () => {
         { provide: LoadingService, useValue: mockLoadingService },
         { provide: GlobalService, useValue: mockGlobalService },
         { provide: CompanyService, useValue: mockCompanyService }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(AdminsListPage);

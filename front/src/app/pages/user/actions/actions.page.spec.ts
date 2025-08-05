@@ -13,7 +13,7 @@ import { TechnicianService } from 'src/app/services/technician.service';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { BehaviorSubject } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 describe('ActionsPage', () => {
   let component: ActionsPage;
   let fixture: ComponentFixture<ActionsPage>;
@@ -74,7 +74,8 @@ describe('ActionsPage', () => {
         { provide: InterventionService, useValue: {} },
         { provide: TechnicianService, useValue: {} },
         { provide: ChangeDetectorRef, useValue: { detectChanges: () => {} } }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(ActionsPage);

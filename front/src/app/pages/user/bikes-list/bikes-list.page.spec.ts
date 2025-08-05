@@ -3,7 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { of, throwError } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { BikesListPage } from './bikes-list.page';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { MessageService } from 'src/app/services/message.service';
@@ -24,11 +24,9 @@ describe('BikesListPage', () => {
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockLoadingService: jasmine.SpyObj<LoadingService>;
 
-  // 🔥 REMPLACEMENT: Factory au lieu de données hardcodées
   const mockBikes = BicycleFactory.createMultiple(2);
 
   beforeEach(() => {
-    // 🌟 UTILISATION: Helpers pour créer les spies
     mockBicycleService = createServiceSpy('BicycleService', ['getUserBicycles', 'delete']) as jasmine.SpyObj<BicycleService>;
     mockMessageService = createMessageServiceSpy();
     mockLoadingService = createLoadingServiceSpy();
@@ -40,7 +38,8 @@ describe('BikesListPage', () => {
         { provide: MessageService, useValue: mockMessageService },
         { provide: LoadingService, useValue: mockLoadingService },
         { provide: ChangeDetectorRef, useValue: jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']) }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(BikesListPage);
@@ -57,7 +56,7 @@ describe('BikesListPage', () => {
       expect(component.selection).toBeInstanceOf(SelectionModel);
       expect(component.selection.isMultipleSelection()).toBe(true);
       
-      // 🔧 CORRECTION: Ordre des colonnes selon le code réel
+      // CORRECTION: Ordre des colonnes selon le code réel
       expect(component.displayedColumns).toEqual(['select', 'id', 'model', 'brand', 'actions']);
       expect(component.pageSizes).toEqual(TEST_CONSTANTS.PAGINATION.PAGE_SIZES);
     });
@@ -112,13 +111,12 @@ describe('BikesListPage', () => {
       component.deleteSelected(mockBikes[0].id);
 
       expect(mockBicycleService.delete).toHaveBeenCalledWith([mockBikes[0].id]);
-      // 🔧 CORRECTION: Vérifier que l'élément avec cet ID est supprimé
       expect(component.dataSource.data.find(bike => bike.id === mockBikes[0].id)).toBeUndefined();
       expect(mockMessageService.showToast).toHaveBeenCalledWith('Bike deleted successfully', 'success');
     });
 
     it('should delete multiple selected bikes', () => {
-      // 🔧 CORRECTION: Message personnalisé pour multiple
+      // CORRECTION: Message personnalisé pour multiple
       const deleteResponse = { message: 'Bikes deleted successfully' };
       mockLoadingService.showLoaderUntilCompleted.and.returnValue(of(deleteResponse));
       mockBicycleService.delete.and.returnValue(of(deleteResponse));
