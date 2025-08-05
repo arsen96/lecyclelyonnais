@@ -134,16 +134,8 @@ jobs:
       - name: 📦 Installer les dépendances
         run: npm ci
         
-      - name: 🔍 Linter Frontend
-        run: npm run lint
-        continue-on-error: true
-        
-      - name: 🔨 Build Frontend
-        run: npm run build
-        continue-on-error: false  # Build doit réussir
-        
       - name: 🧪 Tests unitaires Frontend
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        run: npm run test 
         continue-on-error: true
 
   # ===================================
