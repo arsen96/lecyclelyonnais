@@ -86,17 +86,25 @@ jobs:
             cd front
             npm ci
             npm install -g @ionic/cli @angular/cli
-            # Installer Chrome pour les tests
-            sudo apt-get update
-            sudo apt-get install -y google-chrome-stable
-            echo "✅ Dépendances Ionic installées dans front/ avec Chrome"
+            echo "✅ Dépendances Ionic installées dans front/"
             cd ..
           elif [ -f "ionic.config.json" ]; then
             npm install -g @ionic/cli @angular/cli
-            # Installer Chrome pour les tests
+            echo "✅ Ionic CLI installé à la racine"
+          fi
+          
+      - name: 🌐 Setup Chrome pour les tests
+        run: |
+          if [ -f "front/ionic.config.json" ] || [ -f "ionic.config.json" ]; then
+            # Installer Chrome et les dépendances X11
             sudo apt-get update
-            sudo apt-get install -y google-chrome-stable
-            echo "✅ Ionic CLI installé à la racine avec Chrome"
+            sudo apt-get install -y google-chrome-stable xvfb
+            # Démarrer le serveur virtuel X
+            export DISPLAY=:99.0
+            Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+            # Vérifier l'installation
+            google-chrome --version
+            echo "✅ Chrome installé pour les tests headless"
           fi
           
       - name: 🔨 Build Angular/Ionic (si applicable)
@@ -230,23 +238,80 @@ jobs:
           if [ -f "front/karma.conf.js" ] || [ -f "front/src/karma.conf.js" ]; then
             echo "🧪 Lancement des tests Angular/Ionic dans front/..."
             cd front
-            # Installer les dépendances pour les tests headless
-            npm install --save-dev puppeteer karma-chrome-launcher
-            # Lancer les tests en mode headless
+            # Créer une configuration Karma pour CI si elle n'existe pas
+            if [ ! -f "karma.conf.ci.js" ]; then
+              cat > karma.conf.ci.js << 'KARMA_EOF'
+module.exports = function (config) {
+  const baseConfig = require('./karma.conf.js');
+  baseConfig(config);
+  
+  config.set({
+    browsers: ['ChromeHeadlessCI'],
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--disable-background-timer-throttling',
+          '--disable-background-networking',
+          '--disable-renderer-backgrounding',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-extensions',
+          '--headless'
+        ]
+      }
+    },
+    singleRun: true,
+    autoWatch: false
+  });
+};
+KARMA_EOF
+            fi
+            
+            # Lancer les tests avec la configuration CI
             if command -v ng &> /dev/null; then
-              ng test --watch=false --browsers=ChromeHeadless --code-coverage
+              ng test --karma-config=karma.conf.ci.js --watch=false --code-coverage
             else
-              npm run test -- --watch=false --browsers=ChromeHeadless 2>/dev/null || echo "Aucun script de test Angular configuré"
+              npm run test -- --karma-config=karma.conf.ci.js --watch=false 2>/dev/null || echo "Aucun script de test Angular configuré"
             fi
             cd ..
           elif [ -f "karma.conf.js" ] || [ -f "src/karma.conf.js" ]; then
             echo "🧪 Lancement des tests Angular/Ionic à la racine..."
-            # Installer les dépendances pour les tests headless
-            npm install --save-dev puppeteer karma-chrome-launcher
+            # Créer configuration Karma CI à la racine
+            if [ ! -f "karma.conf.ci.js" ]; then
+              cat > karma.conf.ci.js << 'KARMA_EOF'
+module.exports = function (config) {
+  const baseConfig = require('./karma.conf.js');
+  baseConfig(config);
+  
+  config.set({
+    browsers: ['ChromeHeadlessCI'],
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--headless'
+        ]
+      }
+    },
+    singleRun: true,
+    autoWatch: false
+  });
+};
+KARMA_EOF
+            fi
+            
             if command -v ng &> /dev/null; then
-              ng test --watch=false --browsers=ChromeHeadless --code-coverage
+              ng test --karma-config=karma.conf.ci.js --watch=false --code-coverage
             else
-              npm run test -- --watch=false --browsers=ChromeHeadless 2>/dev/null || echo "Aucun script de test Angular configuré"
+              npm run test -- --karma-config=karma.conf.ci.js --watch=false 2>/dev/null || echo "Aucun script de test Angular configuré"
             fi
           else
             echo "ℹ️ Pas de tests unitaires Angular/Ionic configurés"
@@ -254,6 +319,7 @@ jobs:
         continue-on-error: true
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
+          DISPLAY: ":99.0"
 
   # ===================================
   # JOB 3: Tests E2E Ionic (optionnel)
@@ -369,32 +435,32 @@ jobs:
   # ===================================
   # JOB 5: Déploiement (si tout réussit)
   # ===================================
-  # deploy:
-  #   name: 🚀 Déploiement
-  #   runs-on: ubuntu-latest
-  #   needs: [setup-ionic, test-api, test-unit]
-  #   if: github.ref == 'refs/heads/main' && needs.test-api.result == 'success'
+  deploy:
+    name: 🚀 Déploiement
+    runs-on: ubuntu-latest
+    needs: [setup-ionic, test-api, test-unit]
+    if: github.ref == 'refs/heads/main' && needs.test-api.result == 'success'
     
-  #   steps:
-  #     - name: 📥 Récupérer le code
-  #       uses: actions/checkout@v4
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
         
-  #     - name: 📥 Télécharger les artifacts de build
-  #       if: hashFiles('front/ionic.config.json') != '' || hashFiles('front/angular.json') != '' || hashFiles('ionic.config.json') != '' || hashFiles('angular.json') != ''
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: ionic-angular-build-${{ github.sha }}
-  #       continue-on-error: true
+      - name: 📥 Télécharger les artifacts de build
+        if: hashFiles('front/ionic.config.json') != '' || hashFiles('front/angular.json') != '' || hashFiles('ionic.config.json') != '' || hashFiles('angular.json') != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ionic-angular-build-${{ github.sha }}
+        continue-on-error: true
           
-  #     - name: 🚀 Déploiement automatique
-  #       run: |
-  #         echo "🚀 Prêt pour le déploiement!"
-  #         echo "API: Tests passés avec succès"
-  #         if [ -d "front/dist" ] || [ -d "front/www" ] || [ -d "dist" ] || [ -d "www" ]; then
-  #           echo "Frontend: Build disponible"
-  #         fi
-  #         # Ajoutez ici vos commandes de déploiement
-  #         # Exemple:
-  #         # - Firebase: npx firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
-  #         # - Netlify: npx netlify-cli deploy --prod --dir front/dist
-  #         # - Heroku: git push heroku main
+      - name: 🚀 Déploiement automatique
+        run: |
+          echo "🚀 Prêt pour le déploiement!"
+          echo "API: Tests passés avec succès"
+          if [ -d "front/dist" ] || [ -d "front/www" ] || [ -d "dist" ] || [ -d "www" ]; then
+            echo "Frontend: Build disponible"
+          fi
+          # Ajoutez ici vos commandes de déploiement
+          # Exemple:
+          # - Firebase: npx firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+          # - Netlify: npx netlify-cli deploy --prod --dir front/dist
+          # - Heroku: git push heroku main
