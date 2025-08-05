@@ -22,6 +22,10 @@ jobs:
   test-api:
     name: 🔗 Tests API
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./back
     
     steps:
       - name: 📥 Récupérer le code
@@ -80,6 +84,10 @@ jobs:
   test-unit:
     name: 🧪 Tests Unitaires
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./back
     
     steps:
       - name: 📥 Récupérer le code
