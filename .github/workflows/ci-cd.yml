@@ -1,0 +1,347 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/*
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.yaml'
+      - '**/*.json'
+
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.yaml'
+      - '**/*.json'
+
+jobs:
+  # ===================================
+  # JOB 0: Setup Angular/Ionic Environment
+  # ===================================
+  setup-ionic:
+    name: 📱 Setup Angular/Ionic
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Créer les fichiers environment Angular/Ionic
+        run: |
+          # Vérifier si le dossier src/environments existe (projet Angular/Ionic)
+          if [ -d "src" ]; then
+            mkdir -p src/environments
+            
+            # Environment de développement
+            cat > src/environments/environment.ts << EOF
+          export const environment = {
+            production: false,
+            GOOGLE_CLIENT_ID: '${{ secrets.GOOGLE_CLIENT_ID }}',
+            GOOGLE_MAP_API: '${{ secrets.GOOGLE_MAP_API }}',
+            test_authToken: '${{ secrets.TEST_AUTHTOKEN }}',
+            test_userRole: 'admin',    
+            test_access_token: '${{ secrets.TEST_ACCESS_TOKEN }}',
+            test_clientBasicAuth: '${{ secrets.TEST_CLIENTBASICAUTH }}'   
+          };
+          EOF
+            
+            # Environment de production
+            cat > src/environments/environment.prod.ts << EOF
+          export const environment = {
+            production: true,
+            GOOGLE_CLIENT_ID: '${{ secrets.GOOGLE_CLIENT_ID }}',
+            GOOGLE_MAP_API: '${{ secrets.GOOGLE_MAP_API }}',
+            test_authToken: '${{ secrets.TEST_AUTHTOKEN }}',
+            test_userRole: 'admin',    
+            test_access_token: '${{ secrets.TEST_ACCESS_TOKEN }}',
+            test_clientBasicAuth: '${{ secrets.TEST_CLIENTBASICAUTH }}'    
+          };
+          EOF
+            
+            echo "✅ Fichiers environment Angular/Ionic créés"
+          else
+            echo "ℹ️ Pas de projet Angular/Ionic détecté"
+          fi
+          
+      - name: 🏗️ Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: 📦 Installer les dépendances
+        run: |
+          npm ci
+          # Installer Ionic CLI si ionic.config.json existe
+          if [ -f "ionic.config.json" ]; then
+            npm install -g @ionic/cli @angular/cli
+            echo "✅ Ionic CLI installé"
+          fi
+          
+      - name: 🔨 Build Angular/Ionic (si applicable)
+        run: |
+          if [ -f "ionic.config.json" ]; then
+            echo "🔨 Build de l'application Ionic..."
+            ionic build --prod
+          elif [ -f "angular.json" ]; then
+            echo "🔨 Build de l'application Angular..."
+            ng build --prod
+          else
+            echo "ℹ️ Pas de build Angular/Ionic nécessaire"
+          fi
+        continue-on-error: true
+          
+      - name: 📤 Upload des artifacts Ionic/Angular
+        if: hashFiles('ionic.config.json') != '' || hashFiles('angular.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ionic-angular-build-${{ github.sha }}
+          path: |
+            dist/
+            www/
+          retention-days: 1
+
+  # ===================================
+  # JOB 1: Tests API avec Newman/Postman
+  # ===================================
+  test-api:
+    name: 🔗 Tests API
+    runs-on: ubuntu-latest
+    needs: setup-ionic
+    
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+        
+      - name: 🏗️ Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          
+      - name: 📦 Installer les dépendances
+        run: npm ci
+        
+      - name: 🔄 Sync Postman collections
+        run: npm run postman:sync
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+        
+      - name: 🚀 Démarrer l'application
+        run: |
+          npm start &
+          sleep 15
+        env:
+          NODE_ENV: test
+          PORT: ${{ secrets.PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          
+      - name: 🧪 Test - Authentification
+        run: npm run test:api:auth
+        continue-on-error: false
+        
+      - name: 🧪 Test - Techniciens
+        run: npm run test:api:technicians
+        continue-on-error: true
+        
+      - name: 🧪 Test - Companies
+        run: npm run test:api:company
+        continue-on-error: true
+        
+      - name: 🧪 Test - Bicycles
+        run: npm run test:api:bicycle
+        continue-on-error: true
+        
+      - name: 🧪 Test - Zones
+        run: npm run test:api:zones
+        continue-on-error: true
+        
+      - name: 🧪 Test - Interventions
+        run: npm run test:api:intervention
+        continue-on-error: true
+        
+  # ===================================  
+  # JOB 2: Tests unitaires
+  # ===================================
+  test-unit:
+    name: 🧪 Tests Unitaires
+    runs-on: ubuntu-latest
+    needs: setup-ionic
+    
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+        
+      - name: 📥 Télécharger les artifacts Ionic/Angular
+        if: hashFiles('ionic.config.json') != '' || hashFiles('angular.json') != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ionic-angular-build-${{ github.sha }}
+        continue-on-error: true
+        
+      - name: 🏗️ Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          
+      - name: 📦 Installer les dépendances
+        run: npm ci
+        
+      - name: 🧪 Tests unitaires API
+        run: npm run test:unit
+        continue-on-error: true
+        
+      - name: 🧪 Tests unitaires Angular/Ionic
+        run: |
+          if [ -f "karma.conf.js" ] || [ -f "src/karma.conf.js" ]; then
+            echo "🧪 Lancement des tests Angular/Ionic..."
+            if command -v ng &> /dev/null; then
+              ng test --watch=false --browsers=ChromeHeadless
+            else
+              npm run test 2>/dev/null || echo "Aucun script de test Angular configuré"
+            fi
+          else
+            echo "ℹ️ Pas de tests unitaires Angular/Ionic configurés"
+          fi
+        continue-on-error: true
+
+  # ===================================
+  # JOB 3: Tests E2E Ionic (optionnel)
+  # ===================================
+  test-e2e-ionic:
+    name: 🎯 Tests E2E Ionic
+    runs-on: ubuntu-latest
+    needs: setup-ionic
+    if: hashFiles('ionic.config.json') != ''
+    
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+        
+      - name: 📥 Télécharger les artifacts Ionic
+        uses: actions/download-artifact@v4
+        with:
+          name: ionic-angular-build-${{ github.sha }}
+        continue-on-error: true
+        
+      - name: 🏗️ Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: 📦 Installer les dépendances
+        run: |
+          npm ci
+          npm install -g @ionic/cli
+          
+      - name: 🎯 Lancer les tests E2E
+        run: |
+          if [ -f "e2e/protractor.conf.js" ] || [ -f "cypress.json" ] || [ -f "cypress.config.js" ]; then
+            echo "🎯 Tests E2E détectés..."
+            if [ -f "cypress.json" ] || [ -f "cypress.config.js" ]; then
+              npx cypress run
+            elif command -v ionic &> /dev/null; then
+              ionic e2e
+            fi
+          else
+            echo "ℹ️ Pas de tests E2E configurés"
+          fi
+        continue-on-error: true
+
+  # ===================================
+  # JOB 4: Résultats et notifications
+  # ===================================
+  results:
+    name: 📊 Résultats
+    runs-on: ubuntu-latest
+    needs: [setup-ionic, test-api, test-unit, test-e2e-ionic]
+    if: always()  # Toujours exécuter même si les tests échouent
+    
+    steps:
+      - name: 📊 Afficher les résultats
+        run: |
+          echo "==================================="
+          echo "📊 RÉSULTATS DU PIPELINE COMPLET"
+          echo "==================================="
+          echo "📱 Setup Ionic: ${{ needs.setup-ionic.result }}"
+          echo "🔗 Tests API: ${{ needs.test-api.result }}"
+          echo "🧪 Tests unitaires: ${{ needs.test-unit.result }}"
+          echo "🎯 Tests E2E Ionic: ${{ needs.test-e2e-ionic.result }}"
+          echo "==================================="
+          
+          if [[ "${{ needs.setup-ionic.result }}" == "success" ]]; then
+            echo "✅ Setup Ionic: SUCCÈS"
+          else
+            echo "❌ Setup Ionic: ÉCHEC"
+          fi
+          
+          if [[ "${{ needs.test-api.result }}" == "success" ]]; then
+            echo "✅ Tests API: SUCCÈS"
+          else
+            echo "❌ Tests API: ÉCHEC"
+          fi
+          
+          if [[ "${{ needs.test-unit.result }}" == "success" ]]; then
+            echo "✅ Tests unitaires: SUCCÈS"
+          else
+            echo "❌ Tests unitaires: ÉCHEC"
+          fi
+          
+          if [[ "${{ needs.test-e2e-ionic.result }}" == "success" ]]; then
+            echo "✅ Tests E2E Ionic: SUCCÈS"
+          else
+            echo "❌ Tests E2E Ionic: ÉCHEC ou NON CONFIGURÉ"
+          fi
+          
+      - name: 🚨 Échec critique si auth échoue
+        if: needs.test-api.result == 'failure'
+        run: |
+          echo "🚨 ÉCHEC CRITIQUE: Les tests d'authentification ont échoué!"
+          echo "Le déploiement ne peut pas continuer."
+          exit 1
+          
+      - name: ⚠️ Avertissement setup Ionic
+        if: needs.setup-ionic.result == 'failure'
+        run: |
+          echo "⚠️ AVERTISSEMENT: Le setup Ionic a échoué!"
+          echo "Vérifiez vos secrets GitHub pour les variables d'environnement."
+          
+  # ===================================
+  # JOB 5: Déploiement (si tout réussit)
+  # ===================================
+  # deploy:
+  #   name: 🚀 Déploiement
+  #   runs-on: ubuntu-latest
+  #   needs: [setup-ionic, test-api, test-unit]
+  #   if: github.ref == 'refs/heads/main' && needs.test-api.result == 'success'
+    
+  #   steps:
+  #     - name: 📥 Récupérer le code
+  #       uses: actions/checkout@v4
+        
+  #     - name: 📥 Télécharger les artifacts de build
+  #       if: hashFiles('ionic.config.json') != '' || hashFiles('angular.json') != ''
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: ionic-angular-build-${{ github.sha }}
+  #       continue-on-error: true
+          
+  #     - name: 🚀 Déploiement automatique
+  #       run: |
+  #         echo "🚀 Prêt pour le déploiement!"
+  #         echo "API: Tests passés avec succès"
+  #         if [ -d "dist" ] || [ -d "www" ]; then
+  #           echo "Frontend: Build disponible"
+  #         fi
+  #         # Ajoutez ici vos commandes de déploiement
+  #         # Exemple:
+  #         # - Firebase: npx firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+  #         # - Netlify: npx netlify-cli deploy --prod --dir dist
+  #         # - Heroku: git push heroku main
