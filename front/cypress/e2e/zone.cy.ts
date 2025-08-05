@@ -1,4 +1,3 @@
-import { environment } from 'src/environments/environment';
 import {
   setupZoneMocks,
   verifyZonesList,
@@ -17,10 +16,10 @@ import {
 describe('Zones E2E - Tests Zone List', () => {
   beforeEach(() => {
     cy.window().then((win) => {
-      win.localStorage.setItem('authToken', environment.test_authToken);
-      win.localStorage.setItem('userRole', environment.test_userRole);  
-      win.localStorage.setItem('access_token', environment.test_access_token);
-      win.localStorage.setItem('clientBasicAuth', environment.test_clientBasicAuth);
+      win.localStorage.setItem('authToken', 'f246d1b547b0');
+      win.localStorage.setItem('userRole', 'admin');  
+      win.localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjEsImVtYWlsIjoic2V1bC5hZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MjM5ODgwOCwiZXhwIjoxNzgzOTU2NDA4fQ.1JxBeTmftCn5IgdZY5_h2RSMjjT2Wp0uK2GLushBOXQ');
+      win.localStorage.setItem('clientBasicAuth', 'ZDdmNzRkMzg1M2MzZDdjMTE5ZmY5ODlkNzc5ZjgzNGYxNDE3ZjcwNDo5NDRjZWU5MTliMjNiZGQ4NzE1MWI1ZWM5MWVkMjAyNDUwYTgzZDJl');
     });
     setupZoneMocks();
     cy.visit('/list-zones');
