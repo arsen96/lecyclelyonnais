@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import {Subject,lastValueFrom,} from 'rxjs';
-import { environment } from 'src/environments/environment';
+// import { environment } from 'src/environments/environment';
 import { AuthBaseService } from './auth-base.service';
 import { BaseService } from '../base.service';
 
@@ -36,8 +36,8 @@ export class OauthService extends AuthBaseService{
   public environment:any
   constructor(public oAuthService:OAuthService) {
     super();
-    this.environment = environment;
-    googleAuthConfig.clientId = this.environment.GOOGLE_CLIENT_ID
+    // this.environment = environment;
+    googleAuthConfig.clientId = 'a'
     oAuthService.configure(googleAuthConfig);
    }
 
