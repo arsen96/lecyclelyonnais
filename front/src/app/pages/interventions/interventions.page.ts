@@ -91,6 +91,10 @@ export class InterventionsPage implements OnInit, OnDestroy {
     }
   }
 
+  confirmCancel(intervention: Intervention) {
+    this.cancelIntervention(intervention);
+  }
+
   /**
    * Annule une intervention et met à jour les listes
    * @param {Intervention} intervention - L'intervention à annuler
