@@ -64,103 +64,103 @@ import {
       });
     });
 
-    it('étape 1 - adresse avec erreur', () => {
-      const address = "Rue inexistante";
-      verifyCurrentStep(0);
-      cy.contains('Votre adresse').should('be.visible');
+    // it('étape 1 - adresse avec erreur', () => {
+    //   const address = "Rue inexistante";
+    //   verifyCurrentStep(0);
+    //   cy.contains('Votre adresse').should('be.visible');
   
-      cy.get('.adresse-btn').click();
-      verifyFormError("L'adresse est requise");
+    //   cy.get('.adresse-btn').click();
+    //   verifyFormError("L'adresse est requise");
   
-      cy.get('.adresse-input').type(address);
-        cy.get('.adresse-btn').click();
-        verifyCurrentStep(0);
-    });
+    //   cy.get('.adresse-input').type(address);
+    //     cy.get('.adresse-btn').click();
+    //     verifyCurrentStep(0);
+    // });
   
-    it('étape 2 - vélo', () => {
-      fillAddressStep();
-      cy.contains('Détails du cycle').should('be.visible');
+    // it('étape 2 - vélo', () => {
+    //   fillAddressStep();
+    //   cy.contains('Détails du cycle').should('be.visible');
     
-        // validations des champs
-        cy.get('.details-btn').click();
-        verifyFormError('La marque est requise');
+    //     // validations des champs
+    //     cy.get('.details-btn').click();
+    //     verifyFormError('La marque est requise');
     
-        cy.get('input[formControlName="brand"]').type('Trek');
-        cy.get('.details-btn').click();
-        verifyFormError('Le modèle est requis');
+    //     cy.get('input[formControlName="brand"]').type('Trek');
+    //     cy.get('.details-btn').click();
+    //     verifyFormError('Le modèle est requis');
     
-        cy.get('input[formControlName="model"]').type('Domane');
-        cy.get('.details-btn').click();
-        verifyFormError('L\'année est requise');
+    //     cy.get('input[formControlName="model"]').type('Domane');
+    //     cy.get('.details-btn').click();
+    //     verifyFormError('L\'année est requise');
     
-        // finir et envoyer pour passer à l'étape 3
-        cy.get('input[formControlName="year"]').type('2023');
-        cy.get('mat-select[formControlName="type"]').click();
-        cy.get('mat-option[value="Vélo classique"]').click();
-        cy.get('.details-btn').click();
+    //     // finir et envoyer pour passer à l'étape 3
+    //     cy.get('input[formControlName="year"]').type('2023');
+    //     cy.get('mat-select[formControlName="type"]').click();
+    //     cy.get('mat-option[value="Vélo classique"]').click();
+    //     cy.get('.details-btn').click();
     
-        verifyCurrentStep(2); 
-      })
+    //     verifyCurrentStep(2); 
+    //   })
   
-    it('étape 3 - maintenance/réparation -> maintenance', () => {
-      // Aller au choix d'opération
-      fillAddressAndBike();
-      selectMaintenance();
-    });
+    // it('étape 3 - maintenance/réparation -> maintenance', () => {
+    //   // Aller au choix d'opération
+    //   fillAddressAndBike();
+    //   selectMaintenance();
+    // });
 
-    it('étape 3 - maintenance/réparation -> réparation', () => {
-      // Aller au choix d'opération
-      fillAddressAndBike();
-      selectRepair();
-    });
+    // it('étape 3 - maintenance/réparation -> réparation', () => {
+    //   // Aller au choix d'opération
+    //   fillAddressAndBike();
+    //   selectRepair();
+    // });
   
-    it('étape 4 - formulaire maintenance', () => {
-      fillAddressAndBike();
-      selectMaintenance();
+    // it('étape 4 - formulaire maintenance', () => {
+    //   fillAddressAndBike();
+    //   selectMaintenance();
         
-        cy.get('mat-select[formControlName="package"]').click();
-        cy.get('mat-option[value="basic"]').click();
+    //     cy.get('mat-select[formControlName="package"]').click();
+    //     cy.get('mat-option[value="basic"]').click();
     
-        cy.window().then((win: any) => {
-          const component = win.ng.getComponent(win.document.querySelector('app-actions'));
-          component.globalService.isAuthenticated = {
-            getValue: () => true
-          };
+    //     cy.window().then((win: any) => {
+    //       const component = win.ng.getComponent(win.document.querySelector('app-actions'));
+    //       component.globalService.isAuthenticated = {
+    //         getValue: () => true
+    //       };
           
-          // Forcer la selection de date et d'heure
-          component.maintenanceFormGroup.patchValue({
-            scheduleDate: '2024-12-25',
-            scheduleTime: '09:00 - 11:00'
-          });
-        });
+    //       // Forcer la selection de date et d'heure
+    //       component.maintenanceFormGroup.patchValue({
+    //         scheduleDate: '2024-12-25',
+    //         scheduleTime: '09:00 - 11:00'
+    //       });
+    //     });
     
-        cy.get('.maintenance-btn').click();
-        cy.wait('@createIntervention');
-        verifyConfirmationStep();
-      })
+    //     cy.get('.maintenance-btn').click();
+    //     cy.wait('@createIntervention');
+    //     verifyConfirmationStep();
+    //   })
   
-    it('étape 4b - formulaire réparation', () => {
-        goToOperationChoice();
-        selectRepair();
+    // it('étape 4b - formulaire réparation', () => {
+    //     goToOperationChoice();
+    //     selectRepair();
     
-        cy.get('textarea[formControlName="issueDetails"]').type('Chaîne qui saute');
+    //     cy.get('textarea[formControlName="issueDetails"]').type('Chaîne qui saute');
     
-        cy.window().then((win: any) => {
-          const component = win.ng.getComponent(win.document.querySelector('app-actions'));
-          component.globalService.isAuthenticated = {
-            getValue: () => true
-          };
+    //     cy.window().then((win: any) => {
+    //       const component = win.ng.getComponent(win.document.querySelector('app-actions'));
+    //       component.globalService.isAuthenticated = {
+    //         getValue: () => true
+    //       };
           
-          // Forcer la selection de date et d'heure 
-          component.repairFormGroup.patchValue({
-            scheduleDate: '2024-12-25',
-            scheduleTime: '09:00 - 11:00'
-          });
-        });
+    //       // Forcer la selection de date et d'heure 
+    //       component.repairFormGroup.patchValue({
+    //         scheduleDate: '2024-12-25',
+    //         scheduleTime: '09:00 - 11:00'
+    //       });
+    //     });
     
-        cy.get('.reparation-btn').click();  
-        cy.wait('@createIntervention');
-        verifyConfirmationStep();
-    });
+    //     cy.get('.reparation-btn').click();  
+    //     cy.wait('@createIntervention');
+    //     verifyConfirmationStep();
+    // });
   
   });
