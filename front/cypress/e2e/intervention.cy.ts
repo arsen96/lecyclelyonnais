@@ -78,8 +78,8 @@ import {
     });
   
     it('étape 2 - vélo', () => {
-      fillAddressStep().then(() => {
-        cy.contains('Détails du cycle').should('be.visible');
+      fillAddressStep();
+      cy.contains('Détails du cycle').should('be.visible');
     
         // validations des champs
         cy.get('.details-btn').click();
@@ -101,26 +101,22 @@ import {
     
         verifyCurrentStep(2); 
       })
-    });
   
     it('étape 3 - maintenance/réparation -> maintenance', () => {
       // Aller au choix d'opération
-      fillAddressAndBike().then(() => {
-        cy.contains('Choisissez une opération').should('be.visible');
-        selectMaintenance();
-        })
+      fillAddressAndBike();
+      selectMaintenance();
     });
 
     it('étape 3 - maintenance/réparation -> réparation', () => {
       // Aller au choix d'opération
-      fillAddressAndBike().then(() => {
-        selectRepair();
-        })
+      fillAddressAndBike();
+      selectRepair();
     });
   
     it('étape 4 - formulaire maintenance', () => {
-      fillAddressAndBike().then(() => {
-        selectMaintenance();
+      fillAddressAndBike();
+      selectMaintenance();
         
         cy.get('mat-select[formControlName="package"]').click();
         cy.get('mat-option[value="basic"]').click();
@@ -142,10 +138,9 @@ import {
         cy.wait('@createIntervention');
         verifyConfirmationStep();
       })
-    });
   
     it('étape 4b - formulaire réparation', () => {
-      goToOperationChoice().then(() => {
+        goToOperationChoice();
         selectRepair();
     
         cy.get('textarea[formControlName="issueDetails"]').type('Chaîne qui saute');
@@ -166,8 +161,6 @@ import {
         cy.get('.reparation-btn').click();  
         cy.wait('@createIntervention');
         verifyConfirmationStep();
-      })
     });
   
-
   });

@@ -38,23 +38,22 @@ export const testData = {
   
   
   export const fillAddressStep = () => {
-    return new Promise<void>((resolve, reject) => {
-      cy.get('.adresse-input').clear().type(testData.validAddress);
-      cy.window().then((win:any) => {
-        const mockPlace = {
-          geometry: { location: { lat: 43.3000, lng: -0.3700 } }, 
-          formatted_address: testData.validAddress
-        };
-        
-        const component = win.ng.getComponent(win.document.querySelector('app-actions'));
-        component.handleAddressChange(mockPlace);
-        component.cd.detectChanges();
-        cy.get('.adresse-btn').click();
-        cy.wait('@validateAddress');
-        resolve();
-      });
+    cy.get('.adresse-input').clear().type(testData.validAddress);
+  
+    cy.window().then((win: any) => {
+      const mockPlace = {
+        geometry: { location: { lat: 43.3000, lng: -0.3700 } },
+        formatted_address: testData.validAddress
+      };
+  
+      const component = win.ng.getComponent(win.document.querySelector('app-actions'));
+      component.handleAddressChange(mockPlace);
+      component.cd.detectChanges();
     });
-  }
+  
+    cy.get('.adresse-btn').click();
+    cy.wait('@validateAddress');
+  };
   
   export const fillBikeDetails = () => {
     cy.get('input[formControlName="brand"]').clear().type(testData.validBike.brand);
@@ -94,20 +93,12 @@ export const testData = {
   
   // Workflows partiels pour les tests
   export const fillAddressAndBike = () => {
-    return new Promise<void>((resolve, reject) => {
-      fillAddressStep().then(() => {
-        fillBikeDetails();
-        resolve();
-      });
-    });
+    fillAddressStep();
+    fillBikeDetails();
   };
   
   export const goToOperationChoice = () => {
-    return new Promise<void>((resolve, reject) => {
-      fillAddressAndBike().then(() => {
-        resolve();
-      });
-    });
+    fillAddressAndBike();
   };
   
 
