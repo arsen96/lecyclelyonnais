@@ -222,55 +222,55 @@ jobs:
   # ===================================
   # JOB 5: Build des images Docker
   # ===================================
-  build-docker:
-    name: 🐳 Build Images Docker
-    runs-on: ubuntu-latest
-    needs: [test-api, test-unit-backend, test-frontend]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+  # build-docker:
+  #   name: 🐳 Build Images Docker
+  #   runs-on: ubuntu-latest
+  #   needs: [test-api, test-unit-backend, test-frontend]
+  #   if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
-    permissions:
-      contents: read
-      packages: write
+  #   permissions:
+  #     contents: read
+  #     packages: write
     
-    steps:
-      - name: 📥 Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: 📥 Récupérer le code
+  #       uses: actions/checkout@v4
       
-      # Configuration de Buildx pour le cache
-      - name: 🔧 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     # Configuration de Buildx pour le cache
+  #     - name: 🔧 Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
       
-      - name: 🔐 Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: 🔐 Login Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
       
-      # ====== BACKEND ======
-      - name: 🏗️ Build et Push Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./back
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-          # 🚀 Cache avec gha (GitHub Actions cache)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # ====== BACKEND ======
+  #     - name: 🏗️ Build et Push Backend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./back
+  #         push: true
+  #         tags: |
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:latest
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+  #         # 🚀 Cache avec gha (GitHub Actions cache)
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
       
-      # ====== FRONTEND ======
-      - name: 🏗️ Build et Push Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./front
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
-          # 🚀 Cache avec gha (GitHub Actions cache)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # ====== FRONTEND ======
+  #     - name: 🏗️ Build et Push Frontend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./front
+  #         push: true
+  #         tags: |
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
+  #         # 🚀 Cache avec gha (GitHub Actions cache)
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
   # ===================================
   # JOB 6: Analyse de sécurité
@@ -278,7 +278,7 @@ jobs:
   security-scan:
     name: 🔒 Analyse de sécurité
     runs-on: ubuntu-latest
-    needs: build-docker
+    # needs: build-docker
     if: github.event_name == 'push'
     
     steps:
@@ -293,21 +293,37 @@ jobs:
       
       - name: 🔍 Scan Backend avec Trivy
         uses: aquasecurity/trivy-action@master
+        id: scan-backend
         with:
           image-ref: ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-          format: 'table'
-          exit-code: '0' 
+          format: sarif
+          output: trivy-backend-results.sarif
           severity: 'CRITICAL,HIGH,MEDIUM'
-          ignore-unfixed: true  
+          ignore-unfixed: true
+          exit-code: '0'
       
       - name: 🔍 Scan Frontend avec Trivy
         uses: aquasecurity/trivy-action@master
+        id: scan-frontend
         with:
           image-ref: ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
-          format: 'table'
-          exit-code: '0'
+          format: sarif
+          output: trivy-frontend-results.sarif
           severity: 'CRITICAL,HIGH,MEDIUM'
           ignore-unfixed: true
+          exit-code: '0'
+      
+      - name: 📤 Upload résultats Backend
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-backend-results.sarif
+        continue-on-error: true
+      
+      - name: 📤 Upload résultats Frontend
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-frontend-results.sarif
+        continue-on-error: true
 
 
 
