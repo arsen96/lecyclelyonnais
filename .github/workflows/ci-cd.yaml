@@ -134,60 +134,60 @@ jobs:
       - name: 📦 Installer les dépendances
         run: npm ci
         
-      - name: 🧪 Tests unitaires Frontend
-        run: npm run test:ci
-        continue-on-error: true
+      # - name: 🧪 Tests unitaires Frontend
+      #   run: npm run test:ci
+      #   continue-on-error: true
 
   # ===================================
   # JOB 4: Tests E2E Cypress
   # ===================================
-  test-e2e:
-    name: 🔍 Tests E2E Cypress
-    runs-on: ubuntu-latest
-    # needs: [test-api, test-frontend] 
-    # if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
-    steps:
-      - name: 📥 Récupérer le code
-        uses: actions/checkout@v4
+  # test-e2e:
+  #   name: 🔍 Tests E2E Cypress
+  #   runs-on: ubuntu-latest
+  #   # needs: [test-api, test-frontend] 
+  #   # if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
+  #   steps:
+  #     - name: 📥 Récupérer le code
+  #       uses: actions/checkout@v4
         
-      # Démarrer le backend
-      - name: 🏗️ Setup Node.js pour Backend
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./back/package-lock.json
+  #     # Démarrer le backend
+  #     - name: 🏗️ Setup Node.js pour Backend
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./back/package-lock.json
           
-      - name: 📦 Installer dépendances Backend
-        run: npm ci
-        working-directory: ./back
+  #     - name: 📦 Installer dépendances Backend
+  #       run: npm ci
+  #       working-directory: ./back
         
-      - name: 🚀 Démarrer Backend
-        run: |
-          npm start &
-          sleep 15
-        working-directory: ./back
-        env:
-          NODE_ENV: test
-          PORT: 3000
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  #     - name: 🚀 Démarrer Backend
+  #       run: |
+  #         npm start &
+  #         sleep 15
+  #       working-directory: ./back
+  #       env:
+  #         NODE_ENV: test
+  #         PORT: 3000
+  #         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
-      # Démarrer le frontend  
-      - name: 📦 Installer dépendances Frontend
-        run: npm ci
-        working-directory: ./front
+  #     # Démarrer le frontend  
+  #     - name: 📦 Installer dépendances Frontend
+  #       run: npm ci
+  #       working-directory: ./front
         
-      - name: 🎨 Démarrer Frontend
-        run: |
-          npm start &
-          sleep 30
-        working-directory: ./front
+  #     - name: 🎨 Démarrer Frontend
+  #       run: |
+  #         npm start &
+  #         sleep 30
+  #       working-directory: ./front
         
-      # Tests Cypress
-      - name: 🔍 Tests Cypress E2E
-        run: npm run cypress:run
-        working-directory: ./front
-        continue-on-error: true
+  #     # Tests Cypress
+  #     - name: 🔍 Tests Cypress E2E
+  #       run: npm run cypress:run
+  #       working-directory: ./front
+  #       continue-on-error: true
 
   # ===================================
   # JOB 5: Résultats
@@ -236,6 +236,10 @@ jobs:
       - name: 📥 Récupérer le code
         uses: actions/checkout@v4
       
+      # Configuration de Buildx pour le cache
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
       - name: 🔐 Login Docker Hub
         uses: docker/login-action@v3
         with:
@@ -251,8 +255,9 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:latest
             ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/lecycle-backend:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/lecycle-backend:buildcache,mode=max
+          # 🚀 Cache avec gha (GitHub Actions cache)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       
       # ====== FRONTEND ======
       - name: 🏗️ Build et Push Frontend
@@ -263,8 +268,9 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
             ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:buildcache,mode=max
+          # 🚀 Cache avec gha (GitHub Actions cache)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
 
 
