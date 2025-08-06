@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15
+    image: postgis/postgis:15-3.4
     environment:
       POSTGRES_DB: lecycle_db
       POSTGRES_USER: lecycle_user
@@ -14,31 +14,36 @@ services:
     restart: unless-stopped
 
   backend:
-    image: arsenkubat/lecycle-backend:latest
+    image: arsenkubat/lecycle-backend:latest  
     ports:
       - "3000:3000"
-    volumes:
-      - ./back:/usr/src/app
-      - /usr/src/app/node_modules
     networks:
       - app_network
     environment:
-      - ENVIRONMENT=docker
-    command: npm run start
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://lecycle_user:Testtest96-@postgres:5432/lecycle_db
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=lecycle_user
+      - DB_PASSWORD=Testtest96-
+      - DB_NAME=lecycle_db
+      - JWT_SECRET=${JWT_SECRET:-defaultsecret123} 
     depends_on:
       - postgres
-    extra_hosts:
-      - "host.docker.internal:host-gateway"  
+    restart: unless-stopped 
 
   frontend:
-    image: arsenkubat/lecycle-frontend:latest
+    image: arsenkubat/lecycle-frontend:latest  
     ports:
       - "8100:8100"
-    volumes:
-      - ./front:/usr/src/app
-      - /usr/src/app/node_modules
     networks:
       - app_network
+    environment:
+      - ENVIRONMENT=production 
+      - API_URL=http://backend:3000  
+      - GOOGLE_CLIENT_ID=801627083778-37s8egjl71ftjs1aojhms17l2vvpj02s.apps.googleusercontent.com
+      - GOOGLE_MAP_API=AIzaSyAVlY_KrrKefvnX9hwOO-alBCajjMDfxa8
+    restart: unless-stopped  
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -51,10 +56,9 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - app_network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     depends_on:
       - postgres
+    restart: unless-stopped
 
 volumes:
   postgres_data:

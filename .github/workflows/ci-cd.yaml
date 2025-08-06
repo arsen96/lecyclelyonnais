@@ -145,53 +145,53 @@ jobs:
   # ===================================
   # JOB 4: Tests E2E Cypress
   # ===================================
-  # test-e2e:
-  #   name: 🔍 Tests E2E Cypress
-  #   runs-on: ubuntu-latest
-  #   # needs: [test-api, test-frontend] 
-  #   # if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
-  #   steps:
-  #     - name: 📥 Récupérer le code
-  #       uses: actions/checkout@v4
+  test-e2e:
+    name: 🔍 Tests E2E Cypress
+    runs-on: ubuntu-latest
+    # needs: [test-api, test-frontend] 
+    # if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
         
-  #     # Démarrer le backend
-  #     - name: 🏗️ Setup Node.js pour Backend
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '22'
-  #         cache: 'npm'
-  #         cache-dependency-path: ./back/package-lock.json
+      # Démarrer le backend
+      - name: 🏗️ Setup Node.js pour Backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: ./back/package-lock.json
           
-  #     - name: 📦 Installer dépendances Backend
-  #       run: npm ci
-  #       working-directory: ./back
+      - name: 📦 Installer dépendances Backend
+        run: npm ci
+        working-directory: ./back
         
-  #     - name: 🚀 Démarrer Backend
-  #       run: |
-  #         npm start &
-  #         sleep 15
-  #       working-directory: ./back
-  #       env:
-  #         NODE_ENV: test
-  #         PORT: 3000
-  #         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      - name: 🚀 Démarrer Backend
+        run: |
+          npm start &
+          sleep 15
+        working-directory: ./back
+        env:
+          NODE_ENV: test
+          PORT: 3000
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
-  #     # Démarrer le frontend  
-  #     - name: 📦 Installer dépendances Frontend
-  #       run: npm ci
-  #       working-directory: ./front
+      # Démarrer le frontend  
+      - name: 📦 Installer dépendances Frontend
+        run: npm ci
+        working-directory: ./front
         
-  #     - name: 🎨 Démarrer Frontend
-  #       run: |
-  #         npm start &
-  #         sleep 30
-  #       working-directory: ./front
+      - name: 🎨 Démarrer Frontend
+        run: |
+          npm start &
+          sleep 30
+        working-directory: ./front
         
-  #     # Tests Cypress
-  #     - name: 🔍 Tests Cypress E2E
-  #       run: npm run cypress:run
-  #       working-directory: ./front
-  #       continue-on-error: true
+      # Tests Cypress
+      - name: 🔍 Tests Cypress E2E
+        run: npm run cypress:run
+        working-directory: ./front
+        continue-on-error: true
 
   # ===================================
   # JOB 5: Résultats
@@ -329,6 +329,31 @@ jobs:
           sarif_file: trivy-frontend-results.sarif
         continue-on-error: true
 
+  # ===================================
+  # JOB 7: Déploiement Production
+  # ===================================
+  deploy-production:
+    name: 🚀 Déploiement Production
+    runs-on: ubuntu-latest
+    needs: [build-docker]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: 🚀 Déployer sur le serveur
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}     # ← Utilise la clé SSH
+          # password: NE PAS UTILISER           # ← Plus besoin !
+          port: 22
+          script: |
+            cd ~/lecycle-production
+            docker pull arsenkubat/lecycle-backend:latest
+            docker pull arsenkubat/lecycle-frontend:latest
+            docker-compose down
+            docker-compose up -d
+            docker ps
 
 
 
