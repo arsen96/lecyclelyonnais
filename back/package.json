@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "mocha": "^10.7.3",
-    "newman": "^6.2.0",
+    "newman": "^6.2.1",
     "request": "^2.88.2"
   }
 }
