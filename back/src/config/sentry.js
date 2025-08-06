@@ -240,7 +240,7 @@ const asyncHandler = (fn) => (req, res, next) => {
   });
 };
 
-console.log(`🔍 Sentry initialisé pour HomeCyclHome - Environnement: ${process.env.NODE_ENV || 'development'}`);
+console.log(`Sentry initialisé pour HomeCyclHome - Environnement: ${process.env.NODE_ENV || 'development'}`);
 
 module.exports = {
   Sentry,
