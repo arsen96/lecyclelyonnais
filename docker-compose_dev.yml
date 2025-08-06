@@ -14,7 +14,8 @@ services:
     restart: unless-stopped
 
   backend:
-    image: arsenkubat/lecycle-backend:latest
+    build:
+      context: ./back
     ports:
       - "3000:3000"
     volumes:
@@ -31,7 +32,8 @@ services:
       - "host.docker.internal:host-gateway"  
 
   frontend:
-    image: arsenkubat/lecycle-frontend:latest
+    build:
+      context: ./front
     ports:
       - "8100:8100"
     volumes:
