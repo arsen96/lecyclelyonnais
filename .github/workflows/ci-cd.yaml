@@ -224,7 +224,7 @@ jobs:
   #         fi
 
   # ===================================
-  # JOB 5: Build des images Docker
+  # JOB 5: Build sdes images Docker
   # ===================================
   build-docker:
     name: 🐳 Build Images Docker
