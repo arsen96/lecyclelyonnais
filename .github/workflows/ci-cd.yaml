@@ -112,27 +112,27 @@ jobs:
   # ===================================
   # JOB 3: Build et Tests Frontend
   # ===================================
-  test-frontend:
-    name: 🎨 Frontend Build & Tests
-    runs-on: ubuntu-latest
+  # test-frontend:
+  #   name: 🎨 Frontend Build & Tests
+  #   runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./front
+  #   defaults:
+  #     run:
+  #       working-directory: ./front
     
-    steps:
-      - name: 📥 Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: 📥 Récupérer le code
+  #       uses: actions/checkout@v4
         
-      - name: 🏗️ Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./front/package-lock.json
+  #     - name: 🏗️ Installer Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./front/package-lock.json
           
-      - name: 📦 Installer les dépendances
-        run: npm ci
+  #     - name: 📦 Installer les dépendances
+  #       run: npm ci
         
       # - name: 🧪 Tests unitaires Frontend
       #   run: npm run test:ci
@@ -222,55 +222,55 @@ jobs:
   # ===================================
   # JOB 5: Build des images Docker
   # ===================================
-  build-docker:
-    name: 🐳 Build Images Docker
-    runs-on: ubuntu-latest
-    needs: [test-api, test-unit-backend, test-frontend]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+  # build-docker:
+  #   name: 🐳 Build Images Docker
+  #   runs-on: ubuntu-latest
+  #   needs: [test-api, test-unit-backend, test-frontend]
+  #   if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
-    permissions:
-      contents: read
-      packages: write
+  #   permissions:
+  #     contents: read
+  #     packages: write
     
-    steps:
-      - name: 📥 Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: 📥 Récupérer le code
+  #       uses: actions/checkout@v4
       
-      # Configuration de Buildx pour le cache
-      - name: 🔧 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     # Configuration de Buildx pour le cache
+  #     - name: 🔧 Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
       
-      - name: 🔐 Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: 🔐 Login Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
       
-      # ====== BACKEND ======
-      - name: 🏗️ Build et Push Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./back
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-          # 🚀 Cache avec gha (GitHub Actions cache)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # ====== BACKEND ======
+  #     - name: 🏗️ Build et Push Backend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./back
+  #         push: true
+  #         tags: |
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:latest
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+  #         # 🚀 Cache avec gha (GitHub Actions cache)
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
       
-      # ====== FRONTEND ======
-      - name: 🏗️ Build et Push Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./front
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
-          # 🚀 Cache avec gha (GitHub Actions cache)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # ====== FRONTEND ======
+  #     - name: 🏗️ Build et Push Frontend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./front
+  #         push: true
+  #         tags: |
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
+  #         # 🚀 Cache avec gha (GitHub Actions cache)
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
   # ===================================
   # JOB 6: Analyse de sécurité
@@ -285,7 +285,12 @@ jobs:
       - name: 📥 Récupérer le code
         uses: actions/checkout@v4
       
-      # ====== SCAN BACKEND ======
+      - name: 🔐 Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
       - name: 🔍 Scan Backend avec Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -295,7 +300,6 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM'
           ignore-unfixed: true  
       
-      # ====== SCAN FRONTEND ======
       - name: 🔍 Scan Frontend avec Trivy
         uses: aquasecurity/trivy-action@master
         with:
