@@ -4,10 +4,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const proxyquire = require('proxyquire');
 
-describe('🔐 AuthController - Tests Unitaires Simple', () => {
-  let req, res, bcryptStub, jwtStub, poolMock, authController;
+describe('🔐 AuthController - Tests Unitaires', () => {
+  let req, res, bcryptHashStub, bcryptCompareStub, jwtStub, poolMock, subdomainInfoStub, authController;
 
   beforeEach(() => {
+    // Mock console.error pour nettoyer l'affichage
+    sinon.stub(console, 'error');
+    
     // Objets fake pour req et res
     req = { body: {} };
     res = {
@@ -15,19 +18,38 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
       json: sinon.spy()
     };
     
-    // Stubs pour les dépendances externes
-    bcryptStub = sinon.stub(bcrypt, 'compare');
-    jwtStub = sinon.stub(jwt, 'sign');
+    // Mocks des dépendances externes
+    bcryptHashStub = sinon.stub();
+    bcryptCompareStub = sinon.stub();
+    jwtStub = sinon.stub();
+    subdomainInfoStub = sinon.stub().resolves(1);
     
-    // Mock de la base de données - Version qui marche !
+    // Mock de la base de données
     poolMock = {
       query: sinon.stub()
     };
     
-    
-    // Import du controller avec les mocks injectés
+    // Import du controller avec proxyquire pour mocker TOUTES les dépendances
     authController = proxyquire('../../../src/controllers/authController', {
-      '../config/db': poolMock
+      '../config/db': poolMock,
+      'bcryptjs': {
+        hash: bcryptHashStub,
+        compare: bcryptCompareStub
+      },
+      'jsonwebtoken': {
+        sign: jwtStub
+      },
+      '../controllers/companyController': {
+        subdomainInfo: subdomainInfoStub
+      },
+      'crypto': {
+        randomBytes: sinon.stub().returns({ toString: () => 'fake-reset-token' })
+      },
+      'nodemailer': {
+        createTransporter: sinon.stub().returns({
+          sendMail: sinon.stub().callsArgWith(1, null, { response: 'Email sent' })
+        })
+      }
     });
   });
 
@@ -36,30 +58,34 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
   });
 
   // ================================================================
-  // TEST 1 : LOGIN RÉUSSI
+  // TEST LOGIN - CAS DE SUCCÈS
   // ================================================================
   describe('login() - Cas de succès', () => {
-    it('should return token when login is successful', async () => {
+    it('should return token when client login is successful', async () => {
       // ARRANGE - Préparer les données
       req.body = {
-        email: 'test@test.com',
+        email: 'client@test.com',
         password: 'password123',
         domain: 'localhost'
       };
 
+      const mockClient = {
+        id: 1,
+        email: 'client@test.com',
+        password: 'hashedPassword',
+        first_name: 'John'
+      };
 
-      // Mock: la base trouve l'utilisateur (client)
+      // Mock: subdomainInfo retourne company_id = 1
+      subdomainInfoStub.resolves(1);
+
+      // Mock: la base trouve le client
       poolMock.query.onFirstCall().resolves({
-        rows: [{
-          id: 1,
-          email: 'test@test.com',
-          password: 'hashedPassword',
-          first_name: 'John'
-        }]
+        rows: [mockClient]
       });
 
       // Mock: le mot de passe est correct
-      bcryptStub.resolves(true);
+      bcryptCompareStub.resolves(true);
 
       // Mock: JWT génère un token
       jwtStub.returns('fake-jwt-token');
@@ -74,11 +100,52 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
       const response = res.json.firstCall.args[0];
       expect(response.success).to.be.true;
       expect(response.token).to.equal('fake-jwt-token');
+      expect(response.data.user.role).to.equal('client');
+    });
+
+    it('should return token when technician login is successful', async () => {
+      // ARRANGE
+      req.body = {
+        email: 'tech@test.com',
+        password: 'password123',
+        domain: 'localhost'
+      };
+
+      const mockTechnician = {
+        id: 2,
+        email: 'tech@test.com',
+        password: 'hashedPassword',
+        first_name: 'Jane'
+      };
+
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
+
+      // Mock: client pas trouvé, technician trouvé
+      poolMock.query.onFirstCall().resolves({ rows: [] }); // Client query
+      poolMock.query.onSecondCall().resolves({ rows: [mockTechnician] }); // Technician query
+
+      // Mock: password correct
+      bcryptCompareStub.resolves(true);
+      
+      // Mock: JWT token
+      jwtStub.returns('tech-jwt-token');
+
+      // ACT
+      await authController.login(req, res);
+
+      // ASSERT
+      expect(res.status.calledWith(201)).to.be.true;
+      
+      const response = res.json.firstCall.args[0];
+      expect(response.success).to.be.true;
+      expect(response.token).to.equal('tech-jwt-token');
+      expect(response.data.user.role).to.equal('technician');
     });
   });
 
   // ================================================================
-  // TEST 2 : LOGIN ÉCHOUÉ - Email incorrect
+  // TEST LOGIN - CAS D'ÉCHEC
   // ================================================================
   describe('login() - Cas d\'échec', () => {
     it('should reject login with wrong email', async () => {
@@ -89,9 +156,10 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
         domain: 'localhost'
       };
 
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
 
-      // Mock: la base ne trouve PAS l'utilisateur (ni client ni technician)
-      // On ne precise pas onFirstCall comme ça tous les appels à query vont retourner []
+      // Mock: ni client ni technician trouvé
       poolMock.query.resolves({ rows: [] }); 
 
       // ACT
@@ -113,18 +181,22 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
         domain: 'localhost'
       };
 
+      const mockClient = {
+        id: 1,
+        email: 'test@test.com',
+        password: 'hashedPassword'
+      };
 
-      // Mock: la base trouve l'utilisateur
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
+
+      // Mock: client trouvé
       poolMock.query.onFirstCall().resolves({
-        rows: [{
-          id: 1,
-          email: 'test@test.com',
-          password: 'hashedPassword'
-        }]
+        rows: [mockClient]
       });
 
-      // Mock: le mot de passe est incorrect
-      bcryptStub.resolves(false);
+      // Mock: mot de passe incorrect
+      bcryptCompareStub.resolves(false);
 
       // ACT
       await authController.login(req, res);
@@ -136,12 +208,37 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
         message: "Mot de passe incorrect"
       })).to.be.true;
     });
+
+    it('should handle database errors during login', async () => {
+      // ARRANGE
+      req.body = {
+        email: 'test@test.com',
+        password: 'password123',
+        domain: 'localhost'
+      };
+
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
+
+      // Mock: erreur de base de données
+      poolMock.query.rejects(new Error('Database connection failed'));
+
+      // ACT
+      await authController.login(req, res);
+
+      // ASSERT
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.json.calledOnce).to.be.true;
+      
+      const response = res.json.firstCall.args[0];
+      expect(response.status).to.equal('error');
+    });
   });
 
   // ================================================================
-  // TEST 3 : REGISTER RÉUSSI
+  // TEST REGISTER - CAS DE SUCCÈS
   // ================================================================
-  describe('register() - Cas simple', () => {
+  describe('register() - Cas de succès', () => {
     it('should create user successfully', async () => {
       // ARRANGE
       req.body = {
@@ -154,6 +251,15 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
         domain: 'localhost'
       };
 
+      const newUser = {
+        id: 1,
+        email: 'new@test.com',
+        first_name: 'John',
+        last_name: 'Doe'
+      };
+
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
 
       // Mock: email n'existe pas encore (client)
       poolMock.query.onFirstCall().resolves({ rows: [] });
@@ -163,12 +269,11 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
       
       // Mock: création réussie
       poolMock.query.onThirdCall().resolves({
-        rows: [{
-          id: 1,
-          email: 'new@test.com',
-          first_name: 'John'
-        }]
+        rows: [newUser]
       });
+
+      // Mock: password hashé
+      bcryptHashStub.resolves('hashedPassword123');
 
       // Mock: JWT token
       jwtStub.returns('new-user-token');
@@ -182,9 +287,10 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
       const response = res.json.firstCall.args[0];
       expect(response.success).to.be.true;
       expect(response.token).to.equal('new-user-token');
+      expect(response.data.user.role).to.equal('client');
     });
 
-    it('should reject registration with existing email', async () => {
+    it('should reject registration with existing client email', async () => {
       // ARRANGE
       req.body = {
         email: 'existing@test.com',
@@ -196,10 +302,12 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
         domain: 'localhost'
       };
 
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
 
-      // Mock: email existe déjà  
+      // Mock: email existe déjà dans clients
       poolMock.query.onFirstCall().resolves({
-        rows: [{ email: 'existing@test.com' }] // Email trouvé
+        rows: [{ email: 'existing@test.com' }]
       });
 
       // ACT
@@ -210,6 +318,121 @@ describe('🔐 AuthController - Tests Unitaires Simple', () => {
       expect(res.json.calledWith({
         success: false,
         message: "Cet email est déjà utilisé"
+      })).to.be.true;
+    });
+
+    it('should reject registration with existing technician email', async () => {
+      // ARRANGE
+      req.body = {
+        email: 'tech@test.com',
+        password: 'password123',
+        firstName: 'John',
+        lastName: 'Doe',
+        phone: '0123456789',
+        address: '123 rue test',
+        domain: 'localhost'
+      };
+
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
+
+      // Mock: email n'existe pas chez les clients
+      poolMock.query.onFirstCall().resolves({ rows: [] });
+      
+      // Mock: email existe chez les techniciens
+      poolMock.query.onSecondCall().resolves({ rows: [{ exists: true }] });
+
+      // ACT
+      await authController.register(req, res);
+
+      // ASSERT
+      expect(res.status.calledWith(400)).to.be.true;
+      expect(res.json.calledWith({
+        success: false,
+        message: "Cet email est déjà utilisé"
+      })).to.be.true;
+    });
+
+
+    it('should handle database errors during registration', async () => {
+      // ARRANGE
+      req.body = {
+        email: 'new@test.com',
+        password: 'password123',
+        firstName: 'John',
+        lastName: 'Doe',
+        phone: '0123456789',
+        address: '123 rue test',
+        domain: 'localhost'
+      };
+
+      // Mock: subdomainInfo
+      subdomainInfoStub.resolves(1);
+
+      // Mock: erreur de base de données
+      poolMock.query.rejects(new Error('Database error'));
+
+      // ACT
+      await authController.register(req, res);
+
+      // ASSERT
+      expect(res.status.calledWith(500)).to.be.true;
+      
+      const response = res.json.firstCall.args[0];
+      expect(response.success).to.be.false;
+    });
+  });
+
+  // ================================================================
+  // TEST OAUTH - CAS DE SUCCÈS ET ÉCHEC
+  // ================================================================
+  describe('oauth() - Tests', () => {
+    it('should authenticate user with oauth', async () => {
+      // ARRANGE
+      req.body = {
+        email: 'oauth@test.com'
+      };
+
+      const mockUser = {
+        id: 1,
+        email: 'oauth@test.com',
+        password: 'hashedPassword'
+      };
+
+      // Mock: utilisateur trouvé
+      poolMock.query.resolves({ rows: [mockUser] });
+      
+      // Mock: JWT token
+      jwtStub.returns('oauth-token');
+
+      // ACT
+      await authController.oauth(req, res);
+
+      // ASSERT
+      expect(res.status.calledWith(201)).to.be.true;
+      
+      const response = res.json.firstCall.args[0];
+      expect(response.success).to.be.true;
+      expect(response.token).to.equal('oauth-token');
+    });
+
+    it('should reject oauth for non-existing user', async () => {
+      // ARRANGE
+      req.body = {
+        email: 'nonexistent@test.com'
+      };
+
+      // Mock: utilisateur pas trouvé
+      poolMock.query.resolves({ rows: [] });
+
+      // ACT
+      await authController.oauth(req, res);
+
+      // ASSERT
+      expect(res.status.calledWith(400)).to.be.true;
+      expect(res.json.calledWith({
+        success: false,
+        message: "L'utilisateur n'existe pas"
       })).to.be.true;
     });
   });
