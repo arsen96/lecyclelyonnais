@@ -344,15 +344,14 @@ jobs:
         with:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}     # ← Utilise la clé SSH
-          # password: NE PAS UTILISER           # ← Plus besoin !
+          key: ${{ secrets.PROD_SSH_KEY }}   
           port: 22
           script: |
             cd ~/projet/lecyclelyonnais
             docker pull arsenkubat/lecycle-backend:latest
             docker pull arsenkubat/lecycle-frontend:latest
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
             docker ps
 
 
