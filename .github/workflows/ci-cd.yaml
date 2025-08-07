@@ -348,7 +348,7 @@ jobs:
           # password: NE PAS UTILISER           # ← Plus besoin !
           port: 22
           script: |
-            cd ~/lecycle-production
+            cd ~/projet/lecyclelyonnais
             docker pull arsenkubat/lecycle-backend:latest
             docker pull arsenkubat/lecycle-frontend:latest
             docker-compose down
