@@ -15,8 +15,9 @@ const routesAdmin = require('./routes/adminRoute');
 const routesCompany = require('./routes/companyRoute');
 require('dotenv').config()
 const cors = require('cors'); 
+const { authLimiter, generalLimiter, helmetConfig } = require('./middlewares/security');
 
-
+app.use(helmetConfig);
 app.use(cors());
 // app.use(cors({
 //   origin: ['http://localhost:8100', 'http://localhost:8200', 'http://localhost:8300', 'http://company.localhost:8100'], 
@@ -34,9 +35,12 @@ app.use(sentryUserContextMiddleware);
 console.log("__dirname", __dirname)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+
+app.use(generalLimiter);
+
 // Import and use routes
 app.use('/api', routes);
-app.use('/auth', routesAuth);
+app.use('/auth',authLimiter, routesAuth);
 app.use('/zones', routesZone);
 app.use('/technicians', routesTechnician);
 app.use('/bicycles', routesBicycle);
@@ -47,7 +51,7 @@ app.use('/admins', routesAdmin);
 app.use('/companies', routesCompany);
 
 app.use((error, req, res, next) => {
-  // Les erreurs sont déjà capturées par captureBusinessError dans vos contrôleurs
+  // Les erreurs sont déjà capturées par captureBusinessError
   console.error('Erreur capturée:', error.message);
   
   if (error.status === 404) {
@@ -82,4 +86,5 @@ app.get('/test-sentry', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
