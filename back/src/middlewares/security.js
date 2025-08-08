@@ -8,6 +8,9 @@ const authLimiter = rateLimit({
       message: 'Trop de tentatives de connexion, réessayez plus tard'
     },
     skipSuccessfulRequests: true, 
+    trustProxy: true,
+    standardHeaders: true,
+    legacyHeaders: false
   });
   
   const generalLimiter = rateLimit({

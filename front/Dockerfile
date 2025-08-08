@@ -8,8 +8,21 @@ RUN npm install -g @angular/cli @ionic/cli
 
 COPY . .
 
-RUN ./scripts/generate-env.sh
+# Générer les variables d'environnement si nécessaire
+RUN ./scripts/generate-env.sh || echo "No generate-env.sh script found"
 
-EXPOSE 8100
+# Build pour production
+RUN ionic build --prod
 
-CMD ["ionic", "serve", "--host", "0.0.0.0", "--port", "8100"]
+# Étape de production avec Nginx
+FROM nginx:alpine
+
+# Copier le build depuis l'étape précédente
+COPY --from=build /usr/src/app/www /usr/share/nginx/html
+
+# Copier la config nginx pour SPA
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

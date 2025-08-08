@@ -39,16 +39,16 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(generalLimiter);
 
 // Import and use routes
-app.use('/api', routes);
-app.use('/auth',authLimiter, routesAuth);
-app.use('/zones', routesZone);
-app.use('/technicians', routesTechnician);
-app.use('/bicycles', routesBicycle);
-app.use('/interventions', routesIntervention);
-app.use('/planning-models', routesPlanning);
-app.use('/clients', routesClient);
-app.use('/admins', routesAdmin);
-app.use('/companies', routesCompany);
+app.use('/api/auth', routesAuth);
+app.use('/api/auth',authLimiter, routesAuth);
+app.use('/api/zones', routesZone);
+app.use('/api/technicians', routesTechnician);
+app.use('/api/bicycles', routesBicycle);
+app.use('/api/interventions', routesIntervention);
+app.use('/api/planning-models', routesPlanning);
+app.use('/api/clients', routesClient);
+app.use('/api/admins', routesAdmin);
+app.use('/api/companies', routesCompany);
 
 app.use((error, req, res, next) => {
   // Les erreurs sont déjà capturées par captureBusinessError

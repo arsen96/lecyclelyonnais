@@ -8,7 +8,7 @@ import { CRUD } from '../models/crud';
 })
 export abstract class BaseService implements CRUD<any> {
   public static currentRoute:string;
-  public static baseApi = "http://161.97.116.21:3000";
+  public static baseApi = "https://lecyclelyonnais.fr/api";
   public http:HttpClient = inject(HttpClient)
   private static disconnect = new ReplaySubject<Boolean>(1);
   public static $disconnect = BaseService.disconnect.asObservable();
