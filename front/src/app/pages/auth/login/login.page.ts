@@ -100,9 +100,11 @@ export class LoginPage {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      address: ['', Validators.minLength(2)]
+      address: ['',Validators.minLength(2)]
     });
-  }
+  } 
+
+
 
   /**
    * Retourne les contrôles du formulaire de connexion pour afficher dans le template
@@ -122,6 +124,7 @@ export class LoginPage {
   async onSubmitLogin() {
     if (this.loginForm.valid) {
       const loginData = this.loginForm.value;
+      this.standardAuthService.tokenObs = null;
       const login$ = this.standardAuthService.loginStandard({ ...loginData, ...this.companyService.subdomainREQ });
       const result = this.loaderService.showLoaderUntilCompleted(login$);
       result.subscribe({

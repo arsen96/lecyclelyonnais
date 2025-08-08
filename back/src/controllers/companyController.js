@@ -51,7 +51,7 @@ const createCompany = async (req, res) => {
  */
 const subdomainInfo = async (subdomain) => {
   let result;
-  const currentSubdomain = null;
+  const currentSubdomain = subdomain;
   if(!currentSubdomain || currentSubdomain == 'null'){
     const query = "SELECT id FROM company WHERE subdomain IS NULL";
     result = await pool.query(query);
@@ -116,4 +116,84 @@ const deleteCompanies = async (req, res) => {
   }
 };
 
-module.exports = { getCompanies, createCompany, updateCompany, deleteCompanies,subdomainInfo };
+
+/**
+ * Récupère les informations de l'entreprise actuelle basée sur le domaine
+ */
+const getCurrentCompany = async (req, res) => {
+  try {
+    const { domain } = req.query;
+    
+    if (!domain) {
+      return res.status(400).send({
+        success: false,
+        message: "Le paramètre 'domain' est requis"
+      });
+    }
+
+    const companyId = await subdomainInfo(domain);
+    
+    if (!companyId) {
+      return res.status(404).send({
+        success: false,
+        message: "Aucune entreprise trouvée pour ce domaine"
+      });
+    }
+
+    const query = `
+      SELECT id, name, email, subdomain, theme_color, phone, 
+             created_at, updated_at
+      FROM company 
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [companyId]);
+    
+    res.status(200).send({
+      success: true,
+      data: result.rows[0]
+    });
+    
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'entreprise:', error);
+    res.status(500).send({
+      success: false,
+      message: "Erreur lors de la récupération de l'entreprise"
+    });
+  }
+};
+
+/**
+ * Vérifie si un domaine/sous-domaine est valide et existe
+ */
+const validateDomain = async (req, res) => {
+  try {
+    const { domain } = req.query;
+    
+    if (!domain) {
+      return res.status(400).send({
+        success: false,
+        message: "Le paramètre 'domain' est requis"
+      });
+    }
+
+    const companyId = await subdomainInfo(domain);
+    
+    res.status(200).send({
+      success: true,
+      data: {
+        domain: domain,
+        exists: companyId !== null,
+        companyId: companyId
+      }
+    });
+    
+  } catch (error) {
+    console.error('Erreur lors de la validation du domaine:', error);
+    res.status(500).send({
+      success: false,
+      message: "Erreur lors de la validation du domaine"
+    });
+  }
+};
+
+module.exports = { getCompanies, createCompany, updateCompany, deleteCompanies,subdomainInfo, getCurrentCompany, validateDomain };

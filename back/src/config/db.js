@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const dbHost = process.env.ENVIRONMENT === 'docker' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL;
 
 // Création d'un pool de connexions PostgreSQL
 const pool = new Pool({
