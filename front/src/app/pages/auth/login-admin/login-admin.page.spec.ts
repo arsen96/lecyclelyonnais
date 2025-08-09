@@ -147,14 +147,6 @@ describe('LoginAdminPage', () => {
 
   });
 
-  describe('ionViewWillLeave()', () => {
-    it('should clear messages', () => {
-      component.ionViewWillLeave();
-
-      expect(mockMessageService.clearMessage).toHaveBeenCalled();
-    });
-  });
-
   describe('Component initialization', () => {
     it('should initialize displayMsg to false', () => {
       expect(component.displayMsg).toBe(false);

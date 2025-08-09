@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faLinkedin, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { OauthService } from 'src/app/services/auth/oauth.service';
@@ -12,7 +12,10 @@ import { InterventionService } from 'src/app/services/intervention.service';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { TechnicianService } from 'src/app/services/technician.service';
 import { CompanyService } from 'src/app/services/company.service';
-
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { AddressAutocompleteComponent, AddressSuggestion } from 'src/app/components/address-autocomplete/address-autocomplete.component';
+import { MessageComponent } from 'src/app/components/message/message.component';
 export class FormRegisterModel {
   firstName: string = '';
   lastName: string = '';
@@ -31,6 +34,15 @@ export class FormLoginModel {
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonicModule,
+    AddressAutocompleteComponent,
+    MessageComponent
+  ]
 })
 
 /**
@@ -192,12 +204,11 @@ export class LoginPage {
 
   /**
    * Gère le changement d'adresse dans le formulaire d'inscription.
-   * @param place - Objet contenant les informations sur le lieu.
+   * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
    */
-  handleAddressChange(place: any) {
-    if (place.geometry) {
-      console.log(place);
-      this.registrationForm.patchValue({ address: place.formatted_address });
+  handleAddressChange(place: AddressSuggestion) {
+    if (place.label) {
+      this.registrationForm.patchValue({ address: place.label });
       this.addressValidated = true;
     }
   }

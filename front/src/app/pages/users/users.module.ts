@@ -10,6 +10,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 import { MessageComponent } from 'src/app/components/message/message.component';
 import { environment } from 'src/environments/environment';
+import { AddressAutocompleteComponent } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 @NgModule({
   imports: [
     NgxGpAutocompleteModule,
@@ -18,7 +19,8 @@ import { environment } from 'src/environments/environment';
     IonicModule,
     MessageComponent,
     ReactiveFormsModule,
-    UsersPageRoutingModule
+    UsersPageRoutingModule,
+    AddressAutocompleteComponent
   ],
   declarations: [UsersPage],
   providers: [

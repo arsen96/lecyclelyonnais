@@ -10,6 +10,7 @@ import { ClientService } from 'src/app/services/client.service';
 import { GlobalService, UserRole } from 'src/app/services/global.service';
 import { BehaviorSubject } from 'rxjs';
 import { UsersPage } from '../pages/users/users.page';
+import { AddressSuggestion } from '../components/address-autocomplete/address-autocomplete.component';
 describe('UsersPage', () => {
   let component: UsersPage;
   let fixture: ComponentFixture<UsersPage>;
@@ -110,17 +111,19 @@ describe('UsersPage', () => {
     component.updateUser();
   });
 
-  // Test de handleAddressChange
   it('should handle address change', () => {
     component.ngOnInit();
-    const mockPlace = {
-      geometry: {},
-      formatted_address: '123 Valid Street'
+    const mockPlace: AddressSuggestion = { 
+      label: '123 Test Street',
+      coordinates: [48.8566, 2.3522],
+      postcode: '75001',
+      city: 'Paris',
+      street: 'Test Street'
     };
 
     component.handleAddressChange(mockPlace);
 
-    expect(component.registrationForm.get('address')?.value).toBe('123 Valid Street');
+    expect(component.registrationForm.get('address')?.value).toBe('123 Test Street');
     expect(component.addressValidated).toBe(true);
   });
 

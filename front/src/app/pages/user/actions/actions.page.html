@@ -21,13 +21,17 @@
               @if(displayError){  
               <app-message></app-message>
             }
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Adresse</mat-label>
-              <input matInput placeholder="Saisissez votre adresse" class="adresse-input" formControlName="address" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="changeAddressValidated()" required>
-              <mat-error *ngIf="addressFormGroup.get('address').hasError('required')">
+            <div class="full-width">
+              <app-address-autocomplete 
+                placeholder="Saisissez votre adresse" 
+                formControlName="address"
+                (addressSelected)="handleAddressChange($event)"
+                (ionInput)="changeAddressValidated()">
+              </app-address-autocomplete>
+              <div class="error-message" *ngIf="addressFormGroup.get('address').hasError('required') && addressFormGroup.get('address').touched">
                 L'adresse est requise.
-              </mat-error>
-            </mat-form-field>
+              </div>
+            </div>
             <div class="button-group">
               <button mat-raised-button color="primary" class="next-btn adresse-btn" type="submit">Suivant</button>
             </div>

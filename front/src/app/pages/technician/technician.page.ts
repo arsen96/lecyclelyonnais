@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AddressSuggestion } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 import { Message, MessageService } from 'src/app/services/message.service';
 import { TechnicianService } from 'src/app/services/technician.service';
 import { ZoneService } from 'src/app/services/zone.service';
@@ -29,6 +30,7 @@ export class TechnicianPage implements OnInit {
 
   ionViewWillEnter(): void {
     this.displayMsg = false;
+    this.manageForm();
   }
 
   /**
@@ -125,14 +127,12 @@ export class TechnicianPage implements OnInit {
   }
 
   /**
-   * Valide et met à jour l'adresse depuis Google Places
-   * @param {any} place - Objet place de Google Places API
-   * @returns {void}
+   * Gère le changement d'adresse dans le formulaire d'inscription.
+   * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
    */
-  handleAddressChange(place: any): void {
-    if (place.geometry) {
-      console.log(place);
-      this.technicianForm.patchValue({ address: place.formatted_address });
+  handleAddressChange(place: AddressSuggestion) {
+    if (place.label) {
+      this.technicianForm.patchValue({ address: place.label });
       this.addressValidated = true;
     }
   }
@@ -141,7 +141,7 @@ export class TechnicianPage implements OnInit {
    * Méthode du cycle de vie - initialise le formulaire
    */
   ngOnInit(): void {
-    this.manageForm();
+    
   }
 
   /**

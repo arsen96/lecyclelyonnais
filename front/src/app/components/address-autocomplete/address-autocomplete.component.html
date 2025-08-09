@@ -1,0 +1,19 @@
+<ion-item class="address-field">
+  <ion-input 
+    [placeholder]="placeholder" 
+    [value]="value"
+    (ionInput)="onInput($event)"
+    (ionBlur)="onBlur()"
+    (ionFocus)="onFocus()">
+  </ion-input>
+</ion-item>
+
+<ion-list *ngIf="showSuggestions && suggestions.length > 0" class="suggestions-list">
+  <ion-item 
+    *ngFor="let suggestion of suggestions" 
+    button 
+    (click)="selectSuggestion(suggestion)"
+    class="suggestion-item">
+    <ion-label>{{ suggestion.label }}</ion-label>
+  </ion-item>
+</ion-list>

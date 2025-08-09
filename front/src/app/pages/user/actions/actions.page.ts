@@ -13,6 +13,7 @@ import { BicycleService } from 'src/app/services/bicycle.service';
 import { Bicycle } from 'src/app/models/bicycle';
 import { lastValueFrom } from 'rxjs';
 import { Zones } from 'src/app/models/zones';
+import { AddressSuggestion } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 
 @Component({
   selector: 'app-actions',
@@ -35,7 +36,7 @@ export class ActionsPage implements OnInit {
   isAtConfirmationStep: boolean = false;
   userBicycles: Bicycle[] = [];
   selectedBicycle: Bicycle;
-  constructor(private _formBuilder: FormBuilder,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService, private bicycleService: BicycleService) { }
+  constructor(private _formBuilder: FormBuilder,public messageService:MessageService,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService, private bicycleService: BicycleService) { }
   displayError = false
   concernedZoneId:number;
   concernedZone:Zones ;
@@ -150,8 +151,10 @@ export class ActionsPage implements OnInit {
           try {
           const inZone$ = this.zoneService.isAddressInZone(addressData.address);
           const result = this.loadingService.showLoaderUntilCompleted(inZone$);
+          console.log("xpers 1")
           result.subscribe({
             next: (result: any) => {
+              console.log("xpers 2")
               this.addressFormCompleted = true;
               if (result.success) {
                 this.concernedZoneId = result.success;
@@ -199,6 +202,10 @@ export class ActionsPage implements OnInit {
     }
   }
 
+  ionViewWillLeave(){
+    this.messageService.clearMessage();
+  }
+
 
 
   handleFileInput(event) {
@@ -236,13 +243,16 @@ export class ActionsPage implements OnInit {
     return !unavailableHours.includes(hour);
   }
 
-  handleAddressChange(place: any) {
-    if (place.geometry) {
-      console.log(place);
-      this.addressFormGroup.patchValue({ address: place.formatted_address });
+  /**
+   * Gère le changement d'adresse dans le formulaire d'inscription.
+   * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
+   */
+  handleAddressChange(place: AddressSuggestion) {
+    if (place.label) {
+      this.addressFormGroup.patchValue({ address: place.label });
       this.addressValidated = true;
+    }
   }
-}
 
   onSubmit() {
     
