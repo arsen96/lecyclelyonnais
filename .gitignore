@@ -11,3 +11,8 @@ back/dist/
 # Ignorer les fichiers .env
 front/.env
 back/.env
+# Environment variables
+.env
+
+docker-compose_dev.yml
+docker-compose.yml
