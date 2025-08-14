@@ -8,7 +8,7 @@ RUN npm install -g @angular/cli @ionic/cli
 
 COPY . .
 
-# Générer les variables d'environnement si nécessaire
+# Générer les variables d'environnesment si nécessaire
 RUN ./scripts/generate-env.sh || echo "No generate-env.sh script found"
 
 # Build pour production
