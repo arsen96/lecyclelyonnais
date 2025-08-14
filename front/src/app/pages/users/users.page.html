@@ -53,7 +53,13 @@
         <ion-input type="tel" formControlName="phone" required></ion-input>
       </ion-item>
       <ion-item>
-        <input formControlName="address" class="addressInput" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)"/>
+        <div class="full-width">
+          <app-address-autocomplete 
+            placeholder="Saisissez l'adresse" 
+            formControlName="address"
+            (addressSelected)="handleAddressChange($event)">
+          </app-address-autocomplete>
+        </div>
       </ion-item>
       <div class="ion-text-center">
         <ion-button type="submit" [disabled]="registrationForm.invalid">

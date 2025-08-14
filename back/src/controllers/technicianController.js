@@ -128,6 +128,9 @@ const update = async (req, res) => {
     const geographical_zone_id = await getGeographicalZoneId(address);
 
     if (password) {
+      const hashedPassword = await bcrypt.hash(password, 12);
+      query = 'UPDATE technician SET last_name = $1, first_name = $2, phone = $3, address = $4, email = $5, geographical_zone_id = $6, password = $7 WHERE id = $8';
+      values = [last_name, first_name, phone, address, email, geographical_zone_id, hashedPassword, id];
     } else {
       query = 'UPDATE technician SET last_name = $1, first_name = $2, phone = $3, address = $4, email = $5, geographical_zone_id = $6 WHERE id = $7';
       values = [last_name, first_name, phone, address, email, geographical_zone_id, id];

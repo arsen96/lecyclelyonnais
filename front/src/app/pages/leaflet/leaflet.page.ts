@@ -16,6 +16,7 @@ import { TechnicianService } from 'src/app/services/technician.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ZoneModalComponent } from './zone-modal/zone-modal.component';
 import { CompanyService } from 'src/app/services/company.service';
+import { FormGroup, FormControl } from '@angular/forms';
 
 declare var google: any;
 
@@ -54,6 +55,10 @@ export class LeafletPage {
   selectedInterventionType: string;
   public companyService = inject(CompanyService)
 
+  addressForm = new FormGroup({
+    address: new FormControl('')
+  });
+
   constructor(private cd: ChangeDetectorRef, private technicianService: TechnicianService, private route: ActivatedRoute, public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
     this.route.params.subscribe(params => {
       this.zoneIdSelected = Number(params['id']) ? Number(params['id']) : null;
@@ -69,6 +74,8 @@ export class LeafletPage {
 
   ngOnInit() {
     this.filteredTechnicians = this.zoneSelected?.technicians || [];
+
+    console.log("apeeeeee",this.zoneSelected?.technicians)
   }
 
   filterTechnicians() {
@@ -81,6 +88,9 @@ export class LeafletPage {
         normalizeString(`${technician.first_name} ${technician.last_name}`).toLowerCase().includes(normalizeString(this.searchTerm).toLowerCase())
       );
     }
+
+
+    console.log("asasasa",this.filteredTechnicians );
   }
 
   onMapReady(map: Map) {
@@ -195,7 +205,7 @@ export class LeafletPage {
   /**
    * Convertit une couche Leaflet en format WKT (Well-Known Text)
    * @param {Layer} layer - La couche Leaflet à convertir
-   * @returns {string} Représentation WKT du polygone
+   * @returns {string} la chaine de caractère WKT du polygone
    */
   public convertToWKT(layer: Layer): string {
     const coords = [];
@@ -218,12 +228,17 @@ export class LeafletPage {
     this.zoneName = null;
   }
 
+  /**
+ * Gère le changement d'adresse dans le formulaire d'inscription.
+ * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
+ */
   public handleAddressChange(place: any) {
-    if (place.geometry) {
-      this.map.setView(new LatLng(place.geometry.location.lat(), place.geometry.location.lng()), 15);
-      this.addressValidated = true; // Valider l'adresse
+    if (place.coordinates) {
+      this.map.setView(new LatLng(place.coordinates[1], place.coordinates[0]), 15);
+      this.addressValidated = true;
     }
   }
+
 
   setResult(ev) {
     console.log(`Dismissed with role: ${ev.detail.role}`);
@@ -264,6 +279,8 @@ export class LeafletPage {
   async addTechnicians() {
     this.technicianService.technicians = new Array();
     await this.technicianService.get();
+
+    console.log("techniciansss", this.technicianService.technicians)
     const modal = await this.modalController.create({
       component: TechnicianModalComponent,
       componentProps: {

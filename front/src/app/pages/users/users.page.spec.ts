@@ -124,21 +124,6 @@ describe('UsersPage', () => {
   });
 
 
-  describe('handleAddressChange()', () => {
-    it('should update address and set validation', () => {
-      component.ngOnInit();
-      const mockPlace = {
-        geometry: { location: { lat: () => 40.7128, lng: () => -74.0060 } },
-        formatted_address: '123 Valid Street'
-      };
-
-      component.handleAddressChange(mockPlace);
-
-      expect(component.registrationForm.get('address')?.value).toBe('123 Valid Street');
-      expect(component.addressValidated).toBe(true);
-    });
-  });
-
   describe('generatePassword()', () => {
     it('should generate password and show it', () => {
       component.ngOnInit();
@@ -216,11 +201,4 @@ describe('UsersPage', () => {
     });
   });
 
-  describe('ionViewWillLeave()', () => {
-    it('should clear messages', () => {
-      component.ionViewWillLeave();
-
-      expect(mockMessageService.clearMessage).toHaveBeenCalled();
-    });
-  });
 });

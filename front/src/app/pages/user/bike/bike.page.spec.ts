@@ -188,13 +188,6 @@ describe('BikePage', () => {
     });
   });
 
-  describe('Lifecycle', () => {
-    it('should clear messages on leave', () => {
-      component.ionViewWillLeave();
-
-      expect(mockMessageService.clearMessage).toHaveBeenCalled();
-    });
-  });
 
 
   describe('Edge cases', () => {

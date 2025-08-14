@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 import { LeafletPageRoutingModule } from './leaflet-routing.module';
@@ -16,7 +16,7 @@ import {MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatBadgeModule } from '@angular/material/badge';
 import { ZoneModalComponent } from './zone-modal/zone-modal.component';
-import { environment } from 'src/environments/environment';
+import { AddressAutocompleteComponent } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 
 
 @NgModule({
@@ -26,6 +26,7 @@ import { environment } from 'src/environments/environment';
     LeafletModule,
     IonicModule.forRoot({innerHTMLTemplatesEnabled: true}),
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
     LeafletPageRoutingModule,
     MatSidenavModule,
@@ -33,18 +34,9 @@ import { environment } from 'src/environments/environment';
     MatPaginatorModule,
     MatFormFieldModule,
     MatCheckboxModule,
-    MatBadgeModule
+    MatBadgeModule,
+    AddressAutocompleteComponent
   ],
   declarations: [LeafletPage, TechnicianModalComponent, ZoneModalComponent],
-  providers: [
-    {
-      provide: Loader,
-      useValue: new Loader({
-        apiKey: environment.GOOGLE_MAP_API,
-        libraries: ['places']
-      })
-    },
-    //...
-  ],
 })
 export class LeafletPageModule {}

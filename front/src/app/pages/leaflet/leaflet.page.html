@@ -43,9 +43,13 @@
         @if(!zoneSelected){
           <ion-grid class="inputBtnContainer">
             <ion-row>
-              <ion-col size="10" class="ion-no-padding">
-                <input #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" />
-              </ion-col>
+                <div class="full-width" [formGroup]="addressForm">
+                  <app-address-autocomplete 
+                    placeholder="Saisissez l'adresse" 
+                    formControlName="address"
+                    (addressSelected)="handleAddressChange($event)">
+                  </app-address-autocomplete>
+                </div>
             </ion-row>
           </ion-grid>
         }

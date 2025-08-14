@@ -34,37 +34,6 @@ Sentry.init({
   //   }
   // },
 
-  // Configuration avant envoi (sécurité et filtrage)
-  beforeSend(event) {
-    // Filtrer les informations sensibles
-    if (event.exception) {
-      const error = event.exception.values[0];
-      if (error.value) {
-        // Masquer les mots de passe
-        if (error.value.includes('password') || error.value.includes('token')) {
-          error.value = error.value.replace(/password[=:]\s*["']?[^"'\s]+["']?/gi, 'password=***');
-          error.value = error.value.replace(/token[=:]\s*["']?[^"'\s]+["']?/gi, 'token=***');
-        }
-      }
-    }
-    
-    // Ajouter des contextes métier
-    if (event.request && event.request.url) {
-      event.tags = {
-        ...event.tags,
-        endpoint_type: getEndpointType(event.request.url)
-      };
-    }
-    
-    // Ajouter des informations sur l'environnement
-    event.tags = {
-      ...event.tags,
-      app_layer: 'backend-api',
-      deployment_type: process.env.DEPLOYMENT_TYPE || 'standalone'
-    };
-    
-    return event;
-  },
 
   // Configuration des breadcrumbs
   beforeBreadcrumb(breadcrumb) {
@@ -153,21 +122,7 @@ const sentryUserContextMiddleware = (req, res, next) => {
   next();
 };
 
-// Fonction pour créer des transactions avec contexte métier - VERSION MODERNE
-const createBusinessTransaction = (operation, name, context = {}) => {
-  return Sentry.startTransaction({
-    op: operation,
-    name: name,
-    tags: {
-      business_operation: operation,
-      ...context
-    },
-    data: {
-      timestamp: new Date().toISOString(),
-      ...context
-    }
-  });
-};
+
 
 // Fonction pour tracker les métriques métier
 const trackBusinessMetric = (metricName, value, tags = {}) => {
@@ -184,24 +139,7 @@ const trackBusinessMetric = (metricName, value, tags = {}) => {
   });
 };
 
-// Fonction pour logger les événements d'audit
-const logAuditEvent = (action, userId, targetType, targetId, details = {}) => {
-  Sentry.addBreadcrumb({
-    message: `Audit: ${action}`,
-    category: 'audit',
-    level: 'info',
-    data: {
-      action,
-      user_id: userId,
-      target_type: targetType,
-      target_id: targetId,
-      timestamp: new Date().toISOString(),
-      details
-    }
-  });
-};
-
-// Fonction pour capturer les erreurs métier avec contexte
+// Capturer les erreurs avec contexte
 const captureBusinessError = (error, operation, context = {}) => {
   Sentry.captureException(error, {
     tags: {
@@ -218,36 +156,11 @@ const captureBusinessError = (error, operation, context = {}) => {
   });
 };
 
-// Gestionnaire d'erreurs async avec Sentry - VERSION MODERNE
-const asyncHandler = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch((error) => {
-    // Capturer l'erreur avec le contexte de la requête
-    Sentry.withScope((scope) => {
-      scope.setTag('endpoint', req.route?.path || req.path);
-      scope.setTag('method', req.method);
-      scope.setTag('user_role', req.user?.role);
-      
-      scope.setContext('request_data', {
-        body: req.body,
-        params: req.params,
-        query: req.query,
-        user_id: req.user?.id
-      });
-      
-      Sentry.captureException(error);
-    });
-    next(error);
-  });
-};
 
-console.log(`Sentry initialisé pour HomeCyclHome - Environnement: ${process.env.NODE_ENV || 'development'}`);
 
 module.exports = {
   Sentry,
   sentryUserContextMiddleware,
-  createBusinessTransaction,
   trackBusinessMetric,
-  logAuditEvent,
   captureBusinessError,
-  asyncHandler
 };

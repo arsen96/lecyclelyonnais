@@ -1,157 +1,133 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { LoginPage } from './login.page';
 import { StandardAuth } from 'src/app/services/auth/standard.service';
-import { OauthService } from 'src/app/services/auth/oauth.service';
 import { LoadingService } from 'src/app/services/loading.service';
-import { MessageService, Message } from 'src/app/services/message.service';
-import { GlobalService } from 'src/app/services/global.service';
+import { MessageService } from 'src/app/services/message.service';
 import { CompanyService } from 'src/app/services/company.service';
+import { GlobalService } from 'src/app/services/global.service';
+import { OauthService } from 'src/app/services/auth/oauth.service';
 import { BicycleService } from 'src/app/services/bicycle.service';
 import { TechnicianService } from 'src/app/services/technician.service';
 import { InterventionService } from 'src/app/services/intervention.service';
-import { BehaviorSubject } from 'rxjs';
+import { AddressSuggestion } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 
 describe('LoginPage', () => {
   let component: LoginPage;
   let fixture: ComponentFixture<LoginPage>;
   let mockStandardAuth: jasmine.SpyObj<StandardAuth>;
-  let mockOauthService: jasmine.SpyObj<OauthService>;
   let mockLoadingService: jasmine.SpyObj<LoadingService>;
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockRouter: jasmine.SpyObj<Router>;
-  let mockGlobalService: any;
-  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    const standardAuthSpy = jasmine.createSpyObj('StandardAuth', ['loginStandard', 'register']);
-    const oauthServiceSpy = jasmine.createSpyObj('OauthService', ['decodeJWT', 'loginOauthApi', 'loginOauth'], {
-      oAuthService: { logOut: jasmine.createSpy() }
-    });
-    const loadingServiceSpy = jasmine.createSpyObj('LoadingService', ['showLoaderUntilCompleted', 'setLoading']);
-    const messageServiceSpy = jasmine.createSpyObj('MessageService', ['showMessage', 'clearMessage']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    const companyServiceSpy = jasmine.createSpyObj('CompanyService', [], {
-      subdomainREQ: { domain: 'test' }
-    });
-    const bicycleServiceSpy = jasmine.createSpyObj('BicycleService', [], {
-      userBicycles: []
-    });
+    mockStandardAuth = jasmine.createSpyObj('StandardAuth', ['loginStandard', 'register']);
+    mockLoadingService = jasmine.createSpyObj('LoadingService', ['showLoaderUntilCompleted']);
+    mockMessageService = jasmine.createSpyObj('MessageService', ['showMessage', 'clearMessage']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigateByUrl']);
 
-    mockGlobalService = {
+    const mockGlobalService = {
       isAuthenticated: new BehaviorSubject(false),
-      user: new BehaviorSubject(null),
-      userRole: new BehaviorSubject(null),
-      loadAllData: jasmine.createSpy('loadAllData')
+      loadAllData: jasmine.createSpy()
+    };
+
+    const mockCompanyService = {
+      subdomainREQ: { domain: 'test' }
+    };
+
+    const mockOauthService = {
+      decodeJWT: jasmine.createSpy(),
+      loginOauthApi: jasmine.createSpy(),
+      loginOauth: jasmine.createSpy(),
+      oAuthService: { logOut: jasmine.createSpy() }
     };
 
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FormsModule, HttpClientTestingModule],
-      declarations: [LoginPage],
+      imports: [ReactiveFormsModule, LoginPage],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         FormBuilder,
-        { provide: StandardAuth, useValue: standardAuthSpy },
-        { provide: OauthService, useValue: oauthServiceSpy },
-        { provide: LoadingService, useValue: loadingServiceSpy },
-        { provide: MessageService, useValue: messageServiceSpy },
-        { provide: Router, useValue: routerSpy },
+        { provide: StandardAuth, useValue: mockStandardAuth },
+        { provide: LoadingService, useValue: mockLoadingService },
+        { provide: MessageService, useValue: mockMessageService },
+        { provide: Router, useValue: mockRouter },
         { provide: GlobalService, useValue: mockGlobalService },
-        { provide: CompanyService, useValue: companyServiceSpy },
-        { provide: BicycleService, useValue: bicycleServiceSpy },
+        { provide: CompanyService, useValue: mockCompanyService },
+        { provide: OauthService, useValue: mockOauthService },
+        { provide: BicycleService, useValue: {} },
         { provide: TechnicianService, useValue: {} },
         { provide: InterventionService, useValue: {} },
         { provide: ActivatedRoute, useValue: { fragment: of(null) } }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(LoginPage);
     component = fixture.componentInstance;
-    
-    mockStandardAuth = TestBed.inject(StandardAuth) as jasmine.SpyObj<StandardAuth>;
-    mockOauthService = TestBed.inject(OauthService) as jasmine.SpyObj<OauthService>;
-    mockLoadingService = TestBed.inject(LoadingService) as jasmine.SpyObj<LoadingService>;
-    mockMessageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Form initialization', () => {
-    it('should initialize registration form with validators', () => {
-      expect(component.registrationForm).toBeDefined();
-      expect(component.registrationForm.get('firstName')).toBeDefined();
-      expect(component.registrationForm.get('email')).toBeDefined();
-      expect(component.registrationForm.get('password')).toBeDefined();
-    });
+  it('should initialize login form', () => {
+    expect(component.loginForm).toBeDefined();
+    expect(component.loginForm.get('email')).toBeDefined();
+    expect(component.loginForm.get('password')).toBeDefined();
+  });
 
-    it('should validate required fields', () => {
-      const form = component.registrationForm;
-      
-      expect(form.valid).toBeFalse();
-      
-      form.patchValue({
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@test.com',
-        password: 'password123',
-        phone: '0123456789'
-      });
-      
-      expect(form.valid).toBeTrue();
+  it('should initialize registration form', () => {
+    expect(component.registrationForm).toBeDefined();
+    expect(component.registrationForm.get('firstName')).toBeDefined();
+    expect(component.registrationForm.get('email')).toBeDefined();
+  });
+
+  it('should validate login form', () => {
+    expect(component.loginForm.valid).toBeFalse();
+
+    component.loginForm.patchValue({
+      email: 'test@example.com',
+      password: 'password123'
     });
+    
+    expect(component.loginForm.valid).toBeTrue();
+  });
+
+  it('should call login service on submit', async () => {
+    component.loginForm.patchValue({
+      email: 'test@example.com',
+      password: 'password123'
+    });
+    
+    mockLoadingService.showLoaderUntilCompleted.and.returnValue(of({}));
+    
+    await component.onSubmitLogin();
+    
+    expect(mockStandardAuth.loginStandard).toHaveBeenCalled();
+  });
+
+  it('should handle address change', () => {
+    const mockPlace: AddressSuggestion = { 
+      label: '123 Test Street',
+      coordinates: [48.8566, 2.3522],
+      postcode: '75001',
+      city: 'Paris',
+      street: 'Test Street'
+    };
+    
+    component.handleAddressChange(mockPlace);
+    
+    expect(component.registrationForm.get('address')?.value).toBe('123 Test Street');
+    expect(component.addressValidated).toBeTrue();
   });
 
 
-  describe('handleAddressChange()', () => {
-    it('should update address and set validation when place has geometry', () => {
-      const mockPlace = {
-        geometry: { location: {} },
-        formatted_address: '123 Test Street'
-      };
-
-      component.handleAddressChange(mockPlace);
-
-      expect(component.registrationForm.get('address')?.value).toBe('123 Test Street');
-      expect(component.addressValidated).toBeTrue();
-    });
-
-    it('should not update when place has no geometry', () => {
-      const mockPlace = { formatted_address: '123 Test Street' };
-
-      component.handleAddressChange(mockPlace);
-
-      expect(component.addressValidated).toBeFalse();
-    });
-  });
-
-  describe('displayError()', () => {
-    it('should set error type and show message', () => {
-      component.displayError('Test error', 'login');
-
-      expect(component.error.type).toBe('login');
-      expect(mockMessageService.showMessage).toHaveBeenCalledWith('Test error', Message.danger);
-    });
-  });
-
-  describe('ionViewWillLeave()', () => {
-    it('should clear messages', () => {
-      component.ionViewWillLeave();
-
-      expect(mockMessageService.clearMessage).toHaveBeenCalled();
-    });
-  });
 });

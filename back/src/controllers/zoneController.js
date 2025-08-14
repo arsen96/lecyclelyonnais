@@ -36,10 +36,10 @@ const save = async (req, res) => {
   }
 };
 
-// https://postgis.net/docs/manual-1.5/ch08.html
 /**
  * Récupère les zones avec techniciens et modèles de planning associés
  * @returns {Object} Zones avec données géographiques et planning
+ * https://postgis.net/docs/manual-1.5/ch08.html
  */
 const get = async (req, res) => {
   const { domain } = req.query;
@@ -239,6 +239,7 @@ const isAddressInZone = async (req, res) => {
       throw new Error(notFoundMessage);
     }
 
+    // Récupérer les coordonnées de la première adresse trouvée avec nominatim
     const { lat, lon } = data[0];
     const point = `POINT(${lon} ${lat})`;
     const query = `SELECT id, zone_name FROM geographical_zone 
@@ -249,7 +250,7 @@ const isAddressInZone = async (req, res) => {
     if (!zoneConcerned) {
       throw new Error(notFoundMessage);
     } else {
-      // Check if any technician is in that zone
+      //  Vérifier si des techniciens sont dans cette zone
       const technicianQuery = `SELECT COUNT(*) FROM technician WHERE geographical_zone_id = $1`;
       const technicianResult = await pool.query(technicianQuery, [zoneConcerned]);
       const technicianCount = parseInt(technicianResult.rows[0].count, 10);

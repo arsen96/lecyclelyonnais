@@ -13,6 +13,7 @@ import { BicycleService } from 'src/app/services/bicycle.service';
 import { Bicycle } from 'src/app/models/bicycle';
 import { lastValueFrom } from 'rxjs';
 import { Zones } from 'src/app/models/zones';
+import { AddressSuggestion } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 
 @Component({
   selector: 'app-actions',
@@ -35,7 +36,7 @@ export class ActionsPage implements OnInit {
   isAtConfirmationStep: boolean = false;
   userBicycles: Bicycle[] = [];
   selectedBicycle: Bicycle;
-  constructor(private _formBuilder: FormBuilder,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService, private bicycleService: BicycleService) { }
+  constructor(private _formBuilder: FormBuilder,public messageService:MessageService,public cd:ChangeDetectorRef,public technicianService:TechnicianService,public interventionService:InterventionService, public zoneService:ZoneService,public loadingService:LoadingService, public authService: AuthBaseService, public msgService: MessageService,public globalService:GlobalService, private bicycleService: BicycleService) { }
   displayError = false
   concernedZoneId:number;
   concernedZone:Zones ;
@@ -146,34 +147,36 @@ export class ActionsPage implements OnInit {
   async onAddressSubmit() {
       if (this.addressFormGroup.valid) {
         if (this.addressValidated) {
-          const addressData = this.addressFormGroup.value;
+          const addressData = this.addressFormGroup.value; // Données de l'API Gouvernement français
           try {
-          const inZone$ = this.zoneService.isAddressInZone(addressData.address);
-          const result = this.loadingService.showLoaderUntilCompleted(inZone$);
-          result.subscribe({
-            next: (result: any) => {
-              this.addressFormCompleted = true;
-              if (result.success) {
-                this.concernedZoneId = result.success;
-                this.zoneService.get().then(() => {
-                  this.concernedZone = this.zoneService.getZoneById(this.concernedZoneId);
-                  this.updateAvailableDates();
-                });
-                this.technicianService.get().then((technicians: Technician[]) => {
-                  this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
-                });
-                this.displayError = false;
-                this.stepper.next();
-              } else {
+            // Vérification si l'adresse est dans une zone géographique
+            const inZone$ = this.zoneService.isAddressInZone(addressData.address); 
+            const result = this.loadingService.showLoaderUntilCompleted(inZone$); 
+            result.subscribe({
+              next: (result: any) => {
+                this.addressFormCompleted = true;
+                if (result.success) {
+                  this.concernedZoneId = result.success;
+                  // Récupération de la zone et des techniciens disponibles
+                  this.zoneService.get().then(() => {
+                    this.concernedZone = this.zoneService.getZoneById(this.concernedZoneId);
+                    this.updateAvailableDates();
+                  });
+                  this.technicianService.get().then((technicians: Technician[]) => {
+                    this.techniciansByZone = technicians.filter(technician => technician.geographical_zone_id === this.concernedZoneId);
+                  });
+                  this.displayError = false;
+                  this.stepper.next(); // Passage à l'étape suivante
+                } else {
+                  this.displayError = true;
+                  this.msgService.showMessage(result.message, Message.danger);
+                }
+              },
+              error: (error: any) => {
                 this.displayError = true;
-                this.msgService.showMessage(result.message, Message.danger);
+                this.msgService.showMessage(error, Message.danger);
               }
-            },
-            error: (error: any) => {
-              this.displayError = true;
-              this.msgService.showMessage(error, Message.danger);
-            }
-          });
+            });
         } catch (error) {
           console.error('Error submitting address:', error);
         }
@@ -199,11 +202,19 @@ export class ActionsPage implements OnInit {
     }
   }
 
+  ionViewWillLeave(){
+    this.messageService.clearMessage();
+  }
 
 
+  /**
+   * Gérer le changement de fichier dans le formulaire
+   * @param event Event
+   */
   handleFileInput(event) {
     const files: FileList = event.target.files;
     let photosArray: FormArray;
+    // selectionner le bon formulaire selon le type d'opération
     if(this.operationFormGroup.get('operation').value === 'maintenance'){
       photosArray = this.maintenanceFormGroup.get('photos') as FormArray;
       (this.repairFormGroup.get('photos') as FormArray).clear();
@@ -236,16 +247,18 @@ export class ActionsPage implements OnInit {
     return !unavailableHours.includes(hour);
   }
 
-  handleAddressChange(place: any) {
-    if (place.geometry) {
-      console.log(place);
-      this.addressFormGroup.patchValue({ address: place.formatted_address });
+  /**
+   * Gère le changement d'adresse dans le formulaire d'inscription.
+   * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
+   */
+  handleAddressChange(place: AddressSuggestion) {
+    if (place.label) {
+      this.addressFormGroup.patchValue({ address: place.label });
       this.addressValidated = true;
+    }
   }
-}
 
   onSubmit() {
-    
     if ((this.operationFormGroup.get('operation').value === 'maintenance' && !this.maintenanceFormGroup.valid) || (this.operationFormGroup.get('operation').value === 'reparation' && !this.repairFormGroup.valid)) {
       console.error('Form is invalid');
       return;
@@ -258,7 +271,7 @@ export class ActionsPage implements OnInit {
     this.repairFormGroup.value.scheduleTimeStart = this.repairFormGroup.value.scheduleDate + "T" + this.repairFormGroup.value.scheduleTime?.split('-')[0]?.trim() + ":00Z";
     this.repairFormGroup.value.scheduleTimeEnd = this.repairFormGroup.value.scheduleDate + "T" + this.repairFormGroup.value.scheduleTime?.split('-')[1]?.trim() + ":00Z";
     
-    
+    // les données à envoyer au serveur
     const allData = {
       address: {zone:this.concernedZoneId,...this.addressFormGroup.value},
       details: this.detailsFormGroup.value,
@@ -270,22 +283,27 @@ export class ActionsPage implements OnInit {
 
 
     this.interventionFinalData = allData
+    //si connecté, créer une nouvelle intervention sinon passer à la page de connexion
     if(this.globalService.isAuthenticated.getValue() === true){
       this.createNewIntervention()
     }else{
-      this.stepper.next();
+      this.stepper.next(); // connexion
     }
   }
 
   createNewIntervention(){
     const formData = new FormData();
     formData.append('intervention', JSON.stringify(this.interventionFinalData));
+
+    // ajout des photos du vélo
     this.maintenanceFormGroup.get('photos').value.forEach(photo => {
       formData.append('photos', photo);
     });
+    // appel du service avec loader
     const intervention$ = this.interventionService.create(formData);
     this.loadingService.showLoaderUntilCompleted(intervention$).subscribe({
     next: (res: any) => {
+      // raffraîchir les données
       this.interventionService.interventionLoad();
       this.interventionService.allInterventions = [];
       this.technicianService.getTechniciansByZone(this.concernedZoneId);
@@ -334,6 +352,10 @@ export class ActionsPage implements OnInit {
     this.addressValidated = false
   }
 
+  /**
+   * Gérer le changement de date dans le formulaire 
+   * @param event Event
+   */
   onDateChange(event: any) {
     const selectedDate = new Date(event.detail.value);
     const operationType = this.operationFormGroup.value.operation === 'maintenance' ? 'maintenance' : 'repair';
@@ -344,7 +366,15 @@ export class ActionsPage implements OnInit {
     }
   }
 
+
+  /**
+   * Générer les créneaux horaires disponibles pour une date et un type d'opération
+   * @param date Date
+   * @param operationType string
+   * @returns { time: string, available: boolean }[]
+   */
   generateTimeSlots(date: Date, operationType: string): { time: string, available: boolean }[] {
+    // configuration depuis la zone concernée
     const planification = this.concernedZone.model_planification[operationType];
     const [startHour, startMinute] = planification.start_time.split(':').map(Number);
     const [endHour, endMinute] = planification.end_time.split(':').map(Number);
@@ -356,6 +386,7 @@ export class ActionsPage implements OnInit {
     let currentHour = startHour;
     let currentMinute = startMinute;
 
+    // générer les créneaux horaires disponibles
     while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
         const slotStart = new Date(date);
         slotStart.setHours(currentHour, currentMinute, 0);
@@ -365,8 +396,9 @@ export class ActionsPage implements OnInit {
         if (slotEnd.getHours() > endHour || (slotEnd.getHours() === endHour && slotEnd.getMinutes() > endMinute)) {
             break;
         }
-
+        // format "09:00 - 10:00"
         const timeString = `${slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        // Vérification de la disponibilité du créneau
         const isAvailable = this.isDateAvailable(slotStart, slotEnd);
         slots.push({ time: timeString, available: isAvailable });
 
@@ -378,19 +410,21 @@ export class ActionsPage implements OnInit {
   }
 
   /**
-   * Keep only those that overlap with the requested time slot ()
+   * Verifier si le créneau horaire est disponible
    * @param slotStart Date
    * @param slotEnd Date
-   * @returns true  if at least ont technician is available
+   * @returns true si au moins un technicien est disponible
    */
   isDateAvailable(slotStart: Date, slotEnd: Date): boolean {
     let isAvailable = true;
+    // récupérer les interventions qui chevauchent avec le créneau horaire demandé
     let interventions = this.interventionService.allInterventions.filter(intervention => {
         const appointmentStart = new Date(intervention.appointment_start);
         const appointmentEnd = new Date(intervention.appointment_end);
         return (slotStart < appointmentEnd && slotEnd > appointmentStart) && intervention.status == '';
     });
     if (interventions.length > 0) {
+      // récupérer les techniciens qui sont occupés durant le créneau
       const technicians = interventions.map(intervention => this.technicianService.getTechnicianById(intervention.technician.id));
       isAvailable = !(this.techniciansByZone.length === technicians.length);
     }
@@ -398,6 +432,10 @@ export class ActionsPage implements OnInit {
     return isAvailable;
   }
 
+  /**
+   * Sélectionner un créneau horaire
+   * @param event Event
+   */
   onTimeSlotSelect(event: any) {
     const selectedTimeSlot = event.detail.value;
     

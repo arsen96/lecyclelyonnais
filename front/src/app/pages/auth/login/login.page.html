@@ -137,7 +137,11 @@
                   <!-- Champ Adresse -->
                   <div class="mb-3">
                     <ion-item>
-                      <input formControlName="address" class="addressInput addressRegister" placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)"/>
+                      <app-address-autocomplete 
+                        formControlName="address" 
+                        placeholder="Saisissez votre adresse"
+                        (addressSelected)="handleAddressChange($event)">
+                      </app-address-autocomplete>
                     </ion-item>
                     <!-- @if(f['address'].invalid && f['address'].touched){
                       <small class="invalid" *ngIf="f['address'].errors?.['required']">L'adresse est obligatoire.</small>

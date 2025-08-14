@@ -1,4 +1,4 @@
-const { trackBusinessMetric, logAuditEvent, asyncHandler, captureBusinessError } = require('../config/sentry');
+const { trackBusinessMetric, captureBusinessError } = require('../config/sentry');
 const pool = require('../config/db');
 const bicycleController = require('./bicycleController');
 const multer = require('multer');
@@ -26,7 +26,7 @@ const storage = multer.memoryStorage();
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, 
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB maximum
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
@@ -46,7 +46,7 @@ const save = async (req, res) => {
             captureBusinessError(err, 'intervention.create.upload_failed');
             return res.status(500).send({ success: false, message: "Erreur lors du téléchargement des photos", error: err });
         }
-
+        // extraction des données
         const { repair, maintenance, operation, address } = JSON.parse(req.body.intervention);
         const userId = req.user.id;
         const photos = req.files;
@@ -58,7 +58,7 @@ const save = async (req, res) => {
             const appointmentStart = isMaintenance ? new Date(new Date(maintenance.scheduleTimeStart).getTime() - 60 * 60 * 1000).toISOString() : new Date(new Date(repair.scheduleTimeStart).getTime() - 60 * 60 * 1000).toISOString();
             const appointmentEnd = isMaintenance ? new Date(new Date(maintenance.scheduleTimeEnd).getTime() - 60 * 60 * 1000).toISOString() : new Date(new Date(repair.scheduleTimeEnd).getTime() - 60 * 60 * 1000).toISOString();
 
-            //Retrouver un technicien avec NOT EXISTS si aucune ligne ne correspond à la sous-requête
+            // Recherche d'un technicien disponible avec NOT EXISTS
             const selectTechnicianQuery = `
                 SELECT id FROM technician 
                 WHERE geographical_zone_id = $1 
@@ -84,8 +84,24 @@ const save = async (req, res) => {
             const description = isMaintenance ? "" : repair.issueDetails;
             const currentPackage = isMaintenance ? maintenance.package : "";
             
-            const queryIntervention = 'INSERT INTO intervention (type, bicycle_id, technician_id, client_id, status, description, appointment_start, appointment_end, package) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
-            const result = await pool.query(queryIntervention, [operation.operation, bicycle.id, technicianId, userId, "", description, appointmentStart, appointmentEnd, currentPackage]);
+         
+            const queryIntervention = `
+                INSERT INTO intervention (
+                    type, 
+                    bicycle_id, 
+                    technician_id, 
+                    client_id, 
+                    status, 
+                    description, 
+                    appointment_start, 
+                    appointment_end, 
+                    package
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+                RETURNING *
+            `;
+            const result = await pool.query(queryIntervention, 
+                [operation.operation, bicycle.id, technicianId, userId, "",
+                description, appointmentStart, appointmentEnd, currentPackage]);
             const intervention = result.rows[0];
             
             // Optimiser et sauvegarder les photos

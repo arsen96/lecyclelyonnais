@@ -6,6 +6,7 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { Message, MessageService } from 'src/app/services/message.service';
 import { ClientService } from 'src/app/services/client.service';
 import { GlobalService, UserRole } from 'src/app/services/global.service';
+import { AddressSuggestion } from 'src/app/components/address-autocomplete/address-autocomplete.component';
 
 @Component({
   selector: 'app-users',
@@ -114,17 +115,19 @@ export class UsersPage implements OnInit {
     }
   }
 
-  /**
-   * Valide et met à jour l'adresse depuis Google Places
-   * @param {any} place - Objet place de Google Places API
+ /**
+   * Gère le changement d'adresse dans le formulaire d'inscription.
+   * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
    */
-  handleAddressChange(place: any) {
-    if (place.geometry) {
-      console.log(place);
-      this.registrationForm.patchValue({ address: place.formatted_address });
+  handleAddressChange(place: AddressSuggestion) {
+    if (place.label) {
+      this.registrationForm.patchValue({ address: place.label });
       this.addressValidated = true;
     }
   }
+
+  
+
 
   generatePassword() {
     const newPassword = Math.random().toString(36).slice(-8);
