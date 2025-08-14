@@ -39,7 +39,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(generalLimiter);
 
 // Import and use routes
-app.use('/api/auth', routesAuth);
 app.use('/api/auth',authLimiter, routesAuth);
 app.use('/api/zones', routesZone);
 app.use('/api/technicians', routesTechnician);
