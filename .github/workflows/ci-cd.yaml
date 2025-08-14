@@ -1,5 +1,6 @@
 name: CI/CD Pipeline
-
+# https://docs.github.com/fr/actions/get-started/understand-github-actions
+#https://github.com/marketplace/actions/ -> les différentes actions
 on:
   push:
     branches:
@@ -12,6 +13,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
     paths-ignore:
       - '**/*.md'
 
@@ -24,7 +26,7 @@ jobs:
   # JOB 1: Tests API Backend
   # ==================================
   test-api:
-    name: 🔗 Tests API Backend
+    name:  Tests API Backend
     runs-on: ubuntu-latest
 
     defaults:
@@ -32,26 +34,26 @@ jobs:
         working-directory: ./back
     
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
         
-      - name: 🏗️ Installer Node.js
+      - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: ./back/package-lock.json
           
-      - name: 📦 Installer les dépendances
+      - name: Installer les dépendances
         run: npm ci
         
-      - name: 🔄 Sync Postman collections
+      - name: Sync Postman collections
         run: npm run postman:sync
         env:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
         continue-on-error: true
         
-      - name: 🚀 Démarrer l'application
+      - name: Démarrer l'application
         run: |
           npm start &
           sleep 15
@@ -60,27 +62,27 @@ jobs:
           PORT: ${{ secrets.PORT }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           
-      - name: 🧪 Test - Authentification
+      - name: Test - Authentification
         run: npm run test:api:auth
         continue-on-error: false
         
-      - name: 🧪 Test - Techniciens
+      - name: Test - Techniciens
         run: npm run test:api:technicians
         continue-on-error: true
         
-      - name: 🧪 Test - Companies
+      - name: Test - Companies
         run: npm run test:api:company
         continue-on-error: true
         
-      - name: 🧪 Test - Bicycles
+      - name: Test - Bicycles
         run: npm run test:api:bicycle
         continue-on-error: true
         
-      - name: 🧪 Test - Zones
+      - name: Test - Zones
         run: npm run test:api:zones
         continue-on-error: true
         
-      - name: 🧪 Test - Interventions
+      - name: Test - Interventions
         run: npm run test:api:intervention
         continue-on-error: true
 
@@ -88,7 +90,7 @@ jobs:
   # JOB 2: Tests unitaires Backend
   # ===================================
   test-unit-backend:
-    name: 🧪 Tests Unitaires Backend
+    name:  Tests Unitaires Backend
     runs-on: ubuntu-latest
 
     defaults:
@@ -96,20 +98,20 @@ jobs:
         working-directory: ./back
     
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
         
-      - name: 🏗️ Installer Node.js
+      - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: ./back/package-lock.json
           
-      - name: 📦 Installer les dépendances
+      - name: Installer les dépendances
         run: npm ci
         
-      - name: 🧪 Lancer les tests unitaires
+      - name: Lancer les tests unitaires
         run: npm run test:unit
         continue-on-error: true
 
@@ -117,7 +119,7 @@ jobs:
   # JOB 3: Build et Tests Frontend
   # ===================================
   test-frontend:
-    name: 🎨 Frontend Build & Tests
+    name:  Frontend Tests
     runs-on: ubuntu-latest
 
     defaults:
@@ -125,20 +127,20 @@ jobs:
         working-directory: ./front
     
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
         
-      - name: 🏗️ Installer Node.js
+      - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: ./front/package-lock.json
           
-      - name: 📦 Installer les dépendances
+      - name: Installer les dépendances
         run: npm ci
         
-      - name: 🧪 Tests unitaires Frontend
+      - name: Tests unitaires Frontend
         run: npm run test:ci
         continue-on-error: true
 
@@ -146,27 +148,26 @@ jobs:
   # JOB 4: Tests E2E Cypress
   # ===================================
   test-e2e:
-    name: 🔍 Tests E2E Cypress
+    name: Tests E2E Cypress
     runs-on: ubuntu-latest
-    # needs: [test-api, test-frontend] 
-    # if: needs.test-api.result == 'success' && needs.test-frontend.result == 'success'
+
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
         
       # Démarrer le backend
-      - name: 🏗️ Setup Node.js pour Backend
+      - name: Setup Node.js pour Backend
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: ./back/package-lock.json
           
-      - name: 📦 Installer dépendances Backend
+      - name: Installer dépendances Backend
         run: npm ci
         working-directory: ./back
         
-      - name: 🚀 Démarrer Backend
+      - name: Démarrer Backend
         run: |
           npm start &
           sleep 15
@@ -177,57 +178,27 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
       # Démarrer le frontend  
-      - name: 📦 Installer dépendances Frontend
+      - name: Installer dépendances Frontend
         run: npm ci
         working-directory: ./front
         
-      - name: 🎨 Démarrer Frontend
+      - name: Démarrer Frontend
         run: |
           npm start &
           sleep 30
         working-directory: ./front
         
       # Tests Cypress
-      - name: 🔍 Tests Cypress E2E
+      - name: Tests Cypress E2E
         run: npm run cypress:run
         working-directory: ./front
         continue-on-error: true
 
   # ===================================
-  # JOB 5: Résultats
-  # ===================================
-  # results:
-  #   name: 📊 Résultats
-  #   runs-on: ubuntu-latest
-  #   needs: [test-api, test-unit-backend, test-frontend, test-e2e]
-  #   if: always()
-    
-  #   steps:
-  #     - name: 📊 Afficher les résultats
-  #       run: |
-  #         echo "============================================="
-  #         echo "📊 RÉSULTATS COMPLETS DES TESTS"
-  #         echo "============================================="
-  #         echo "🔗 Tests API Backend: ${{ needs.test-api.result }}"
-  #         echo "🧪 Tests unitaires Backend: ${{ needs.test-unit-backend.result }}"
-  #         echo "🎨 Build & Tests Frontend: ${{ needs.test-frontend.result }}"
-  #         echo "🔍 Tests E2E Cypress: ${{ needs.test-e2e.result }}"
-  #         echo "============================================="
-          
-  #         # Résumé final
-  #         if [[ "${{ needs.test-api.result }}" == "success" ]] && [[ "${{ needs.test-frontend.result }}" == "success" ]]; then
-  #           echo "🎉 BUILD PRINCIPAL: SUCCÈS"
-  #           echo "✅ L'application est prête pour le déploiement"
-  #         else
-  #           echo "❌ BUILD PRINCIPAL: ÉCHEC"
-  #           echo "🚨 Des problèmes critiques empêchent le déploiement"
-  #         fi
-
-  # ===================================
   # JOB 5: Build sdes images Docker
   # ===================================
   build-docker:
-    name: 🐳 Build Images Docker
+    name:  Build Images Docker
     runs-on: ubuntu-latest
     needs: [test-api, test-unit-backend, test-frontend]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
@@ -237,10 +208,10 @@ jobs:
       packages: write
     
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
       
-      - name: 🔧 Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
       - name: Login Docker Hub
@@ -256,11 +227,17 @@ jobs:
           context: ./back
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+             ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+             ${{ github.ref == 'refs/heads/main' && format('{0}/lecycle-backend:latest', secrets.DOCKER_USERNAME) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+        # docker images --digests arsenkubat/lecycle-frontend pour voir tous les SHA
+        #exemple de recuperation du SHA: docker pull arsenkubat/lecycle-frontend@sha256:58b1....
+         # OPTION 1:
+         # docker pull arsenkubat/lecycle-frontend@sha256:58b1....
+         # OPTION 2:
+         # docker images 
+         # docker tag 9c8e4598f390 lecyclelyonnais-backend:latest
       # ====== FRONTEND ======
       - name: Build et Push Frontend
         uses: docker/build-push-action@v5
@@ -277,10 +254,10 @@ jobs:
   # JOB 6: Analyse de sécurité
   # ===================================
   security-scan:
-    name: 🔒 Analyse de sécurité
+    name:  Analyse de sécurité
     runs-on: ubuntu-latest
     needs: build-docker
-    if: github.event_name == 'push'
+    if: needs.build-docker.result == 'success'
     
     steps:
       - name: Récupérer le code
@@ -292,7 +269,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
-      - name: 🔍 Scan Backend avec Trivy
+      - name: Scan Backend avec Trivy
         uses: aquasecurity/trivy-action@master
         id: scan-backend
         with:
@@ -330,7 +307,7 @@ jobs:
   # JOB 7: Déploiement Production
   # ===================================
   deploy-production:
-    name: 🚀 Déploiement Production
+    name:  Déploiement Production
     runs-on: ubuntu-latest
     needs: [build-docker]
     if: github.ref == 'refs/heads/main'
@@ -358,388 +335,3 @@ jobs:
         run: |
           docker system prune -f
 
-
-
-
-
-
-
-
-
-
-
-
-
-#   # ===================================
-#   # JOB 5: Build des images Docker
-#   # ===================================
-#   build-docker:
-#     name: 🐳 Build Images Docker
-#     runs-on: ubuntu-latest
-#     needs: [test-api, test-unit-backend, test-frontend]
-#     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-    
-#     permissions:
-#       contents: read
-#       packages: write
-    
-#     steps:
-#       - name: 📥 Récupérer le code
-#         uses: actions/checkout@v4
-      
-#       - name: 🔐 Login au registry
-#         uses: docker/login-action@v3
-#         with:
-#           registry: ${{ env.REGISTRY }}
-#           username: ${{ github.actor }}
-#           password: ${{ secrets.GITHUB_TOKEN }}
-#           # Pour Docker Hub:
-#           # username: ${{ secrets.DOCKER_USERNAME }}
-#           # password: ${{ secrets.DOCKER_PASSWORD }}
-      
-#       - name: 📝 Extraire les métadonnées
-#         id: meta
-#         uses: docker/metadata-action@v5
-#         with:
-#           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-#           tags: |
-#             type=ref,event=branch
-#             type=ref,event=pr
-#             type=semver,pattern={{version}}
-#             type=semver,pattern={{major}}.{{minor}}
-#             type=sha,prefix={{branch}}-
-#             type=raw,value=latest,enable={{is_default_branch}}
-      
-#       - name: 🏗️ Build et Push Backend
-#         uses: docker/build-push-action@v5
-#         with:
-#           context: ./back
-#           push: true
-#           tags: |
-#             ${{ env.REGISTRY }}/${{ github.repository }}-backend:${{ github.sha }}
-#             ${{ env.REGISTRY }}/${{ github.repository }}-backend:${{ github.ref_name }}
-#             ${{ env.REGISTRY }}/${{ github.repository }}-backend:latest
-#           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}-backend:buildcache
-#           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}-backend:buildcache,mode=max
-      
-#       - name: 🏗️ Build et Push Frontend
-#         uses: docker/build-push-action@v5
-#         with:
-#           context: ./front
-#           push: true
-#           tags: |
-#             ${{ env.REGISTRY }}/${{ github.repository }}-frontend:${{ github.sha }}
-#             ${{ env.REGISTRY }}/${{ github.repository }}-frontend:${{ github.ref_name }}
-#             ${{ env.REGISTRY }}/${{ github.repository }}-frontend:latest
-#           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}-frontend:buildcache
-#           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}-frontend:buildcache,mode=max
-
-#   # ===================================
-#   # JOB 6: Analyse de sécurité
-#   # ===================================
-#   security-scan:
-#     name: 🔒 Analyse de sécurité
-#     runs-on: ubuntu-latest
-#     needs: build-docker
-#     if: github.event_name == 'push'
-    
-#     steps:
-#       - name: 📥 Récupérer le code
-#         uses: actions/checkout@v4
-      
-#       - name: 🔍 Scan Backend avec Trivy
-#         uses: aquasecurity/trivy-action@master
-#         with:
-#           image-ref: ${{ env.REGISTRY }}/${{ github.repository }}-backend:${{ github.sha }}
-#           format: 'sarif'
-#           output: 'trivy-backend-results.sarif'
-#           severity: 'CRITICAL,HIGH'
-#         continue-on-error: true
-      
-#       - name: 🔍 Scan Frontend avec Trivy
-#         uses: aquasecurity/trivy-action@master
-#         with:
-#           image-ref: ${{ env.REGISTRY }}/${{ github.repository }}-frontend:${{ github.sha }}
-#           format: 'sarif'
-#           output: 'trivy-frontend-results.sarif'
-#           severity: 'CRITICAL,HIGH'
-#         continue-on-error: true
-      
-#       - name: 📤 Upload résultats de sécurité
-#         uses: github/codeql-action/upload-sarif@v3
-#         with:
-#           sarif_file: 'trivy-backend-results.sarif'
-#         continue-on-error: true
-
-#   # ===================================
-#   # JOB 7: Déploiement Staging
-#   # ===================================
-#   deploy-staging:
-#     name: 🚀 Déploiement Staging
-#     runs-on: ubuntu-latest
-#     needs: [build-docker, test-e2e]
-#     if: github.ref == 'refs/heads/develop'
-#     environment: staging
-    
-#     steps:
-#       - name: 📥 Récupérer le code
-#         uses: actions/checkout@v4
-      
-#       - name: 📝 Préparer docker-compose pour staging
-#         run: |
-#           cat > docker-compose.staging.yml << EOF
-#           version: '3.8'
-#           services:
-#             postgres:
-#               image: postgres:15
-#               environment:
-#                 POSTGRES_DB: lecycle_db_staging
-#                 POSTGRES_USER: ${{ secrets.STAGING_DB_USER }}
-#                 POSTGRES_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
-#               volumes:
-#                 - postgres_staging_data:/var/lib/postgresql/data
-#               networks:
-#                 - staging_network
-#               restart: unless-stopped
-
-#             backend:
-#               image: ${{ env.REGISTRY }}/${{ github.repository }}-backend:${{ github.sha }}
-#               ports:
-#                 - "3001:3000"
-#               environment:
-#                 - ENVIRONMENT=staging
-#                 - DATABASE_URL=postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@postgres:5432/lecycle_db_staging
-#                 - JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}
-#               depends_on:
-#                 - postgres
-#               networks:
-#                 - staging_network
-#               restart: unless-stopped
-
-#             frontend:
-#               image: ${{ env.REGISTRY }}/${{ github.repository }}-frontend:${{ github.sha }}
-#               ports:
-#                 - "8101:8100"
-#               environment:
-#                 - ENVIRONMENT=staging
-#                 - API_URL=http://backend:3000
-#               networks:
-#                 - staging_network
-#               restart: unless-stopped
-
-#           volumes:
-#             postgres_staging_data:
-
-#           networks:
-#             staging_network:
-#               driver: bridge
-#           EOF
-      
-#       - name: 🚀 Déployer sur serveur staging
-#         uses: appleboy/ssh-action@v1.0.0
-#         with:
-#           host: ${{ secrets.STAGING_HOST }}
-#           username: ${{ secrets.STAGING_USER }}
-#           key: ${{ secrets.STAGING_SSH_KEY }}
-#           script: |
-#             cd /opt/lecycle-staging
-#             docker-compose -f docker-compose.staging.yml pull
-#             docker-compose -f docker-compose.staging.yml up -d
-#             docker system prune -f
-
-#   # ===================================
-#   # JOB 8: Déploiement Production
-#   # ===================================
-#   deploy-production:
-#     name: 🚀 Déploiement Production
-#     runs-on: ubuntu-latest
-#     needs: [build-docker, test-e2e, security-scan]
-#     if: github.ref == 'refs/heads/main'
-#     environment: production
-    
-#     steps:
-#       - name: 📥 Récupérer le code
-#         uses: actions/checkout@v4
-      
-#       - name: 📝 Préparer docker-compose pour production
-#         run: |
-#           cat > docker-compose.production.yml << EOF
-#           version: '3.8'
-#           services:
-#             postgres:
-#               image: postgres:15
-#               environment:
-#                 POSTGRES_DB: lecycle_db
-#                 POSTGRES_USER: ${{ secrets.PROD_DB_USER }}
-#                 POSTGRES_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-#               volumes:
-#                 - postgres_prod_data:/var/lib/postgresql/data
-#               networks:
-#                 - prod_network
-#               restart: always
-
-#             backend:
-#               image: ${{ env.REGISTRY }}/${{ github.repository }}-backend:${{ github.sha }}
-#               ports:
-#                 - "3000:3000"
-#               environment:
-#                 - ENVIRONMENT=production
-#                 - DATABASE_URL=postgresql://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@postgres:5432/lecycle_db
-#                 - JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
-#               depends_on:
-#                 - postgres
-#               networks:
-#                 - prod_network
-#               restart: always
-#               deploy:
-#                 replicas: 2
-#                 resources:
-#                   limits:
-#                     cpus: '0.5'
-#                     memory: 512M
-
-#             frontend:
-#               image: ${{ env.REGISTRY }}/${{ github.repository }}-frontend:${{ github.sha }}
-#               ports:
-#                 - "80:8100"
-#                 - "443:8100"
-#               environment:
-#                 - ENVIRONMENT=production
-#                 - API_URL=https://api.lecycle.fr
-#               networks:
-#                 - prod_network
-#               restart: always
-#               deploy:
-#                 replicas: 2
-#                 resources:
-#                   limits:
-#                     cpus: '0.5'
-#                     memory: 256M
-
-#             nginx:
-#               image: nginx:alpine
-#               ports:
-#                 - "80:80"
-#                 - "443:443"
-#               volumes:
-#                 - ./nginx.conf:/etc/nginx/nginx.conf:ro
-#                 - ./ssl:/etc/nginx/ssl:ro
-#               depends_on:
-#                 - backend
-#                 - frontend
-#               networks:
-#                 - prod_network
-#               restart: always
-
-#           volumes:
-#             postgres_prod_data:
-
-#           networks:
-#             prod_network:
-#               driver: bridge
-#           EOF
-      
-#       - name: 🚀 Déployer sur serveur production
-#         uses: appleboy/ssh-action@v1.0.0
-#         with:
-#           host: ${{ secrets.PROD_HOST }}
-#           username: ${{ secrets.PROD_USER }}
-#           key: ${{ secrets.PROD_SSH_KEY }}
-#           script: |
-#             cd /opt/lecycle-production
-#             # Backup de la base de données avant déploiement
-#             docker exec postgres pg_dump -U ${{ secrets.PROD_DB_USER }} lecycle_db > backup_$(date +%Y%m%d_%H%M%S).sql
-            
-#             # Déploiement avec zero-downtime
-#             docker-compose -f docker-compose.production.yml pull
-#             docker-compose -f docker-compose.production.yml up -d --no-deps --scale backend=2 backend
-#             sleep 10
-#             docker-compose -f docker-compose.production.yml up -d --no-deps frontend
-            
-#             # Nettoyage
-#             docker system prune -f
-
-#   # ===================================
-#   # JOB 9: Tests de santé post-déploiement
-#   # ===================================
-#   health-check:
-#     name: 🏥 Tests de santé
-#     runs-on: ubuntu-latest
-#     needs: [deploy-staging, deploy-production]
-#     if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
-    
-#     steps:
-#       - name: 🔍 Vérifier santé Staging
-#         if: github.ref == 'refs/heads/develop'
-#         run: |
-#           response=$(curl -s -o /dev/null -w "%{http_code}" https://staging.lecycle.fr/api/health)
-#           if [ $response -eq 200 ]; then
-#             echo "✅ Staging API is healthy"
-#           else
-#             echo "❌ Staging API health check failed"
-#             exit 1
-#           fi
-      
-#       - name: 🔍 Vérifier santé Production
-#         if: github.ref == 'refs/heads/main'
-#         run: |
-#           response=$(curl -s -o /dev/null -w "%{http_code}" https://api.lecycle.fr/health)
-#           if [ $response -eq 200 ]; then
-#             echo "✅ Production API is healthy"
-#           else
-#             echo "❌ Production API health check failed"
-#             exit 1
-#           fi
-      
-#       - name: 📧 Notification de succès
-#         if: success()
-#         uses: dawidd6/action-send-mail@v3
-#         with:
-#           server_address: smtp.gmail.com
-#           server_port: 465
-#           username: ${{ secrets.EMAIL_USERNAME }}
-#           password: ${{ secrets.EMAIL_PASSWORD }}
-#           subject: ✅ Déploiement réussi - LeCycle
-#           to: team@lecycle.fr
-#           from: CI/CD Pipeline
-#           body: |
-#             Le déploiement sur ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }} a été effectué avec succès.
-            
-#             Version: ${{ github.sha }}
-#             Branche: ${{ github.ref_name }}
-            
-#             Vérifiez l'application: ${{ github.ref == 'refs/heads/main' && 'https://lecycle.fr' || 'https://staging.lecycle.fr' }}
-
-#   # ===================================
-#   # JOB 10: Résultats
-#   # ===================================
-#   results:
-#     name: 📊 Résultats
-#     runs-on: ubuntu-latest
-#     needs: [test-api, test-unit-backend, test-frontend, test-e2e, build-docker, security-scan]
-#     if: always()
-    
-#     steps:
-#       - name: 📊 Afficher les résultats
-#         run: |
-#           echo "============================================="
-#           echo "📊 RÉSULTATS COMPLETS DU PIPELINE CI/CD"
-#           echo "============================================="
-#           echo "🔗 Tests API Backend: ${{ needs.test-api.result }}"
-#           echo "🧪 Tests unitaires Backend: ${{ needs.test-unit-backend.result }}"
-#           echo "🎨 Build & Tests Frontend: ${{ needs.test-frontend.result }}"
-#           echo "🔍 Tests E2E Cypress: ${{ needs.test-e2e.result }}"
-#           echo "🐳 Build Docker: ${{ needs.build-docker.result }}"
-#           echo "🔒 Scan de sécurité: ${{ needs.security-scan.result }}"
-#           echo "============================================="
-          
-#           # Résumé final
-#           if [[ "${{ needs.test-api.result }}" == "success" ]] && \
-#              [[ "${{ needs.test-frontend.result }}" == "success" ]] && \
-#              [[ "${{ needs.build-docker.result }}" == "success" ]]; then
-#             echo "🎉 PIPELINE CI/CD: SUCCÈS"
-#             echo "✅ L'application est prête pour le déploiement"
-#           else
-#             echo "❌ PIPELINE CI/CD: ÉCHEC"
-#             echo "🚨 Des problèmes empêchent le déploiement"
-#           fi
