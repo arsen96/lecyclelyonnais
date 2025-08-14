@@ -4,16 +4,26 @@
     [value]="value"
     (ionInput)="onInput($event)"
     (ionBlur)="onBlur()"
-    (ionFocus)="onFocus()">
+    (ionFocus)="onFocus()"
+    (keydown)="onInputKeyDown($event)">
   </ion-input>
 </ion-item>
 
-<ion-list *ngIf="showSuggestions && suggestions.length > 0" class="suggestions-list">
+<ion-list 
+  *ngIf="showSuggestions && suggestions.length > 0" 
+  class="suggestions-list"
+  role="listbox"
+  [attr.aria-label]="'Suggestions d\'adresses'">
   <ion-item 
-    *ngFor="let suggestion of suggestions" 
+    *ngFor="let suggestion of suggestions; let i = index" 
     button 
     (click)="selectSuggestion(suggestion)"
-    class="suggestion-item">
+    (keydown)="onSuggestionKeyDown($event, suggestion, i)"
+    class="suggestion-item"
+    role="option"
+    [attr.aria-selected]="i === selectedIndex"
+    [attr.tabindex]="i === selectedIndex ? 0 : -1"
+    [attr.id]="'suggestion-' + i">
     <ion-label>{{ suggestion.label }}</ion-label>
   </ion-item>
 </ion-list>

@@ -40,6 +40,7 @@ export class AddressAutocompleteComponent {
   value = '';
   suggestions: AddressSuggestion[] = [];
   showSuggestions = false;
+  selectedIndex = -1; 
   private searchSubject = new Subject<string>();
   private readonly API_URL = 'https://api-adresse.data.gouv.fr/search/';
 
@@ -54,6 +55,7 @@ export class AddressAutocompleteComponent {
     ).subscribe(suggestions => {
       this.suggestions = suggestions;
       this.showSuggestions = suggestions.length > 0;
+      this.selectedIndex = -1; 
     });
   }
 
@@ -84,11 +86,93 @@ export class AddressAutocompleteComponent {
       );
   }
 
-
   onInput(event: any) {
     this.value = event.target.value;
     this.onChange(this.value);
     this.searchSubject.next(this.value);
+  }
+
+  /**
+   * Gestion de la navigation au clavier dans le champ input
+   */
+  onInputKeyDown(event: KeyboardEvent) {
+    if (!this.showSuggestions || this.suggestions.length === 0) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedIndex = Math.min(this.selectedIndex + 1, this.suggestions.length - 1);
+        this.focusSelectedSuggestion();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+        if (this.selectedIndex === -1) {
+          // Retour au champ input
+          (event.target as HTMLElement)?.focus();
+        } else {
+          this.focusSelectedSuggestion();
+        }
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedIndex >= 0 && this.selectedIndex < this.suggestions.length) {
+          this.selectSuggestion(this.suggestions[this.selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        this.showSuggestions = false;
+        this.selectedIndex = -1;
+        break;
+    }
+  }
+
+  /**
+   * Gestion de la navigation au clavier dans les suggestions
+   */
+  onSuggestionKeyDown(event: KeyboardEvent, suggestion: AddressSuggestion, index: number) {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedIndex = Math.min(index + 1, this.suggestions.length - 1);
+        this.focusSelectedSuggestion();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedIndex = Math.max(index - 1, -1);
+        if (this.selectedIndex === -1) {
+          // Retour au champ input
+          const inputElement = document.querySelector('ion-input input') as HTMLElement;
+          inputElement?.focus();
+        } else {
+          this.focusSelectedSuggestion();
+        }
+        break;
+      case 'Enter':
+      case ' ': // Espace
+        event.preventDefault();
+        this.selectSuggestion(suggestion);
+        break;
+      case 'Escape':
+        event.preventDefault();
+        this.showSuggestions = false;
+        this.selectedIndex = -1;
+        // Retour au champ input
+        const inputElement = document.querySelector('ion-input input') as HTMLElement;
+        inputElement?.focus();
+        break;
+    }
+  }
+
+  /**
+   * Focus sur la suggestion sélectionnée
+   */
+  private focusSelectedSuggestion() {
+    if (this.selectedIndex >= 0) {
+      const suggestionElement = document.getElementById(`suggestion-${this.selectedIndex}`);
+      suggestionElement?.focus();
+    }
   }
   
   selectSuggestion(suggestion: AddressSuggestion) {
@@ -96,7 +180,8 @@ export class AddressAutocompleteComponent {
     this.onChange(this.value);
     this.onTouched();
     this.showSuggestions = false;
-    this.addressSelected.emit(suggestion); // Communication vers le parent 
+    this.selectedIndex = -1;
+    this.addressSelected.emit(suggestion);
   }
 
   writeValue(value: string): void {
@@ -111,8 +196,6 @@ export class AddressAutocompleteComponent {
     this.onTouched = fn;
   }
 
-
-
   onFocus() {
     if (this.suggestions.length > 0) {
       this.showSuggestions = true;
@@ -122,6 +205,7 @@ export class AddressAutocompleteComponent {
   onBlur() {
     setTimeout(() => {
       this.showSuggestions = false;
+      this.selectedIndex = -1;
     }, 200);
   }
 }
