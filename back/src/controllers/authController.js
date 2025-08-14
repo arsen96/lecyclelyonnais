@@ -166,7 +166,6 @@ const passwordForgot = async (req, res) => {
         pass: 'qhoe nawk aecu dody',
       },
     });
-    console.log("domaindomaindomaindomain",domain)
     const currentdomain = domain && domain !== "localhost" ? `${domain}.localhost` : 'localhost'
     const mailOptions = {
       from: 'kubatarsen@gmail.com',

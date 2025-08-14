@@ -84,34 +84,21 @@ export class AddressAutocompleteComponent {
       );
   }
 
+
   onInput(event: any) {
     this.value = event.target.value;
     this.onChange(this.value);
     this.searchSubject.next(this.value);
   }
-
-  onFocus() {
-    if (this.suggestions.length > 0) {
-      this.showSuggestions = true;
-    }
-  }
-
-  onBlur() {
-    // Délai pour permettre la sélection
-    setTimeout(() => {
-      this.showSuggestions = false;
-    }, 200);
-  }
-
+  
   selectSuggestion(suggestion: AddressSuggestion) {
     this.value = suggestion.label;
     this.onChange(this.value);
     this.onTouched();
     this.showSuggestions = false;
-    this.addressSelected.emit(suggestion);
+    this.addressSelected.emit(suggestion); // Communication vers le parent 
   }
 
-  // ControlValueAccessor methods
   writeValue(value: string): void {
     this.value = value || '';
   }
@@ -122,5 +109,19 @@ export class AddressAutocompleteComponent {
 
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
+  }
+
+
+
+  onFocus() {
+    if (this.suggestions.length > 0) {
+      this.showSuggestions = true;
+    }
+  }
+
+  onBlur() {
+    setTimeout(() => {
+      this.showSuggestions = false;
+    }, 200);
   }
 }

@@ -22,15 +22,6 @@ import { AddressAutocompleteComponent } from 'src/app/components/address-autocom
     UsersPageRoutingModule,
     AddressAutocompleteComponent
   ],
-  declarations: [UsersPage],
-  providers: [
-    {
-      provide: Loader,
-      useValue: new Loader({
-        apiKey: environment.GOOGLE_MAP_API,
-        libraries: ['places']
-      })
-    },
-  ]
+  declarations: [UsersPage]
 })
 export class UsersPageModule {}
