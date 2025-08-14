@@ -1,0 +1,9 @@
+backups/
+database/
+
+node_modules/
+.env
+.env.*
+*.log
+tmp/
+Dockerfile
