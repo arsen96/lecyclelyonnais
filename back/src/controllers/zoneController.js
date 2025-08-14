@@ -231,7 +231,15 @@ const isAddressInZone = async (req, res) => {
   try {
     const { address } = req.body;
     console.log("address", address);
-    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    
+    // SECURE URL CONSTRUCTION using URLSearchParams
+    const baseUrl = 'https://nominatim.openstreetmap.org/search';
+    const params = new URLSearchParams({
+      format: 'json',
+      q: address
+    });
+    const nominatimUrl = `${baseUrl}?${params.toString()}`;
+    
     const response = await fetch(nominatimUrl);
     const data = await response.json();
     let notFoundMessage = "Nous n'avons pas de technicien dans votre zone";
@@ -239,7 +247,6 @@ const isAddressInZone = async (req, res) => {
       throw new Error(notFoundMessage);
     }
 
-    // Récupérer les coordonnées de la première adresse trouvée avec nominatim
     const { lat, lon } = data[0];
     const point = `POINT(${lon} ${lat})`;
     const query = `SELECT id, zone_name FROM geographical_zone 
@@ -250,7 +257,7 @@ const isAddressInZone = async (req, res) => {
     if (!zoneConcerned) {
       throw new Error(notFoundMessage);
     } else {
-      //  Vérifier si des techniciens sont dans cette zone
+      // Vérifier si des techniciens sont dans cette zone
       const technicianQuery = `SELECT COUNT(*) FROM technician WHERE geographical_zone_id = $1`;
       const technicianResult = await pool.query(technicianQuery, [zoneConcerned]);
       const technicianCount = parseInt(technicianResult.rows[0].count, 10);
