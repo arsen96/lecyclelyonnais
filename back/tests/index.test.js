@@ -28,25 +28,10 @@ describe('Todos Test Group', function() {
                 { title: "test everything", completed: false }
             ]
         );
-
-        // const expectedError = new Error(`No TODO was found with the title: "run code"`);
-        // assert.throws(() => {
-        //     todos.complete("run code");
-        // },expectedError);
     });
 
 
     describe("saveToFile()", function() {
-    //  beforeEach(function () {
-    //     this.todos = new Todos();
-    //     this.todos.add("save a CSV");
-    // });
-
-    // afterEach(function () {
-    //     if (fs.existsSync("todos.csv")) {
-    //         fs.unlinkSync("todos.csv");
-    //     }
-    // });
 
         it("should save a single TODO", function(done) {
             let todos = new Todos();

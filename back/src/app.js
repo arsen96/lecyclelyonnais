@@ -19,10 +19,6 @@ const { authLimiter, generalLimiter, helmetConfig } = require('./middlewares/sec
 
 app.use(helmetConfig);
 app.use(cors());
-// app.use(cors({
-//   origin: ['http://localhost:8100', 'http://localhost:8200', 'http://localhost:8300', 'http://company.localhost:8100'], 
-//   credentials: true 
-// }));
 
 // Middleware for JSON requests
 app.use(express.urlencoded({ extended: true }));

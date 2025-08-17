@@ -18,10 +18,12 @@
                 <ion-item 
                 routerDirection="root"
                 [routerLink]="p.url ? [p.url] : null"
-                (click)="p.func ? p.func() : null" 
+                (click)="p.func ? p.func() : null"
+                (keydown)="onKeyDown($event, p)"
                 lines="none"
                 detail="false"
-                routerLinkActive="selected">
+                routerLinkActive="selected"
+                tabindex="0">
                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
