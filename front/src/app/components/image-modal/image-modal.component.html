@@ -1,7 +1,12 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="end">
-      <ion-button (click)="close()">Fermer</ion-button>
+      <ion-button 
+        (click)="close()" 
+        (keydown.enter)="close()"
+        (keydown.space)="close()">
+        Fermer
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -9,13 +14,24 @@
 <ion-content>
   <div class="image-container">
     @if(photos.length > 1){
-      <ion-button (click)="previous()" fill="clear">
+      <ion-button         
+      (click)="previous()" 
+      (keydown.enter)="previous()"
+      (keydown.space)="previous()"
+      (keydown.arrowleft)="previous()"
+      
+      fill="clear">
         <ion-icon name="arrow-back-circle" size="large"></ion-icon>
       </ion-button>
     }
     <img [src]="photos[index]" alt="photo" />
     @if(photos.length > 1){
-      <ion-button (click)="next()" fill="clear">
+      <ion-button 
+      (click)="next()" 
+      (keydown.enter)="next()"
+      (keydown.space)="next()"
+      (keydown.arrowright)="next()"
+      fill="clear">
         <ion-icon name="arrow-forward-circle" size="large"></ion-icon>
       </ion-button>
     }

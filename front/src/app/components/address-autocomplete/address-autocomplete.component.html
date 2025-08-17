@@ -5,7 +5,11 @@
     (ionInput)="onInput($event)"
     (ionBlur)="onBlur()"
     (ionFocus)="onFocus()"
-    (keydown)="onInputKeyDown($event)">
+    (keydown)="onInputKeyDown($event)"
+    role="combobox"
+    [attr.aria-expanded]="showSuggestions && suggestions.length > 0"
+    [attr.aria-owns]="showSuggestions && suggestions.length > 0 ? 'suggestions-listbox' : null"
+    [attr.aria-activedescendant]="selectedIndex >= 0 ? 'suggestion-' + selectedIndex : null">
   </ion-input>
 </ion-item>
 
@@ -13,6 +17,7 @@
   *ngIf="showSuggestions && suggestions.length > 0" 
   class="suggestions-list"
   role="listbox"
+  id="suggestions-listbox"
   [attr.aria-label]="'Suggestions d\'adresses'">
   <ion-item 
     *ngFor="let suggestion of suggestions; let i = index" 
@@ -21,7 +26,7 @@
     (keydown)="onSuggestionKeyDown($event, suggestion, i)"
     class="suggestion-item"
     role="option"
-    [attr.aria-selected]="i === selectedIndex"
+    [attr.aria-selected]="i === selectedIndex ? 'true' : 'false'"
     [attr.tabindex]="i === selectedIndex ? 0 : -1"
     [attr.id]="'suggestion-' + i">
     <ion-label>{{ suggestion.label }}</ion-label>
