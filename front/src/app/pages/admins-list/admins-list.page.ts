@@ -148,4 +148,23 @@ export class AdminsListPage implements OnInit {
       }
     });
   }
+
+
+onDeleteKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    this.deleteSelected();
+  }
 }
+
+  onDeleteSingleKeyDown(event: KeyboardEvent, elementId: any): void {
+      if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.deleteSelected(elementId);
+    }
+  }
+}
+
+
+
+
