@@ -7,9 +7,11 @@
     (ionFocus)="onFocus()"
     (keydown)="onInputKeyDown($event)"
     role="combobox"
-    [attr.aria-expanded]="showSuggestions && suggestions.length > 0"
+    [attr.aria-expanded]="(showSuggestions && suggestions.length > 0) ? 'true' : 'false'"
     [attr.aria-owns]="showSuggestions && suggestions.length > 0 ? 'suggestions-listbox' : null"
-    [attr.aria-activedescendant]="selectedIndex >= 0 ? 'suggestion-' + selectedIndex : null">
+    [attr.aria-activedescendant]="selectedIndex >= 0 ? 'suggestion-' + selectedIndex : null"
+    aria-autocomplete="list"
+    [attr.aria-haspopup]="'listbox'">
   </ion-input>
 </ion-item>
 
