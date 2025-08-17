@@ -160,4 +160,28 @@ export class AdminsPage implements OnInit {
       console.error("Error loading companies:", error);
     });
   }
+
+
+onResetPasswordKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    this.enablePasswordReset();
+  }
+}
+
+
+onGeneratePasswordKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    this.generatePassword();
+  }
+}
+
+
+onTogglePasswordVisibilityKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    this.showPassword = !this.showPassword;
+  }
+}
 }
