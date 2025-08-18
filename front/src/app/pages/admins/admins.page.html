@@ -1,57 +1,71 @@
 <ion-header [translucent]="true">
 
-<ion-content [fullscreen]="true">
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button routerLink="/admins-list">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-      <ion-title class="ion-text-center">{{selectedAdmin ? 'Modifier un administrateur' : 'Créer un compte administrateur'}}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <div class="centered-form">
-    <app-message class="ion-margin-top" *ngIf="error.type === 'register'"></app-message>
-    <form [formGroup]="adminForm" (ngSubmit)="onSubmitAdmin()">
-      <ion-item>
-        <ion-label position="floating">Prénom</ion-label>
-        <ion-input formControlName="first_name" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Nom</ion-label>
-        <ion-input formControlName="last_name" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" formControlName="email" required></ion-input>
-      </ion-item>
-      <ion-item *ngIf="selectedAdmin && !resetPasswordMode">
-        <ion-button (click)="enablePasswordReset()">Réinitialiser le mot de passe</ion-button>
-      </ion-item>
-      <ion-item *ngIf="resetPasswordMode || !selectedAdmin">
-        <ion-label position="floating">Mot de passe</ion-label>
-        <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
-        <ion-button (click)="generatePassword()">Générer</ion-button>
-        <ion-button slot="end" (click)="showPassword = !showPassword">
-          <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-      <ion-item *ngIf="!selectedAdmin && globalService.userRole.getValue() === UserRole.SUPERADMIN">
-        <ion-select label="Entreprise" labelPlacement="stacked" formControlName="company_id" interface="popover">
-          <ion-select-option *ngFor="let company of companies" [value]="company.id">
-            {{ company.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <div class="ion-text-center">
-        <ion-button type="submit" [disabled]="adminForm.invalid">
-          {{selectedAdmin ? 'Modifier' : 'Créer un compte'}}
-        </ion-button>
-      </div>
-     
-    </form>
-  </div>
-</ion-content>
+  <ion-content [fullscreen]="true">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button routerLink="/admins-list">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">{{selectedAdmin ? 'Modifier un administrateur' : 'Créer un compte administrateur'}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <div class="centered-form">
+      <app-message class="ion-margin-top" *ngIf="error.type === 'register'"></app-message>
+      <form [formGroup]="adminForm" (ngSubmit)="onSubmitAdmin()">
+        <ion-item>
+          <ion-label position="floating">Prénom</ion-label>
+          <ion-input formControlName="first_name" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Nom</ion-label>
+          <ion-input formControlName="last_name" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" formControlName="email" required></ion-input>
+        </ion-item>
+        <ion-item *ngIf="selectedAdmin && !resetPasswordMode">
+          <ion-button 
+            (click)="enablePasswordReset()"
+            (keydown)="onResetPasswordKeyDown($event)"
+            tabindex="0">
+            Réinitialiser le mot de passe
+          </ion-button>
+        </ion-item>
+        <ion-item *ngIf="resetPasswordMode || !selectedAdmin">
+          <ion-label position="floating">Mot de passe</ion-label>
+          <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
+          <ion-button 
+            (click)="generatePassword()"
+            (keydown)="onGeneratePasswordKeyDown($event)"
+            tabindex="0">
+            Générer
+          </ion-button>
+          <ion-button 
+            slot="end" 
+            (click)="showPassword = !showPassword"
+            (keydown)="onTogglePasswordVisibilityKeyDown($event)"
+            tabindex="0">
+            <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+          </ion-button>
+        </ion-item>
+  
+        <ion-item *ngIf="!selectedAdmin && globalService.userRole.getValue() === UserRole.SUPERADMIN">
+          <ion-select label="Entreprise" labelPlacement="stacked" formControlName="company_id" interface="popover">
+            <ion-select-option *ngFor="let company of companies" [value]="company.id">
+              {{ company.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+  
+        <div class="ion-text-center">
+          <ion-button type="submit" [disabled]="adminForm.invalid">
+            {{selectedAdmin ? 'Modifier' : 'Créer un compte'}}
+          </ion-button>
+        </div>
+       
+      </form>
+    </div>
+  </ion-content>

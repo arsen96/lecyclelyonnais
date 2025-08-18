@@ -122,4 +122,18 @@ export class AppComponent implements OnInit {
     return isAdmin ? `/company/${this.companyService?.currentCompany?.id}` : 'company-list';
   }
 
+
+ /**
+ * Gère les événements clavier pour l'accessibilité du menu
+ */
+onKeyDown(event: KeyboardEvent, p: any): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    
+    if (p.func) {
+      p.func();
+    }
+  }
+}
+
 }
