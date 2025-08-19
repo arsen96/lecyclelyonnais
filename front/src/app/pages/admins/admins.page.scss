@@ -15,5 +15,28 @@ ion-select {
     --border-radius: 8px;
     --background: #fff;
     --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --background:white;
   }
+
+  ::ng-deep ion-list{
+    background:white;
+  }
+
+::ng-deep ion-select-popover {
+  --background: white;
+}
+
+::ng-deep ion-select-popover ion-item {
+  --background: white;
+  --color: #333;
+}
+
+::ng-deep ion-select-popover .item-radio-checked {
+  --background: #000000;
+  --color: #ffffff;
+}
+
+// ::ng-deep ion-select-popover ion-item.selected {
+
+
   

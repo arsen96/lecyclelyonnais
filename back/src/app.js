@@ -13,6 +13,8 @@ const routesPlanning = require('./routes/planningModelRoute');
 const routesClient = require('./routes/clientRoute');
 const routesAdmin = require('./routes/adminRoute');
 const routesCompany = require('./routes/companyRoute');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 require('dotenv').config()
 const cors = require('cors'); 
 const { authLimiter, generalLimiter, helmetConfig } = require('./middlewares/security');
@@ -34,16 +36,42 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(generalLimiter);
 
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'HomeCycl\'Home API',
+      version: '1.0.0',
+      description: 'API de gestion des interventions vélo multi-tenant',
+    },
+    servers: [
+      {
+        url: 'https://www.lecyclelyonnais.fr/api',
+        description: 'Production server',
+      },
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+    ],
+  },
+  apis: ['./src/routes/*.js'], 
+};
+
+const specs = swaggerJsdoc(options);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
 // Import and use routes
-app.use('/api/auth',authLimiter, routesAuth);
-app.use('/api/zones', routesZone);
-app.use('/api/technicians', routesTechnician);
-app.use('/api/bicycles', routesBicycle);
-app.use('/api/interventions', routesIntervention);
-app.use('/api/planning-models', routesPlanning);
-app.use('/api/clients', routesClient);
-app.use('/api/admins', routesAdmin);
-app.use('/api/companies', routesCompany);
+app.use('/api', routes);
+app.use('/auth',authLimiter, routesAuth);
+app.use('/zones', routesZone);
+app.use('/technicians', routesTechnician);
+app.use('/bicycles', routesBicycle);
+app.use('/interventions', routesIntervention);
+app.use('/planning-models', routesPlanning);
+app.use('/clients', routesClient);
+app.use('/admins', routesAdmin);
+app.use('/companies', routesCompany);
 
 app.use((error, req, res, next) => {
   // Les erreurs sont déjà capturées par captureBusinessError

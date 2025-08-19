@@ -232,7 +232,6 @@ const isAddressInZone = async (req, res) => {
     const { address } = req.body;
     console.log("address", address);
     
-    // SECURE URL CONSTRUCTION using URLSearchParams
     const baseUrl = 'https://nominatim.openstreetmap.org/search';
     const params = new URLSearchParams({
       format: 'json',

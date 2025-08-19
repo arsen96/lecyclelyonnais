@@ -17,22 +17,22 @@ const getGeographicalZoneId = async (address) => {
       throw new Error('Adresse invalide');
     }
     
-    // Sanitisation : supprimer caractères dangereux
+    // supprimer caractères dangereux  html et &(remplacer)
     const sanitizedAddress = address
-      .replace(/[<>\"']/g, '') // Supprimer caractères HTML
-      .replace(/[&]/g, 'and')   // Remplacer & par "and"
+      .replace(/[<>\"']/g, '') 
+      .replace(/[&]/g, 'and')  
       .trim();
     
     if (sanitizedAddress.length === 0) {
       return null;
     }
     
-    // construction sécurisée avec URLSearchParams pour sonarqube
+    //  URLSearchParams pour sonarqube pour eviter injection
     const baseUrl = 'https://nominatim.openstreetmap.org/search';
     const params = new URLSearchParams({
       format: 'json',
       q: sanitizedAddress,
-      limit: '1', // limiter le nombre de résultats
+      limit: '1', 
     });
     
     const nominatimUrl = `${baseUrl}?${params.toString()}`;

@@ -64,8 +64,19 @@ const update = async (req, res) => {
     try{
         const startTime = formatTime(req.body.start_time);
         const endTime = formatTime(req.body.end_time);
-        const query = 'UPDATE planning_models SET name = $1, intervention_type = $2, slot_duration = $3, start_time = $4, end_time = $5, available_days = $6 WHERE id = $7';
-        const values = [req.body.name, req.body.intervention_type, req.body.slot_duration, startTime, endTime, req.body.available_days, req.params.id];
+        const query = `
+            UPDATE planning_models 
+            SET name = $1, 
+                intervention_type = $2, 
+                slot_duration = $3, 
+                start_time = $4, 
+                end_time = $5, 
+                available_days = $6 
+            WHERE id = $7
+        `;
+        const values = [req.body.name, req.body.intervention_type,
+             req.body.slot_duration,startTime,
+              endTime, req.body.available_days, req.params.id];
         await pool.query(query, values);
         res.status(200).json({success:true,message:"Modèle de planning mis à jour avec succès"});
     }catch(error){

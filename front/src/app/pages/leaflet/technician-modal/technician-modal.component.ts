@@ -69,7 +69,6 @@ export class TechnicianModalComponent implements OnInit {
       },error => {
         this.messageService.showToast(error, 'danger');
       })
-      console.log("add",id);
   }
 
   applyFilter(event: Event) {
