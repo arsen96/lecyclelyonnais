@@ -1577,7 +1577,13 @@ export class AddressAutocompleteComponent {
     (ionInput)&#x3D;&quot;onInput($event)&quot;
     (ionBlur)&#x3D;&quot;onBlur()&quot;
     (ionFocus)&#x3D;&quot;onFocus()&quot;
-    (keydown)&#x3D;&quot;onInputKeyDown($event)&quot;&gt;
+    (keydown)&#x3D;&quot;onInputKeyDown($event)&quot;
+    role&#x3D;&quot;combobox&quot;
+    [attr.aria-expanded]&#x3D;&quot;(showSuggestions &amp;&amp; suggestions.length &gt; 0) ? &#x27;true&#x27; : &#x27;false&#x27;&quot;
+    [attr.aria-owns]&#x3D;&quot;showSuggestions &amp;&amp; suggestions.length &gt; 0 ? &#x27;suggestions-listbox&#x27; : null&quot;
+    [attr.aria-activedescendant]&#x3D;&quot;selectedIndex &gt;&#x3D; 0 ? &#x27;suggestion-&#x27; + selectedIndex : null&quot;
+    aria-autocomplete&#x3D;&quot;list&quot;
+    [attr.aria-haspopup]&#x3D;&quot;&#x27;listbox&#x27;&quot;&gt;
   &lt;/ion-input&gt;
 &lt;/ion-item&gt;
 
@@ -1585,6 +1591,7 @@ export class AddressAutocompleteComponent {
   *ngIf&#x3D;&quot;showSuggestions &amp;&amp; suggestions.length &gt; 0&quot; 
   class&#x3D;&quot;suggestions-list&quot;
   role&#x3D;&quot;listbox&quot;
+  id&#x3D;&quot;suggestions-listbox&quot;
   [attr.aria-label]&#x3D;&quot;&#x27;Suggestions d\&#x27;adresses&#x27;&quot;&gt;
   &lt;ion-item 
     *ngFor&#x3D;&quot;let suggestion of suggestions; let i &#x3D; index&quot; 
@@ -1593,7 +1600,7 @@ export class AddressAutocompleteComponent {
     (keydown)&#x3D;&quot;onSuggestionKeyDown($event, suggestion, i)&quot;
     class&#x3D;&quot;suggestion-item&quot;
     role&#x3D;&quot;option&quot;
-    [attr.aria-selected]&#x3D;&quot;i &#x3D;&#x3D;&#x3D; selectedIndex&quot;
+    [attr.aria-selected]&#x3D;&quot;i &#x3D;&#x3D;&#x3D; selectedIndex ? &#x27;true&#x27; : &#x27;false&#x27;&quot;
     [attr.tabindex]&#x3D;&quot;i &#x3D;&#x3D;&#x3D; selectedIndex ? 0 : -1&quot;
     [attr.id]&#x3D;&quot;&#x27;suggestion-&#x27; + i&quot;&gt;
     &lt;ion-label&gt;{{ suggestion.label }}&lt;/ion-label&gt;
@@ -1610,7 +1617,10 @@ export class AddressAutocompleteComponent {
 }   
 
 .suggestions-list{
-    width: 100%;
+    position: absolute;
+    width: 80%;
+    right: 50%;
+    transform: translateX(50%);
     --background: grey;
     padding: 0;
 }
@@ -1655,8 +1665,8 @@ export class AddressAutocompleteComponent {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><ion-item class="address-field">  <ion-input     [placeholder]="placeholder"     [value]="value"    (ionInput)="onInput($event)"    (ionBlur)="onBlur()"    (ionFocus)="onFocus()"    (keydown)="onInputKeyDown($event)">  </ion-input></ion-item><ion-list   *ngIf="showSuggestions && suggestions.length > 0"   class="suggestions-list"  role="listbox"  [attr.aria-label]="\'Suggestions d\\'adresses\'">  <ion-item     *ngFor="let suggestion of suggestions; let i = index"     button     (click)="selectSuggestion(suggestion)"    (keydown)="onSuggestionKeyDown($event, suggestion, i)"    class="suggestion-item"    role="option"    [attr.aria-selected]="i === selectedIndex"    [attr.tabindex]="i === selectedIndex ? 0 : -1"    [attr.id]="\'suggestion-\' + i">    <ion-label>{{ suggestion.label }}</ion-label>  </ion-item></ion-list></div>'
-    var COMPONENTS = [{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
+        var COMPONENT_TEMPLATE = '<div><ion-item class="address-field">  <ion-input     [placeholder]="placeholder"     [value]="value"    (ionInput)="onInput($event)"    (ionBlur)="onBlur()"    (ionFocus)="onFocus()"    (keydown)="onInputKeyDown($event)"    role="combobox"    [attr.aria-expanded]="(showSuggestions && suggestions.length > 0) ? \'true\' : \'false\'"    [attr.aria-owns]="showSuggestions && suggestions.length > 0 ? \'suggestions-listbox\' : null"    [attr.aria-activedescendant]="selectedIndex >= 0 ? \'suggestion-\' + selectedIndex : null"    aria-autocomplete="list"    [attr.aria-haspopup]="\'listbox\'">  </ion-input></ion-item><ion-list   *ngIf="showSuggestions && suggestions.length > 0"   class="suggestions-list"  role="listbox"  id="suggestions-listbox"  [attr.aria-label]="\'Suggestions d\\'adresses\'">  <ion-item     *ngFor="let suggestion of suggestions; let i = index"     button     (click)="selectSuggestion(suggestion)"    (keydown)="onSuggestionKeyDown($event, suggestion, i)"    class="suggestion-item"    role="option"    [attr.aria-selected]="i === selectedIndex ? \'true\' : \'false\'"    [attr.tabindex]="i === selectedIndex ? 0 : -1"    [attr.id]="\'suggestion-\' + i">    <ion-label>{{ suggestion.label }}</ion-label>  </ion-item></ion-list></div>'
+    var COMPONENTS = [{'name': 'ActionsPage', 'selector': 'app-actions'},{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AddressPage', 'selector': 'app-address'},{'name': 'AdminsListPage', 'selector': 'app-admins-list'},{'name': 'AdminsPage', 'selector': 'app-admins'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BikePage', 'selector': 'app-bike'},{'name': 'BikesListPage', 'selector': 'app-bikes-list'},{'name': 'CompanyListPage', 'selector': 'app-company-list'},{'name': 'CompanyPage', 'selector': 'app-company'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'InterventionsPage', 'selector': 'app-interventions'},{'name': 'LeafletListPage', 'selector': 'app-leaflet-list'},{'name': 'LeafletPage', 'selector': 'app-leaflet'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'LoginAdminPage', 'selector': 'app-login-admin'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'MesinterventionsPage', 'selector': 'app-mesinterventions'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PlanningModelsListPage', 'selector': 'app-planning-models-list'},{'name': 'PlanningModelsPage', 'selector': 'app-planning-models'},{'name': 'ResetPage', 'selector': 'app-reset'},{'name': 'ResetPasswordPage', 'selector': 'app-reset-password'},{'name': 'TechnicianListPage', 'selector': 'app-technician-list'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'TechnicianPage', 'selector': 'app-technician'},{'name': 'UsersListPage', 'selector': 'app-users-list'},{'name': 'UsersPage', 'selector': 'app-users'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'AddressAutocompleteComponent'};
 </script>

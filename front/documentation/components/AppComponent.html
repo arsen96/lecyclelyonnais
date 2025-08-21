@@ -265,6 +265,9 @@
                                 <a href="#ngOnInit" >ngOnInit</a>
                             </li>
                             <li>
+                                <a href="#onKeyDown" >onKeyDown</a>
+                            </li>
+                            <li>
                                 <a href="#updateMenu" >updateMenu</a>
                             </li>
                             <li>
@@ -537,6 +540,87 @@
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onKeyDown"></a>
+                    <span class="name">
+                        <span ><b>onKeyDown</b></span>
+                        <a href="#onKeyDown"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onKeyDown(event: KeyboardEvent, p: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">src/app/app.component.ts:129</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Gère les événements clavier pour l&#39;accessibilité du menu</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                        <code>KeyboardEvent</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>p</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1118,6 +1202,20 @@ export class AppComponent implements OnInit {
     return isAdmin ? &#x60;/company/${this.companyService?.currentCompany?.id}&#x60; : &#x27;company-list&#x27;;
   }
 
+
+ /**
+ * Gère les événements clavier pour l&#x27;accessibilité du menu
+ */
+onKeyDown(event: KeyboardEvent, p: any): void {
+  if (event.key &#x3D;&#x3D;&#x3D; &#x27;Enter&#x27; || event.key &#x3D;&#x3D;&#x3D; &#x27; &#x27;) {
+    event.preventDefault();
+    
+    if (p.func) {
+      p.func();
+    }
+  }
+}
+
 }
 </code></pre>
     </div>
@@ -1125,8 +1223,8 @@ export class AppComponent implements OnInit {
     <div class="tab-pane fade " id="templateData">
         <pre class="line-numbers"><code class="language-html">&lt;ion-app&gt;
   &lt;app-loader&gt;&lt;/app-loader&gt;
-  &lt;ion-split-pane contentId&#x3D;&quot;main-content&quot;&gt;
-    &lt;ion-menu contentId&#x3D;&quot;main-content&quot; type&#x3D;&quot;overlay&quot;&gt;
+  &lt;ion-split-pane contentId&#x3D;&quot;main-content&quot; when&#x3D;&quot;xs&quot; content-id&#x3D;&quot;main&quot;&gt;
+    &lt;ion-menu contentId&#x3D;&quot;main-content&quot; type&#x3D;&quot;overlay&quot; [hidden]&#x3D;&quot;globalService.isMobile &amp;&amp; globalService.isPortrait&quot;&gt;
       &lt;ion-content&gt;
         &lt;ion-list id&#x3D;&quot;inbox-list&quot;&gt;
           &lt;ion-list-header class&#x3D;&quot;ion-margin-bottom&quot;&gt;
@@ -1143,10 +1241,12 @@ export class AppComponent implements OnInit {
                 &lt;ion-item 
                 routerDirection&#x3D;&quot;root&quot;
                 [routerLink]&#x3D;&quot;p.url ? [p.url] : null&quot;
-                (click)&#x3D;&quot;p.func ? p.func() : null&quot; 
+                (click)&#x3D;&quot;p.func ? p.func() : null&quot;
+                (keydown)&#x3D;&quot;onKeyDown($event, p)&quot;
                 lines&#x3D;&quot;none&quot;
                 detail&#x3D;&quot;false&quot;
-                routerLinkActive&#x3D;&quot;selected&quot;&gt;
+                routerLinkActive&#x3D;&quot;selected&quot;
+                tabindex&#x3D;&quot;0&quot;&gt;
                 &lt;ion-icon aria-hidden&#x3D;&quot;true&quot; slot&#x3D;&quot;start&quot; [ios]&#x3D;&quot;p.icon + &#x27;-outline&#x27;&quot; [md]&#x3D;&quot;p.icon + &#x27;-sharp&#x27;&quot;&gt;&lt;/ion-icon&gt;
                 &lt;ion-label&gt;{{ p.title }}&lt;/ion-label&gt;
               &lt;/ion-item&gt;
@@ -1156,8 +1256,7 @@ export class AppComponent implements OnInit {
     &lt;/ion-menu&gt;
     &lt;ion-router-outlet id&#x3D;&quot;main-content&quot;&gt;&lt;/ion-router-outlet&gt;
   &lt;/ion-split-pane&gt;
-&lt;/ion-app&gt;
-</code></pre>
+&lt;/ion-app&gt;</code></pre>
     </div>
 
     <div class="tab-pane fade " id="styleData">
@@ -1173,6 +1272,10 @@ ion-menu.md ion-content {
   --padding-end: 8px;
   --padding-top: 20px;
   --padding-bottom: 20px;
+}
+
+[hidden]{
+  display: none!important;
 }
 
 ion-menu.md ion-list {
@@ -1314,8 +1417,8 @@ ion-item{
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><ion-app>  <app-loader></app-loader>  <ion-split-pane contentId="main-content">    <ion-menu contentId="main-content" type="overlay">      <ion-content>        <ion-list id="inbox-list">          <ion-list-header class="ion-margin-bottom">          @if(companyService.currentCompany?.name){            {{ companyService.currentCompany?.name  }}          }@else{            CycleLyonnais          }          </ion-list-header>          <!-- Boucle sur les éléments de menu -->          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages(); let i = index">                <ion-item                 routerDirection="root"                [routerLink]="p.url ? [p.url] : null"                (click)="p.func ? p.func() : null"                 lines="none"                detail="false"                routerLinkActive="selected">                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + \'-outline\'" [md]="p.icon + \'-sharp\'"></ion-icon>                <ion-label>{{ p.title }}</ion-label>              </ion-item>          </ion-menu-toggle>        </ion-list>      </ion-content>    </ion-menu>    <ion-router-outlet id="main-content"></ion-router-outlet>  </ion-split-pane></ion-app></div>'
-    var COMPONENTS = [{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
+        var COMPONENT_TEMPLATE = '<div><ion-app>  <app-loader></app-loader>  <ion-split-pane contentId="main-content" when="xs" content-id="main">    <ion-menu contentId="main-content" type="overlay" [hidden]="globalService.isMobile && globalService.isPortrait">      <ion-content>        <ion-list id="inbox-list">          <ion-list-header class="ion-margin-bottom">          @if(companyService.currentCompany?.name){            {{ companyService.currentCompany?.name  }}          }@else{            CycleLyonnais          }          </ion-list-header>          <!-- Boucle sur les éléments de menu -->          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages(); let i = index">                <ion-item                 routerDirection="root"                [routerLink]="p.url ? [p.url] : null"                (click)="p.func ? p.func() : null"                (keydown)="onKeyDown($event, p)"                lines="none"                detail="false"                routerLinkActive="selected"                tabindex="0">                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + \'-outline\'" [md]="p.icon + \'-sharp\'"></ion-icon>                <ion-label>{{ p.title }}</ion-label>              </ion-item>          </ion-menu-toggle>        </ion-list>      </ion-content>    </ion-menu>    <ion-router-outlet id="main-content"></ion-router-outlet>  </ion-split-pane></ion-app></div>'
+    var COMPONENTS = [{'name': 'ActionsPage', 'selector': 'app-actions'},{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AddressPage', 'selector': 'app-address'},{'name': 'AdminsListPage', 'selector': 'app-admins-list'},{'name': 'AdminsPage', 'selector': 'app-admins'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BikePage', 'selector': 'app-bike'},{'name': 'BikesListPage', 'selector': 'app-bikes-list'},{'name': 'CompanyListPage', 'selector': 'app-company-list'},{'name': 'CompanyPage', 'selector': 'app-company'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'InterventionsPage', 'selector': 'app-interventions'},{'name': 'LeafletListPage', 'selector': 'app-leaflet-list'},{'name': 'LeafletPage', 'selector': 'app-leaflet'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'LoginAdminPage', 'selector': 'app-login-admin'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'MesinterventionsPage', 'selector': 'app-mesinterventions'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PlanningModelsListPage', 'selector': 'app-planning-models-list'},{'name': 'PlanningModelsPage', 'selector': 'app-planning-models'},{'name': 'ResetPage', 'selector': 'app-reset'},{'name': 'ResetPasswordPage', 'selector': 'app-reset-password'},{'name': 'TechnicianListPage', 'selector': 'app-technician-list'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'TechnicianPage', 'selector': 'app-technician'},{'name': 'UsersListPage', 'selector': 'app-users-list'},{'name': 'UsersPage', 'selector': 'app-users'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'AppComponent'};
 </script>

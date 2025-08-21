@@ -1,0 +1,491 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>lecyclelyonnais documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">lecyclelyonnais documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  BearerToken</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/services/auth/auth-base.service.ts</code>
+        </p>
+
+
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#token" 
+>
+                                            token
+                                        </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section data-compodoc="block-properties">
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="token"></a>
+                                        <span class="name "><b>token</b>
+                                            <a href="#token">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>token:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { ChangeDetectionStrategy, ChangeDetectorRef, inject, Injectable, signal } from &#x27;@angular/core&#x27;;
+import { Router } from &#x27;@angular/router&#x27;;
+import { BehaviorSubject, catchError, map, shareReplay, Subject, tap, lastValueFrom } from &#x27;rxjs&#x27;;
+import { Observable } from &#x27;rxjs&#x27;;
+import { jwtDecode } from &quot;jwt-decode&quot;;
+import { GlobalService } from &#x27;../global.service&#x27;;
+import { LoadingService } from &#x27;../loading.service&#x27;;
+import { BaseService } from &#x27;../base.service&#x27;;
+
+export interface BearerToken {
+	token: string;
+}
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class AuthBaseService {
+
+  tokenObs: Observable&lt;string&gt; | null;
+  router &#x3D; inject(Router);
+  public http &#x3D; inject(HttpClient)
+  public globalService &#x3D; inject(GlobalService)
+  public loadingService &#x3D; inject(LoadingService)
+  private isUserLoadedSubject &#x3D; new BehaviorSubject&lt;boolean&gt;(false);
+  isUserLoaded$ &#x3D; this.isUserLoadedSubject.asObservable();
+  private wasAuthenticated &#x3D; false;
+  private initialized &#x3D; false;
+
+  constructor() {
+    this.wasAuthenticated &#x3D; !!this.checkIsAuthenicated();
+    this.globalService.isAuthenticated.next(this.wasAuthenticated);
+    
+    if (!this.wasAuthenticated) {
+      console.log(&quot;logout&quot;)
+      localStorage.removeItem(&quot;access_token&quot;);
+    }
+
+    this.unauthenticated();
+  }
+
+  /**
+   * Initialise le service d&#x27;authentification
+   */
+  async initialize(): Promise&lt;void&gt; {
+    if (this.initialized) {
+      return;
+    }
+
+    try {
+      if (this.wasAuthenticated) {
+        await this.getUser();
+      }
+      this.initialized &#x3D; true;
+    } catch (error) {
+      console.error(&#x27;Error during auth service initialization:&#x27;, error);
+      this.initialized &#x3D; true;
+    }
+  }
+
+  /**
+   * S&#x27;assure que le service est initialisé
+   */
+  async ensureInitialized(): Promise&lt;void&gt; {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+  }
+
+  getToken(): string | null {
+    const token &#x3D; localStorage.getItem(&#x27;authToken&#x27;);
+    return token;
+  }
+
+  setSession(token: string) {
+    localStorage.setItem(&quot;access_token&quot;, token);
+  }
+
+  /**
+   * Vérifie si l&#x27;utilisateur est authentifié via le token JWT
+   * @returns true si le token est valide, false sinon
+   */
+  public checkIsAuthenicated() {
+    const token &#x3D; localStorage.getItem(&quot;access_token&quot;);
+    if (token) {
+      try {
+        const decodedToken &#x3D; jwtDecode(token);
+        const now &#x3D; Date.now() / 1000;
+        const tokenValid &#x3D; typeof decodedToken.exp !&#x3D;&#x3D; &#x27;undefined&#x27; &amp;&amp; decodedToken.exp &gt; now;
+        
+        if (!tokenValid) {
+          this.globalService.user.next(null);
+          this.globalService.userRole.next(null);
+        }
+        return tokenValid;
+      } catch (error) {
+        console.error(&#x27;Error decoding token:&#x27;, error);
+        this.globalService.user.next(null);
+        this.globalService.userRole.next(null);
+        return false;
+      }
+    }
+    
+    this.globalService.user.next(null);
+    this.globalService.userRole.next(null);
+    return false;
+  }
+
+  /**
+   * Authentifie l&#x27;utilisateur avec les credentials fournis
+   * @param loginCredentials - Credentials de connexion
+   * @param endpoint - Endpoint d&#x27;authentification
+   * @returns Observable avec le token d&#x27;authentification
+   */
+  login(loginCredentials: any, endpoint: string): Observable&lt;string&gt; {
+    if (!this.tokenObs) {
+      this.tokenObs &#x3D; this.http.post&lt;BearerToken&gt;(endpoint, loginCredentials)
+        .pipe(catchError(BaseService.handleError.bind(this)))
+        .pipe(
+          tap(res &#x3D;&gt; {
+            if (res) {
+              this.setSession(res.token);
+              this.isUserLoadedSubject.next(true);
+              // ✅ Initialiser après login réussi
+              this.getUser().catch(error &#x3D;&gt; {
+                console.error(&#x27;Error loading user after login:&#x27;, error);
+              });
+            }
+          }),
+          map(data &#x3D;&gt; {
+            return data;
+          }),
+          shareReplay()
+        );
+    }
+    return this.tokenObs;
+  }
+
+  /**
+   * Récupère les informations de l&#x27;utilisateur connecté
+   * @returns Promise avec les données utilisateur
+   */
+  async getUser(): Promise&lt;any&gt; {
+    try {
+      const response &#x3D; await lastValueFrom(this.http.get(&#x60;${BaseService.baseApi}/auth/user&#x60;)
+        .pipe(catchError(BaseService.handleError.bind(this)))
+      );
+      
+      this.globalService.user.next(response.data);
+      this.globalService.userRole.next(response.data.role);
+      this.isUserLoadedSubject.next(true);
+      return response.data;
+    } catch (error) {
+      console.error(&#x27;Error loading user:&#x27;, error);
+      this.isUserLoadedSubject.next(true);
+      throw error;
+    }
+  }
+
+  /**
+   * Décode un token JWT manuellement
+   * @param token - Token JWT à décoder
+   * @returns Payload décodé ou null si erreur
+   */
+  decodeJWT(token: string) {
+    try {
+      const base64Url &#x3D; token.split(&#x27;.&#x27;)[1];
+      const base64 &#x3D; base64Url.replace(/-/g, &#x27;+&#x27;).replace(/_/g, &#x27;/&#x27;);
+      const jsonPayload &#x3D; decodeURIComponent(window.atob(base64).split(&#x27;&#x27;).map(function(c) {
+        return &#x27;%&#x27; + (&#x27;00&#x27; + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(&#x27;&#x27;));
+
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error(&#x27;Error decoding JWT:&#x27;, error);
+      return null;
+    }
+  }
+
+  logout() {
+    this.tokenObs &#x3D; null;
+    this.initialized &#x3D; false;
+    const role &#x3D; this.globalService.userRole.getValue();
+    console.log(&quot;logout&quot;)
+    console.trace()
+    localStorage.removeItem(&quot;access_token&quot;);
+    
+    if (role &#x3D;&#x3D;&#x3D; &#x27;admin&#x27; || role &#x3D;&#x3D;&#x3D; &#x27;superadmin&#x27;) {
+      this.router.navigateByUrl(&quot;login-admin&quot;);
+    } else {
+      this.router.navigateByUrl(&quot;login&quot;);
+    }
+    
+    this.globalService.user.next(null);
+    this.globalService.userRole.next(null);
+    this.loadingService.setLoading(false);
+  }
+
+  /**
+   * Gère la déconnexion automatique en cas de déconnexion réseau
+   * @param force - Force la déconnexion même si pas authentifié avant
+   */
+  public unauthenticated(force &#x3D; false): void {
+    BaseService.$disconnect.subscribe((result) &#x3D;&gt; {
+      if (result) {
+        if (this.wasAuthenticated || force) {
+          this.logout();
+          this.router.navigateByUrl(&quot;login&quot;);
+        }
+      }
+    });
+  }
+}</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'BearerToken.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
