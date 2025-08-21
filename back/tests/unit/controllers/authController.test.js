@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const proxyquire = require('proxyquire');
 
-describe('🔐 AuthController - Tests Unitaires', () => {
+describe(' AuthController - Tests Unitaires', () => {
   let req, res, bcryptHashStub, bcryptCompareStub, jwtStub, poolMock, subdomainInfoStub, authController;
 
   beforeEach(() => {

@@ -3,7 +3,10 @@ ion-item{
 }   
 
 .suggestions-list{
-    width: 100%;
+    position: absolute;
+    width: 80%;
+    right: 50%;
+    transform: translateX(50%);
     --background: grey;
     padding: 0;
 }
