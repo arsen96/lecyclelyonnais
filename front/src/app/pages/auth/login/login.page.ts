@@ -116,7 +116,9 @@ export class LoginPage {
     });
   } 
 
-
+  onResetPassword(){
+    this.router.navigateByUrl("/reset");
+  }
 
   /**
    * Retourne les contrôles du formulaire de connexion pour afficher dans le template
