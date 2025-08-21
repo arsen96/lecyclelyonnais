@@ -149,8 +149,10 @@ const oauth = async (req, res) => {
 
 const passwordForgot = async (req, res) => {
   const { email,domain } = req.body;
+  console.log("aper1")
   const checkUserQuery = 'SELECT email,password FROM client WHERE email = $1';
   const user = await pool.query(checkUserQuery, [email]);
+  console.log("useruseruser",user?.rows)
   if (user.rows.length > 0) {
     const currentUser = user.rows[0];
     const token = crypto.randomBytes(20).toString('hex');
