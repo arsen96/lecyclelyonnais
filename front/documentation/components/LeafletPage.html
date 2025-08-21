@@ -1,0 +1,2573 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>lecyclelyonnais documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">lecyclelyonnais documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  LeafletPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/pages/leaflet/leaflet.page.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+            <tr>
+                <td class="col-md-3">encapsulation</td>
+                <td class="col-md-9"><code>ViewEncapsulation.None</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-leaflet</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./leaflet.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./leaflet.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addressForm" >addressForm</a>
+                            </li>
+                            <li>
+                                <a href="#addressValidated" >addressValidated</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#alertController" >alertController</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#companyService" >companyService</a>
+                            </li>
+                            <li>
+                                <a href="#drawControl" >drawControl</a>
+                            </li>
+                            <li>
+                                <a href="#drawnItems" >drawnItems</a>
+                            </li>
+                            <li>
+                                <a href="#filteredTechnicians" >filteredTechnicians</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#loaderService" >loaderService</a>
+                            </li>
+                            <li>
+                                <a href="#map" >map</a>
+                            </li>
+                            <li>
+                                <a href="#mapReady" >mapReady</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapReadyResolver" >mapReadyResolver</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#messageService" >messageService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#newMapAdded" >newMapAdded</a>
+                            </li>
+                            <li>
+                                <a href="#options" >options</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#router" >router</a>
+                            </li>
+                            <li>
+                                <a href="#searchTerm" >searchTerm</a>
+                            </li>
+                            <li>
+                                <a href="#selectedInterventionType" >selectedInterventionType</a>
+                            </li>
+                            <li>
+                                <a href="#zoneAdded" >zoneAdded</a>
+                            </li>
+                            <li>
+                                <a href="#zoneIdSelected" >zoneIdSelected</a>
+                            </li>
+                            <li>
+                                <a href="#zoneName" >zoneName</a>
+                            </li>
+                            <li>
+                                <a href="#zoneSelected" >zoneSelected</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#addTechnicians" >addTechnicians</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#configLeafletDraw" >configLeafletDraw</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#convertToWKT" >convertToWKT</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#detectChange" >detectChange</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#editeMap" >editeMap</a>
+                            </li>
+                            <li>
+                                <a href="#filterTechnicians" >filterTechnicians</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#handleAddressChange" >handleAddressChange</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onCancel" >onCancel</a>
+                            </li>
+                            <li>
+                                <a href="#onMapReady" >onMapReady</a>
+                            </li>
+                            <li>
+                                <a href="#onSidenavClose" >onSidenavClose</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#openZoneModal" >openZoneModal</a>
+                            </li>
+                            <li>
+                                <a href="#removeTechnician" >removeTechnician</a>
+                            </li>
+                            <li>
+                                <a href="#resetDrawing" >resetDrawing</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#setModelPlanification" >setModelPlanification</a>
+                            </li>
+                            <li>
+                                <a href="#setResult" >setResult</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(cd: ChangeDetectorRef, technicianService: <a href="../injectables/TechnicianService.html" target="_self">TechnicianService</a>, route: ActivatedRoute, messageService: <a href="../injectables/MessageService.html" target="_self">MessageService</a>, zoneService: <a href="../injectables/ZoneService.html" target="_self">ZoneService</a>, alertController: AlertController, router: Router, modalController: ModalController)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:60</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>cd</td>
+                                                  
+                                                        <td>
+                                                                    <code>ChangeDetectorRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>technicianService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TechnicianService.html" target="_self" >TechnicianService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>route</td>
+                                                  
+                                                        <td>
+                                                                    <code>ActivatedRoute</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>messageService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MessageService.html" target="_self" >MessageService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>zoneService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ZoneService.html" target="_self" >ZoneService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>alertController</td>
+                                                  
+                                                        <td>
+                                                                    <code>AlertController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>modalController</td>
+                                                  
+                                                        <td>
+                                                                    <code>ModalController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addTechnicians"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>addTechnicians</b></span>
+                        <a href="#addTechnicians"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addTechnicians()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="279"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:279</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="configLeafletDraw"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>configLeafletDraw</b></span>
+                        <a href="#configLeafletDraw"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>configLeafletDraw()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:110</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Configure les outils de dessin Leaflet selon le mode (création/édition)</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="convertToWKT"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>convertToWKT</b></span>
+                        <a href="#convertToWKT"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>convertToWKT(layer: Layer)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:210</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Convertit une couche Leaflet en format WKT (Well-Known Text)</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>layer</td>
+                                            <td>
+                                                        <code>Layer</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>La couche Leaflet à convertir</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>la chaine de caractère WKT du polygone</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="detectChange"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>detectChange</b></span>
+                        <a href="#detectChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>detectChange()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:222</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="editeMap"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>editeMap</b></span>
+                        <a href="#editeMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>editeMap()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:255</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Charge et affiche une zone existante sur la carte</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterTechnicians"></a>
+                    <span class="name">
+                        <span ><b>filterTechnicians</b></span>
+                        <a href="#filterTechnicians"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>filterTechnicians()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleAddressChange"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>handleAddressChange</b></span>
+                        <a href="#handleAddressChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleAddressChange(place: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="235"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:235</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Gère le changement d&#39;adresse dans le formulaire d&#39;inscription.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>place</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Objet AddressSuggestion contenant les informations sur le lieu.</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onCancel"></a>
+                    <span class="name">
+                        <span ><b>onCancel</b></span>
+                        <a href="#onCancel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onCancel()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="247"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:247</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMapReady"></a>
+                    <span class="name">
+                        <span ><b>onMapReady</b></span>
+                        <a href="#onMapReady"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMapReady(map: Map)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>map</td>
+                                            <td>
+                                                        <code>Map</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSidenavClose"></a>
+                    <span class="name">
+                        <span ><b>onSidenavClose</b></span>
+                        <a href="#onSidenavClose"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSidenavClose()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="318"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:318</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openZoneModal"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>openZoneModal</b></span>
+                        <a href="#openZoneModal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openZoneModal(edition)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:184</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>edition</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>false</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeTechnician"></a>
+                    <span class="name">
+                        <span ><b>removeTechnician</b></span>
+                        <a href="#removeTechnician"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>removeTechnician(technicianId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="305"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:305</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Supprime un technicien d&#39;une zone</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>technicianId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>ID du technicien à supprimer</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resetDrawing"></a>
+                    <span class="name">
+                        <span ><b>resetDrawing</b></span>
+                        <a href="#resetDrawing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>resetDrawing()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="226"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:226</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setModelPlanification"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>setModelPlanification</b></span>
+                        <a href="#setModelPlanification"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setModelPlanification()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="322"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:322</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setResult"></a>
+                    <span class="name">
+                        <span ><b>setResult</b></span>
+                        <a href="#setResult"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setResult(ev)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="243"
+                                    class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:243</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ev</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addressForm"></a>
+                    <span class="name">
+                        <span ><b>addressForm</b></span>
+                        <a href="#addressForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new FormGroup({
+    address: new FormControl(&#x27;&#x27;)
+  })</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addressValidated"></a>
+                    <span class="name">
+                        <span ><b>addressValidated</b></span>
+                        <a href="#addressValidated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="alertController"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>alertController</b></span>
+                        <a href="#alertController"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>AlertController</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="companyService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>companyService</b></span>
+                        <a href="#companyService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(CompanyService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="drawControl"></a>
+                    <span class="name">
+                        <span ><b>drawControl</b></span>
+                        <a href="#drawControl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="drawnItems"></a>
+                    <span class="name">
+                        <span ><b>drawnItems</b></span>
+                        <a href="#drawnItems"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new FeatureGroup()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filteredTechnicians"></a>
+                    <span class="name">
+                        <span ><b>filteredTechnicians</b></span>
+                        <a href="#filteredTechnicians"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loaderService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>loaderService</b></span>
+                        <a href="#loaderService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(LoadingService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="map"></a>
+                    <span class="name">
+                        <span ><b>map</b></span>
+                        <a href="#map"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapReady"></a>
+                    <span class="name">
+                        <span ><b>mapReady</b></span>
+                        <a href="#mapReady"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Promise&lt;boolean&gt;</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapReadyResolver"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapReadyResolver</b></span>
+                        <a href="#mapReadyResolver"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="messageService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>messageService</b></span>
+                        <a href="#messageService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/MessageService.html" target="_self" >MessageService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newMapAdded"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>newMapAdded</b></span>
+                        <a href="#newMapAdded"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="options"></a>
+                    <span class="name">
+                        <span ><b>options</b></span>
+                        <a href="#options"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    layers: [
+      tileLayer(&#x27;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&#x27;, { maxZoom: 18, attribution: &#x27;...&#x27; })
+    ],
+    zoom: 7,
+    center: latLng(46.603354, 1.888334)
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="router"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>router</b></span>
+                        <a href="#router"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Router</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="searchTerm"></a>
+                    <span class="name">
+                        <span ><b>searchTerm</b></span>
+                        <a href="#searchTerm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedInterventionType"></a>
+                    <span class="name">
+                        <span ><b>selectedInterventionType</b></span>
+                        <a href="#selectedInterventionType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoneAdded"></a>
+                    <span class="name">
+                        <span ><b>zoneAdded</b></span>
+                        <a href="#zoneAdded"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoneIdSelected"></a>
+                    <span class="name">
+                        <span ><b>zoneIdSelected</b></span>
+                        <a href="#zoneIdSelected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoneName"></a>
+                    <span class="name">
+                        <span ><b>zoneName</b></span>
+                        <a href="#zoneName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoneSelected"></a>
+                    <span class="name">
+                        <span ><b>zoneSelected</b></span>
+                        <a href="#zoneSelected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Zones</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/pages/leaflet/leaflet.page.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ChangeDetectorRef, Component, NgZone, OnInit, ViewEncapsulation, ElementRef, ViewChild, Input, AfterViewInit, provideExperimentalZonelessChangeDetection, inject } from &#x27;@angular/core&#x27;;
+import { tileLayer, latLng, map, FeatureGroup, Control, Map, LatLng, circleMarker, Layer, Polygon, geoJSON } from &#x27;leaflet&#x27;;
+import &#x27;leaflet-draw&#x27;; // Importer le plugin leaflet-draw
+import * as turf from &#x27;@turf/turf&#x27;;  // Importer Turf.js
+import { HttpClient } from &#x27;@angular/common/http&#x27;; // Ajoutez cet import
+import { AlertController } from &#x27;@ionic/angular&#x27;; 
+import { ZoneService } from &#x27;src/app/services/zone.service&#x27;;
+import { ActivatedRoute, Router } from &#x27;@angular/router&#x27;;
+import { Zones } from &#x27;src/app/models/zones&#x27;;
+import { async } from &#x27;rxjs&#x27;;
+import { Message, MessageService } from &#x27;src/app/services/message.service&#x27;;
+import { ModalController } from &#x27;@ionic/angular&#x27;;
+import { TechnicianModalComponent } from &#x27;./technician-modal/technician-modal.component&#x27;;
+import { Technician } from &#x27;src/app/models/technicians&#x27;;
+import { TechnicianService } from &#x27;src/app/services/technician.service&#x27;;
+import { LoadingService } from &#x27;src/app/services/loading.service&#x27;;
+import { ZoneModalComponent } from &#x27;./zone-modal/zone-modal.component&#x27;;
+import { CompanyService } from &#x27;src/app/services/company.service&#x27;;
+import { FormGroup, FormControl } from &#x27;@angular/forms&#x27;;
+
+declare var google: any;
+
+@Component({
+  selector: &#x27;app-leaflet&#x27;,
+  templateUrl: &#x27;./leaflet.page.html&#x27;,
+  styleUrls: [&#x27;./leaflet.page.scss&#x27;],
+  encapsulation: ViewEncapsulation.None
+})
+export class LeafletPage {
+  public newMapAdded &#x3D; true;
+  zoneName: string;
+  map;
+
+  zoneSelected: Zones;
+  drawnItems &#x3D; new FeatureGroup();
+  options &#x3D; {
+    layers: [
+      tileLayer(&#x27;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&#x27;, { maxZoom: 18, attribution: &#x27;...&#x27; })
+    ],
+    zoom: 7,
+    center: latLng(46.603354, 1.888334)
+  };
+  addressValidated &#x3D; false;
+
+  zoneIdSelected: number;
+  drawControl;
+
+  mapReady: Promise&lt;boolean&gt;;
+  private mapReadyResolver: (value: boolean | PromiseLike&lt;boolean&gt;) &#x3D;&gt; void;
+
+  searchTerm: string &#x3D; &#x27;&#x27;;
+  filteredTechnicians &#x3D; [];
+  zoneAdded &#x3D; false;
+  public loaderService &#x3D; inject(LoadingService);
+  selectedInterventionType: string;
+  public companyService &#x3D; inject(CompanyService)
+
+  addressForm &#x3D; new FormGroup({
+    address: new FormControl(&#x27;&#x27;)
+  });
+
+  constructor(private cd: ChangeDetectorRef, private technicianService: TechnicianService, private route: ActivatedRoute, public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
+    this.route.params.subscribe(params &#x3D;&gt; {
+      this.zoneIdSelected &#x3D; Number(params[&#x27;id&#x27;]) ? Number(params[&#x27;id&#x27;]) : null;
+      console.log(&quot; this.zoneIdSelected this.zoneIdSelected&quot;, this.zoneIdSelected);
+    });
+
+    this.mapReady &#x3D; new Promise&lt;boolean&gt;((resolve) &#x3D;&gt; {
+      this.mapReadyResolver &#x3D; resolve;
+    });
+  }
+
+ 
+
+  ngOnInit() {
+    this.filteredTechnicians &#x3D; this.zoneSelected?.technicians || [];
+
+    console.log(&quot;apeeeeee&quot;,this.zoneSelected?.technicians)
+  }
+
+  filterTechnicians() {
+    console.log(&quot;this.searchTerm&quot;, this.searchTerm);
+    if (this.searchTerm.trim() &#x3D;&#x3D;&#x3D; &#x27;&#x27;) {
+      this.filteredTechnicians &#x3D; this.zoneSelected?.technicians || [];
+    } else {
+      const normalizeString &#x3D; (str: string) &#x3D;&gt; str.normalize(&#x27;NFD&#x27;).replace(/[\u0300-\u036f]/g, &#x27;&#x27;).replace(/\s+/g, &#x27;&#x27;);
+      this.filteredTechnicians &#x3D; this.zoneSelected?.technicians.filter(technician &#x3D;&gt;
+        normalizeString(&#x60;${technician.first_name} ${technician.last_name}&#x60;).toLowerCase().includes(normalizeString(this.searchTerm).toLowerCase())
+      );
+    }
+
+
+    console.log(&quot;asasasa&quot;,this.filteredTechnicians );
+  }
+
+  onMapReady(map: Map) {
+    this.map &#x3D; map;
+    this.map.whenReady(() &#x3D;&gt; {
+      setTimeout(() &#x3D;&gt; {
+        this.map.invalidateSize();
+        this.mapReadyResolver(true);
+      }, 1500);
+      this.configLeafletDraw();
+    });
+  }
+
+  /**
+   * Configure les outils de dessin Leaflet selon le mode (création/édition)
+   */
+  async configLeafletDraw() {
+    if (this.zoneIdSelected) {
+      await this.editeMap();
+    }
+    this.map.addLayer(this.drawnItems);
+
+    const drawOptions &#x3D; {
+      edit: {
+        featureGroup: this.drawnItems,
+        edit: false,
+        remove: !this.zoneSelected
+      },
+      draw: {
+        polygon: !this.zoneSelected,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+      }
+    };
+
+    this.drawControl &#x3D; new (Control as any).Draw(drawOptions);
+
+    if (!this.zoneSelected) {
+      this.map.addControl(this.drawControl);
+    }
+
+    // Gère la création d&#x27;une nouvelle zone
+    this.map.on(&#x27;draw:created&#x27;, async (event: any) &#x3D;&gt; {
+      if (this.zoneSelected) return;
+      const layer &#x3D; event.layer;
+      this.drawnItems.addLayer(layer);
+      const latLngs &#x3D; layer.getLatLngs();
+      const coordinates &#x3D; latLngs[0].map((latlng: any) &#x3D;&gt; [latlng.lng, latlng.lat]);
+      coordinates.push(coordinates[0]);
+      const polygon &#x3D; turf.polygon([coordinates]);
+
+      // Vérifie la taille de la zone (max 200 km²)
+      const areaInSquareKilometers &#x3D; turf.area(polygon) / 1000000;
+      if (areaInSquareKilometers &gt; 200) {
+        this.messageService.showToast(&quot;La zone que vous avez dessinée est trop grande.&quot;, Message.danger); 
+        this.resetDrawing();
+      } else {
+        const wkt &#x3D; this.convertToWKT(layer);
+        try {
+          const modalData &#x3D; await this.openZoneModal();
+          if (wkt &amp;&amp; modalData) {
+            this.loaderService.setLoading(true);
+            this.zoneService.create(wkt, {...modalData,...this.companyService.subdomainREQ}).subscribe({
+              next: (res: { success: boolean, message: string, zoneId: number }) &#x3D;&gt; {
+                this.zoneService.allZones &#x3D; new Array();
+                this.zoneService.get().then(() &#x3D;&gt; {
+                  this.zoneAdded &#x3D; true;
+                  this.zoneIdSelected &#x3D; res.zoneId;
+                  this.zoneSelected &#x3D; this.zoneService.allZones.find(zone &#x3D;&gt; zone.id &#x3D;&#x3D;&#x3D; this.zoneIdSelected);
+                  this.loaderService.setLoading(false);
+                });
+                this.drawControl.remove();
+              },
+              error: (error) &#x3D;&gt; {
+                this.loaderService.setLoading(false);
+              }
+            });
+          }
+          this.detectChange();
+        } catch (err) {
+          console.log(&quot;dismissed modal&quot;, err);
+          this.resetDrawing();
+        }
+      }
+      this.detectChange();
+    });
+  }
+
+  async openZoneModal(edition &#x3D; false): Promise&lt;any&gt; {
+    const modal &#x3D; await this.modalController.create({
+      component: ZoneModalComponent,
+      componentProps: {
+        zoneSelected: this.zoneSelected,
+        edition
+      }
+    });
+
+    await modal.present();
+    const { data } &#x3D; await modal.onDidDismiss();
+     if (!data) {
+      this.resetDrawing();
+    } else if(data.zoneTitle.length &gt; 0 &amp;&amp; data.zoneTypeInterventionMaintenance &amp;&amp; data.zoneTypeInterventionRepair){
+    }else{
+      this.resetDrawing();
+    }
+
+    return data;
+  }
+
+  /**
+   * Convertit une couche Leaflet en format WKT (Well-Known Text)
+   * @param {Layer} layer - La couche Leaflet à convertir
+   * @returns {string} la chaine de caractère WKT du polygone
+   */
+  public convertToWKT(layer: Layer): string {
+    const coords &#x3D; [];
+    if (layer instanceof Polygon) {
+      const latlngs &#x3D; layer.getLatLngs()[0] as Array&lt;any&gt;;
+      for (let i &#x3D; 0; i &lt; latlngs.length; i++) {
+        coords.push(latlngs[i].lng + &quot; &quot; + latlngs[i].lat);
+      };
+      return &quot;POLYGON((&quot; + coords.join(&quot;,&quot;) + &quot;,&quot; + latlngs[0].lng + &quot; &quot; + latlngs[0].lat + &quot;))&quot;;
+    }
+    return null;
+  }
+
+  public detectChange() {
+    this.cd.detectChanges();
+  }
+
+  resetDrawing() {
+    this.drawnItems.clearLayers();
+    this.zoneName &#x3D; null;
+  }
+
+  /**
+ * Gère le changement d&#x27;adresse dans le formulaire d&#x27;inscription.
+ * @param place - Objet AddressSuggestion contenant les informations sur le lieu.
+ */
+  public handleAddressChange(place: any) {
+    if (place.coordinates) {
+      this.map.setView(new LatLng(place.coordinates[1], place.coordinates[0]), 15);
+      this.addressValidated &#x3D; true;
+    }
+  }
+
+
+  setResult(ev) {
+    console.log(&#x60;Dismissed with role: ${ev.detail.role}&#x60;);
+  }
+
+  onCancel() {
+    console.log(&quot;Ajout annulé !&quot;);
+    this.resetDrawing();
+  }
+
+  /**
+   * Charge et affiche une zone existante sur la carte
+   */
+  async editeMap() {
+    try {
+      await this.zoneService.get();
+      this.zoneSelected &#x3D; this.zoneService.allZones.find(zone &#x3D;&gt; zone.id &#x3D;&#x3D;&#x3D; this.zoneIdSelected);
+
+      if (this.zoneSelected) {
+        const geoJsonData &#x3D; {
+          type: &quot;Feature&quot;,
+          geometry: {
+            type: &quot;Polygon&quot;,
+            coordinates: this.zoneSelected.geojson.coordinates
+          }
+        } as any;
+
+        console.log(&quot;geoJsonData&quot;, geoJsonData);
+        await this.mapReady;
+        const layer &#x3D; geoJSON(geoJsonData).addTo(this.map);
+        this.map.fitBounds(layer.getBounds());
+      }
+    } catch (err) {
+      console.log(&quot;err&quot;, err);
+    }
+  }
+
+  async addTechnicians() {
+    this.technicianService.technicians &#x3D; new Array();
+    await this.technicianService.get();
+
+    console.log(&quot;techniciansss&quot;, this.technicianService.technicians)
+    const modal &#x3D; await this.modalController.create({
+      component: TechnicianModalComponent,
+      componentProps: {
+        zoneId: this.zoneIdSelected,
+        currentZone: this.zoneSelected,
+        technicians: this.technicianService.technicians.filter(t &#x3D;&gt; !t.address)
+      }
+    });
+
+    modal.onDidDismiss().then((data) &#x3D;&gt; {
+      this.technicianService.technicians &#x3D; new Array();
+      console.log(&quot;data&quot;, data);
+    });
+
+    return await modal.present();
+  }
+
+  /**
+   * Supprime un technicien d&#x27;une zone
+   * @param {number} technicianId - ID du technicien à supprimer
+   */
+  removeTechnician(technicianId: number) {
+    this.zoneService.removeTechnicianFromZone(this.zoneIdSelected, technicianId).subscribe({
+      next: (res: any) &#x3D;&gt; {
+        this.zoneSelected.technicians &#x3D; this.zoneSelected.technicians.filter(t &#x3D;&gt; t.id !&#x3D;&#x3D; technicianId);
+        this.filterTechnicians();
+        this.messageService.showToast(res.message, &#x27;success&#x27;);
+      },
+      error: (error) &#x3D;&gt; {
+        console.error(&quot;Erreur lors de la suppression du technicien&quot;, error);
+      }
+    });
+  }
+
+  onSidenavClose() {
+    this.technicianService.technicians &#x3D; new Array();
+  }
+
+  async setModelPlanification(){
+    const modalData &#x3D; await this.openZoneModal(true)
+    console.log(&quot;modalData&quot;, modalData);
+    if(modalData){
+      this.zoneService.update(this.zoneIdSelected, modalData.zoneTitle, modalData.zoneTypeInterventionMaintenance, modalData.zoneTypeInterventionRepair).subscribe({
+        next: (res: any) &#x3D;&gt; {
+          console.log(&quot;resresres&quot;, res);
+          this.zoneSelected.model_planification.maintenance.id &#x3D; modalData.zoneTypeInterventionMaintenance;
+          this.zoneSelected.model_planification.repair.id &#x3D; modalData.zoneTypeInterventionRepair;
+          this.zoneSelected.zone_name &#x3D; modalData.zoneTitle;
+          this.messageService.showToast(res.message, &#x27;success&#x27;);
+        },
+        error: (error) &#x3D;&gt; {
+          this.messageService.showToast(error.message, &#x27;danger&#x27;);
+        }
+      });
+    }
+  }
+}
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-content [fullscreen]&#x3D;&quot;true&quot;&gt;
+  &lt;ion-header&gt;
+    &lt;ion-toolbar&gt;
+      &lt;ion-title class&#x3D;&quot;ion-text-center&quot;&gt;
+        @if(zoneSelected){
+          {{ zoneSelected.zone_name }}
+        }@else{
+          Ajouter une nouvelle zone
+        }
+      &lt;/ion-title&gt;
+      &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+        &lt;ion-button routerLink&#x3D;&quot;/list-zones&quot;&gt;
+          &lt;ion-icon name&#x3D;&quot;arrow-back-outline&quot;&gt;&lt;/ion-icon&gt;
+        &lt;/ion-button&gt;
+      &lt;/ion-buttons&gt;
+    &lt;/ion-toolbar&gt;
+  &lt;/ion-header&gt;
+
+  &lt;mat-sidenav-container&gt;
+    &lt;mat-sidenav #sidenav mode&#x3D;&quot;over&quot; position&#x3D;&quot;end&quot; (closedStart)&#x3D;&quot;onSidenavClose()&quot;&gt;
+      @if(filteredTechnicians.length &#x3D;&#x3D;&#x3D; 0 &amp;&amp; searchTerm.trim() &#x3D;&#x3D;&#x3D; &#x27;&#x27;){
+        &lt;h5 class&#x3D;&quot;ion-text-center no-technician-found&quot;&gt;Aucun technicien ne se trouve dans cette zone&lt;/h5&gt;
+      }@else{ 
+        &lt;ion-input placeholder&#x3D;&quot;Rechercher un technicien&quot; [(ngModel)]&#x3D;&quot;searchTerm&quot; (ionInput)&#x3D;&quot;filterTechnicians()&quot;&gt;&lt;/ion-input&gt;
+        @if(filteredTechnicians.length &gt; 0 || searchTerm.trim() &#x3D;&#x3D;&#x3D; &#x27;&#x27;){
+        @for(technician of filteredTechnicians; track zoneSelected.id){ 
+          &lt;div class&#x3D;&quot;technician-item&quot;&gt;
+            &lt;ion-icon name&#x3D;&quot;person-circle-outline&quot;&gt;&lt;/ion-icon&gt;
+            &lt;p&gt;{{ technician.first_name }} {{ technician.last_name }}&lt;/p&gt;
+            &lt;ion-button fill&#x3D;&quot;clear&quot; slot&#x3D;&quot;end&quot; (click)&#x3D;&quot;removeTechnician(technician.id)&quot;&gt;
+              &lt;ion-icon name&#x3D;&quot;trash-outline&quot; class&#x3D;&quot;rmvUserFromList&quot;&gt;&lt;/ion-icon&gt;
+            &lt;/ion-button&gt;
+          &lt;/div&gt;
+        }
+      }@else{
+        &lt;p&gt;Aucun technicien trouvé&lt;/p&gt;
+      }
+    }
+    &lt;/mat-sidenav&gt;
+
+    &lt;mat-sidenav-content&gt;
+      @if(newMapAdded){
+        @if(!zoneSelected){
+          &lt;ion-grid class&#x3D;&quot;inputBtnContainer&quot;&gt;
+            &lt;ion-row&gt;
+                &lt;div class&#x3D;&quot;full-width&quot; [formGroup]&#x3D;&quot;addressForm&quot;&gt;
+                  &lt;app-address-autocomplete 
+                    placeholder&#x3D;&quot;Saisissez l&#x27;adresse&quot; 
+                    formControlName&#x3D;&quot;address&quot;
+                    (addressSelected)&#x3D;&quot;handleAddressChange($event)&quot;&gt;
+                  &lt;/app-address-autocomplete&gt;
+                &lt;/div&gt;
+            &lt;/ion-row&gt;
+          &lt;/ion-grid&gt;
+        }
+        &lt;div id&#x3D;&quot;map&quot;
+          leaflet 
+          (leafletMapReady)&#x3D;&quot;onMapReady($event)&quot;
+          [leafletOptions]&#x3D;&quot;options&quot;&gt;
+        &lt;/div&gt;
+        @if(zoneSelected){
+        &lt;div class&#x3D;&quot;sidenav-toggle&quot;&gt;
+          &lt;ion-button (click)&#x3D;&quot;filterTechnicians(); sidenav.toggle()&quot;&gt;
+            &lt;ion-icon name&#x3D;&quot;people-outline&quot; class&#x3D;&quot;sidenav-user-list-icon&quot;&gt;&lt;/ion-icon&gt;
+            &lt;span matBadge&#x3D;&quot;{{ zoneSelected?.technicians?.length || 0 }}&quot; matBadgeOverlap&#x3D;&quot;false&quot; matBadgeColor&#x3D;&quot;primary&quot; matBadgePosition&#x3D;&quot;above&quot;&gt;&lt;/span&gt;
+          &lt;/ion-button&gt;
+          &lt;ion-button  (click)&#x3D;&quot;addTechnicians()&quot;&gt;
+            &lt;ion-icon name&#x3D;&quot;person-add-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-button&gt;
+          &lt;div class&#x3D;&quot;modelPlanificationContainer&quot;&gt;
+            &lt;ion-button (click)&#x3D;&quot;setModelPlanification()&quot;&gt;&lt;ion-text size&#x3D;&quot;small&quot;&gt;Planification&lt;/ion-text&gt;&lt;/ion-button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        }
+      }
+    &lt;/mat-sidenav-content&gt;
+  &lt;/mat-sidenav-container&gt;
+
+  &lt;!-- &lt;ion-list&gt;
+    &lt;ion-item&gt;
+      &lt;ion-label&gt;Type d&#x27;intervention&lt;/ion-label&gt;
+      &lt;ion-select [(ngModel)]&#x3D;&quot;selectedInterventionType&quot; placeholder&#x3D;&quot;Choisissez le type d&#x27;intervention&quot;&gt;
+        &lt;ion-select-option value&#x3D;&quot;maintenance&quot;&gt;Maintenance&lt;/ion-select-option&gt;
+        &lt;ion-select-option value&#x3D;&quot;repair&quot;&gt;Réparation&lt;/ion-select-option&gt;
+      &lt;/ion-select&gt;
+    &lt;/ion-item&gt;
+  &lt;/ion-list&gt; --&gt;
+&lt;/ion-content&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./leaflet.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">#map {
+    min-height: 88vh;
+}
+  
+
+::ng-deep .leaflet-control-container{
+    display: none!important;
+  }
+
+  ion-toast{
+    --background:black;
+    --color:white;
+    font-family: &quot;vremenagroteskbold&quot;, sans-serif;
+    font-size:1.2em;
+    text-align: center;
+  }
+
+  input[ngx-gp-autocomplete] {
+    width: 100%;
+    box-sizing: border-box; 
+    padding: 10px; 
+    font-size: 1em;
+    font-family: &quot;Arial&quot;, sans-serif; 
+    border: none;
+    outline: none; 
+
+    &amp;:focus {
+      border: none; 
+      outline: none;
+    }
+  }
+
+  ion-header {
+    background-color: #f8f9fa; 
+  }
+
+
+  ion-toolbar {
+    border-bottom: 1px solid #ddd; 
+  }
+
+  ion-button {
+    width: 100%;
+    height: 100%;
+  }
+
+
+  .inputBtnContainer{
+    padding:5px;
+  }
+
+.back-button {
+  z-index: 1000; 
+}
+
+.ion-content{
+  position: relative;
+}
+
+.sidenav-toggle {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  z-index: 1000;
+  width: auto;
+  height:auto;
+}
+
+.technician-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 0px 0px 0px 5px;
+  
+
+  ion-button{
+    width: auto;
+    margin-left: auto;
+  }
+
+  ion-icon.rmvUserFromList {
+    color: firebrick; 
+  }
+
+  ion-icon{
+    font-size: 1.3em;
+  }
+
+  p {
+    margin: 0px 0px 0px 10px;
+    font-size: 1em;
+  }
+}
+
+mat-sidenav {
+  display: flex;
+  flex-direction: column;
+
+  ion-input {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white; 
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .no-technician-found{
+    position: absolute;
+    top: 50%;
+    text-align: center;
+    transform: translateY(-50%);
+  }
+
+  .technician-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 0px 0px 0px 5px;
+
+    ion-button {
+      width: auto;
+      margin-left: auto;
+    }
+
+    ion-icon.rmvUserFromList {
+      color: firebrick;
+    }
+
+    ion-icon {
+      font-size: 1.3em;
+    }
+
+    p {
+      margin: 0px 0px 0px 10px;
+      font-size: 1em;
+    }
+  }
+}
+
+.sidenav-user-list-icon{
+  margin-right: 5px;
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-content [fullscreen]="true">  <ion-header>    <ion-toolbar>      <ion-title class="ion-text-center">        @if(zoneSelected){          {{ zoneSelected.zone_name }}        }@else{          Ajouter une nouvelle zone        }      </ion-title>      <ion-buttons slot="start">        <ion-button routerLink="/list-zones">          <ion-icon name="arrow-back-outline"></ion-icon>        </ion-button>      </ion-buttons>    </ion-toolbar>  </ion-header>  <mat-sidenav-container>    <mat-sidenav #sidenav mode="over" position="end" (closedStart)="onSidenavClose()">      @if(filteredTechnicians.length === 0 && searchTerm.trim() === \'\'){        <h5 class="ion-text-center no-technician-found">Aucun technicien ne se trouve dans cette zone</h5>      }@else{         <ion-input placeholder="Rechercher un technicien" [(ngModel)]="searchTerm" (ionInput)="filterTechnicians()"></ion-input>        @if(filteredTechnicians.length > 0 || searchTerm.trim() === \'\'){        @for(technician of filteredTechnicians; track zoneSelected.id){           <div class="technician-item">            <ion-icon name="person-circle-outline"></ion-icon>            <p>{{ technician.first_name }} {{ technician.last_name }}</p>            <ion-button fill="clear" slot="end" (click)="removeTechnician(technician.id)">              <ion-icon name="trash-outline" class="rmvUserFromList"></ion-icon>            </ion-button>          </div>        }      }@else{        <p>Aucun technicien trouvé</p>      }    }    </mat-sidenav>    <mat-sidenav-content>      @if(newMapAdded){        @if(!zoneSelected){          <ion-grid class="inputBtnContainer">            <ion-row>                <div class="full-width" [formGroup]="addressForm">                  <app-address-autocomplete                     placeholder="Saisissez l\'adresse"                     formControlName="address"                    (addressSelected)="handleAddressChange($event)">                  </app-address-autocomplete>                </div>            </ion-row>          </ion-grid>        }        <div id="map"          leaflet           (leafletMapReady)="onMapReady($event)"          [leafletOptions]="options">        </div>        @if(zoneSelected){        <div class="sidenav-toggle">          <ion-button (click)="filterTechnicians(); sidenav.toggle()">            <ion-icon name="people-outline" class="sidenav-user-list-icon"></ion-icon>            <span matBadge="{{ zoneSelected?.technicians?.length || 0 }}" matBadgeOverlap="false" matBadgeColor="primary" matBadgePosition="above"></span>          </ion-button>          <ion-button  (click)="addTechnicians()">            <ion-icon name="person-add-outline"></ion-icon>          </ion-button>          <div class="modelPlanificationContainer">            <ion-button (click)="setModelPlanification()"><ion-text size="small">Planification</ion-text></ion-button>          </div>        </div>        }      }    </mat-sidenav-content>  </mat-sidenav-container>  <!-- <ion-list>    <ion-item>      <ion-label>Type d\'intervention</ion-label>      <ion-select [(ngModel)]="selectedInterventionType" placeholder="Choisissez le type d\'intervention">        <ion-select-option value="maintenance">Maintenance</ion-select-option>        <ion-select-option value="repair">Réparation</ion-select-option>      </ion-select>    </ion-item>  </ion-list> --></ion-content></div>'
+    var COMPONENTS = [{'name': 'ActionsPage', 'selector': 'app-actions'},{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AddressPage', 'selector': 'app-address'},{'name': 'AdminsListPage', 'selector': 'app-admins-list'},{'name': 'AdminsPage', 'selector': 'app-admins'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BikePage', 'selector': 'app-bike'},{'name': 'BikesListPage', 'selector': 'app-bikes-list'},{'name': 'CompanyListPage', 'selector': 'app-company-list'},{'name': 'CompanyPage', 'selector': 'app-company'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'InterventionsPage', 'selector': 'app-interventions'},{'name': 'LeafletListPage', 'selector': 'app-leaflet-list'},{'name': 'LeafletPage', 'selector': 'app-leaflet'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'LoginAdminPage', 'selector': 'app-login-admin'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'MesinterventionsPage', 'selector': 'app-mesinterventions'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PlanningModelsListPage', 'selector': 'app-planning-models-list'},{'name': 'PlanningModelsPage', 'selector': 'app-planning-models'},{'name': 'ResetPage', 'selector': 'app-reset'},{'name': 'ResetPasswordPage', 'selector': 'app-reset-password'},{'name': 'TechnicianListPage', 'selector': 'app-technician-list'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'TechnicianPage', 'selector': 'app-technician'},{'name': 'UsersListPage', 'selector': 'app-users-list'},{'name': 'UsersPage', 'selector': 'app-users'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'LeafletPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'LeafletPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -306,7 +306,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(modalController: ModalController, technicianService: TechnicianService, cd: ChangeDetectorRef, zoneService: ZoneService)</code>
+<code>constructor(modalController: ModalController, technicianService: <a href="../injectables/TechnicianService.html" target="_self">TechnicianService</a>, cd: ChangeDetectorRef, zoneService: <a href="../injectables/ZoneService.html" target="_self">ZoneService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -344,7 +344,7 @@
                                                         <td>technicianService</td>
                                                   
                                                         <td>
-                                                                    <code>TechnicianService</code>
+                                                                        <code><a href="../injectables/TechnicianService.html" target="_self" >TechnicianService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -368,7 +368,7 @@
                                                         <td>zoneService</td>
                                                   
                                                         <td>
-                                                                    <code>ZoneService</code>
+                                                                        <code><a href="../injectables/ZoneService.html" target="_self" >ZoneService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -889,7 +889,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>MessageService</code>
+                        <i>Type : </i>        <code><a href="../injectables/MessageService.html" target="_self" >MessageService</a></code>
 
                     </td>
                 </tr>
@@ -1049,7 +1049,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>TechnicianService</code>
+                        <i>Type : </i>        <code><a href="../injectables/TechnicianService.html" target="_self" >TechnicianService</a></code>
 
                     </td>
                 </tr>
@@ -1128,7 +1128,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>ZoneService</code>
+                        <i>Type : </i>        <code><a href="../injectables/ZoneService.html" target="_self" >ZoneService</a></code>
 
                     </td>
                 </tr>
@@ -1386,7 +1386,7 @@ h4{
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
         var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-toolbar>    <ion-title>Ajouter un Technicien</ion-title>    <ion-buttons slot="end">      <ion-button (click)="dismiss()">        <ion-icon name="close"></ion-icon>      </ion-button>    </ion-buttons>  </ion-toolbar></ion-header><ion-content>@if(technicians?.length > 0) {    <div>      <div class="searchBarItem">        <ion-label>Rechercher un technicien</ion-label>        <input matInput (keyup)="applyFilter($event)" placeholder="Nom du technicien">      </div>      @if(selection.hasValue()){        <ion-button class="addBtn" (click)="addMultipleTechnicians()" color="success">          Ajouter         </ion-button>      }    <table mat-table [dataSource]="dataSource" matSort>      <ng-container matColumnDef="select">        <th mat-header-cell *matHeaderCellDef> Sélectionner </th>        <td mat-cell *matCellDef="let technician">          <mat-checkbox (change)="$event ? selection.toggle(technician) : null"                        [checked]="selection.isSelected(technician)"></mat-checkbox>        </td>      </ng-container>      <ng-container matColumnDef="first_name">        <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>        <td mat-cell *matCellDef="let technician"> {{technician.first_name}}  </td>      </ng-container>      <ng-container matColumnDef="last_name">        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>        <td mat-cell *matCellDef="let technician"> {{technician.last_name}}  </td>      </ng-container>      <ng-container matColumnDef="action">        <th mat-header-cell *matHeaderCellDef style="position: sticky; top: 0; background: white; z-index: 1;"> Ajouter </th>        <td mat-cell *matCellDef="let element">          <div class="btnActionContainer">              <ion-button color="success" class="btnAction" (click)="manageSelected(element.id)">                <ion-icon name="person-add-outline"></ion-icon>              </ion-button>            <!-- <ion-button color="danger" class="btnAction" (click)="manageSelected(element.id,false)">              <ion-icon name="person-remove-outline"></ion-icon>            </ion-button> -->          </div>        </td>      </ng-container>      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>    </table>    <mat-paginator #paginator [pageSizeOptions]="pageSizes" [pageSize]="10" showFirstLastButtons></mat-paginator>  </div>}@else{  <h4 class="ion-text-center">Aucun technicien n\'est disponible</h4>}</ion-content> </div>'
-    var COMPONENTS = [{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
+    var COMPONENTS = [{'name': 'ActionsPage', 'selector': 'app-actions'},{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AddressPage', 'selector': 'app-address'},{'name': 'AdminsListPage', 'selector': 'app-admins-list'},{'name': 'AdminsPage', 'selector': 'app-admins'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BikePage', 'selector': 'app-bike'},{'name': 'BikesListPage', 'selector': 'app-bikes-list'},{'name': 'CompanyListPage', 'selector': 'app-company-list'},{'name': 'CompanyPage', 'selector': 'app-company'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'InterventionsPage', 'selector': 'app-interventions'},{'name': 'LeafletListPage', 'selector': 'app-leaflet-list'},{'name': 'LeafletPage', 'selector': 'app-leaflet'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'LoginAdminPage', 'selector': 'app-login-admin'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'MesinterventionsPage', 'selector': 'app-mesinterventions'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PlanningModelsListPage', 'selector': 'app-planning-models-list'},{'name': 'PlanningModelsPage', 'selector': 'app-planning-models'},{'name': 'ResetPage', 'selector': 'app-reset'},{'name': 'ResetPasswordPage', 'selector': 'app-reset-password'},{'name': 'TechnicianListPage', 'selector': 'app-technician-list'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'TechnicianPage', 'selector': 'app-technician'},{'name': 'UsersListPage', 'selector': 'app-users-list'},{'name': 'UsersPage', 'selector': 'app-users'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'TechnicianModalComponent'};
 </script>

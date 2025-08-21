@@ -1,0 +1,2751 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>lecyclelyonnais documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">lecyclelyonnais documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  MesinterventionsPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/pages/mesinterventions/mesinterventions.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-mesinterventions</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./mesinterventions.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./mesinterventions.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#displayOngoingInterventions" >displayOngoingInterventions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#displayPastInterventions" >displayPastInterventions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#displayUpcomingInterventions" >displayUpcomingInterventions</a>
+                            </li>
+                            <li>
+                                <a href="#endDate" >endDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#globalService" >globalService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#interventionService" >interventionService</a>
+                            </li>
+                            <li>
+                                <a href="#isFilterApplied" >isFilterApplied</a>
+                            </li>
+                            <li>
+                                <a href="#isFilterAppliedOngoing" >isFilterAppliedOngoing</a>
+                            </li>
+                            <li>
+                                <a href="#isFilterAppliedPast" >isFilterAppliedPast</a>
+                            </li>
+                            <li>
+                                <a href="#isFilterAppliedUpcoming" >isFilterAppliedUpcoming</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#loadingService" >loadingService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#messageService" >messageService</a>
+                            </li>
+                            <li>
+                                <a href="#newComment" >newComment</a>
+                            </li>
+                            <li>
+                                <a href="#ongoingInterventions" >ongoingInterventions</a>
+                            </li>
+                            <li>
+                                <a href="#pastInterventions" >pastInterventions</a>
+                            </li>
+                            <li>
+                                <a href="#selectedTypeOngoing" >selectedTypeOngoing</a>
+                            </li>
+                            <li>
+                                <a href="#selectedTypePast" >selectedTypePast</a>
+                            </li>
+                            <li>
+                                <a href="#selectedTypeUpcoming" >selectedTypeUpcoming</a>
+                            </li>
+                            <li>
+                                <a href="#startDate" >startDate</a>
+                            </li>
+                            <li>
+                                <a href="#technicianInterventions" >technicianInterventions</a>
+                            </li>
+                            <li>
+                                <a href="#upcomingInterventions" >upcomingInterventions</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#cancelIntervention" >cancelIntervention</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#confirmCancel" >confirmCancel</a>
+                            </li>
+                            <li>
+                                <a href="#filterInterventions" >filterInterventions</a>
+                            </li>
+                            <li>
+                                <a href="#filterInterventionsByType" >filterInterventionsByType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSelectedPhotos" >getSelectedPhotos</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#ionViewWillEnter" >ionViewWillEnter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#markAsDone" >markAsDone</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onFileSelected" >onFileSelected</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#openImageModal" >openImageModal</a>
+                            </li>
+                            <li>
+                                <a href="#removePhoto" >removePhoto</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#updateInterventionLists" >updateInterventionLists</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#FilterType" >FilterType</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(modalController: ModalController, alertController: AlertController)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:94</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>modalController</td>
+                                                  
+                                                        <td>
+                                                                    <code>ModalController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>alertController</td>
+                                                  
+                                                        <td>
+                                                                    <code>AlertController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cancelIntervention"></a>
+                    <span class="name">
+                        <span ><b>cancelIntervention</b></span>
+                        <a href="#cancelIntervention"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>cancelIntervention(intervention: Intervention)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:150</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Annule une intervention et met à jour son statut</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>intervention</td>
+                                            <td>
+                                                        <code>Intervention</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>L&#39;intervention à annuler</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="confirmCancel"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>confirmCancel</b></span>
+                        <a href="#confirmCancel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>confirmCancel(intervention: Intervention)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Demande confirmation avant d&#39;annuler une intervention</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>intervention</td>
+                                            <td>
+                                                        <code>Intervention</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>L&#39;intervention à annuler</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterInterventions"></a>
+                    <span class="name">
+                        <span ><b>filterInterventions</b></span>
+                        <a href="#filterInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>filterInterventions(filterType: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="266"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:266</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Filtre les interventions selon le type et la période</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filterType</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Type de filtre (past, ongoing, upcoming)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterInterventionsByType"></a>
+                    <span class="name">
+                        <span ><b>filterInterventionsByType</b></span>
+                        <a href="#filterInterventionsByType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>filterInterventionsByType(type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:190</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSelectedPhotos"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getSelectedPhotos</b></span>
+                        <a href="#getSelectedPhotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSelectedPhotos(intervention: Intervention)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:219</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Convertit les URLs des photos en objets File pour l&#39;upload</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>intervention</td>
+                                            <td>
+                                                        <code>Intervention</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>L&#39;intervention contenant les photos</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;File[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>Liste des fichiers photos</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ionViewWillEnter"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>ionViewWillEnter</b></span>
+                        <a href="#ionViewWillEnter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ionViewWillEnter()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Charge et trie les interventions du technicien par statut temporel</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markAsDone"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>markAsDone</b></span>
+                        <a href="#markAsDone"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>markAsDone(intervention: Intervention)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:199</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Marque une intervention comme terminée avec les photos sélectionnées</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>intervention</td>
+                                            <td>
+                                                        <code>Intervention</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>L&#39;intervention à terminer</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:98</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onFileSelected"></a>
+                    <span class="name">
+                        <span ><b>onFileSelected</b></span>
+                        <a href="#onFileSelected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onFileSelected(event: Event, intervention: Intervention)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:172</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Gère la sélection de fichiers photos pour une intervention</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                        <code>Event</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Événement de sélection de fichier</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>intervention</td>
+                                            <td>
+                                                        <code>Intervention</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>L&#39;intervention concernée</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openImageModal"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>openImageModal</b></span>
+                        <a href="#openImageModal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openImageModal(photos: string[], index: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:106</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Ouvre une modal pour afficher les photos en plein écran</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>photos</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Liste des URLs des photos</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>index</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Index de la photo à afficher en premier</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removePhoto"></a>
+                    <span class="name">
+                        <span ><b>removePhoto</b></span>
+                        <a href="#removePhoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>removePhoto(intervention: Intervention, index: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:186</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Supprime une photo de la liste des photos uploadées</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>intervention</td>
+                                            <td>
+                                                        <code>Intervention</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>L&#39;intervention concernée</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>index</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Index de la photo à supprimer</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateInterventionLists"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>updateInterventionLists</b></span>
+                        <a href="#updateInterventionLists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateInterventionLists()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:239</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Met à jour les listes d&#39;interventions après modification d&#39;un statut</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayOngoingInterventions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>displayOngoingInterventions</b></span>
+                        <a href="#displayOngoingInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayPastInterventions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>displayPastInterventions</b></span>
+                        <a href="#displayPastInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayUpcomingInterventions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>displayUpcomingInterventions</b></span>
+                        <a href="#displayUpcomingInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="endDate"></a>
+                    <span class="name">
+                        <span ><b>endDate</b></span>
+                        <a href="#endDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="globalService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>globalService</b></span>
+                        <a href="#globalService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(GlobalService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="interventionService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>interventionService</b></span>
+                        <a href="#interventionService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(InterventionService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFilterApplied"></a>
+                    <span class="name">
+                        <span ><b>isFilterApplied</b></span>
+                        <a href="#isFilterApplied"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFilterAppliedOngoing"></a>
+                    <span class="name">
+                        <span ><b>isFilterAppliedOngoing</b></span>
+                        <a href="#isFilterAppliedOngoing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFilterAppliedPast"></a>
+                    <span class="name">
+                        <span ><b>isFilterAppliedPast</b></span>
+                        <a href="#isFilterAppliedPast"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFilterAppliedUpcoming"></a>
+                    <span class="name">
+                        <span ><b>isFilterAppliedUpcoming</b></span>
+                        <a href="#isFilterAppliedUpcoming"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadingService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>loadingService</b></span>
+                        <a href="#loadingService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(LoadingService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="messageService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>messageService</b></span>
+                        <a href="#messageService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(MessageService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newComment"></a>
+                    <span class="name">
+                        <span ><b>newComment</b></span>
+                        <a href="#newComment"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ongoingInterventions"></a>
+                    <span class="name">
+                        <span ><b>ongoingInterventions</b></span>
+                        <a href="#ongoingInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Intervention[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pastInterventions"></a>
+                    <span class="name">
+                        <span ><b>pastInterventions</b></span>
+                        <a href="#pastInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Intervention[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedTypeOngoing"></a>
+                    <span class="name">
+                        <span ><b>selectedTypeOngoing</b></span>
+                        <a href="#selectedTypeOngoing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedTypePast"></a>
+                    <span class="name">
+                        <span ><b>selectedTypePast</b></span>
+                        <a href="#selectedTypePast"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedTypeUpcoming"></a>
+                    <span class="name">
+                        <span ><b>selectedTypeUpcoming</b></span>
+                        <a href="#selectedTypeUpcoming"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="startDate"></a>
+                    <span class="name">
+                        <span ><b>startDate</b></span>
+                        <a href="#startDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="technicianInterventions"></a>
+                    <span class="name">
+                        <span ><b>technicianInterventions</b></span>
+                        <a href="#technicianInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Intervention[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upcomingInterventions"></a>
+                    <span class="name">
+                        <span ><b>upcomingInterventions</b></span>
+                        <a href="#upcomingInterventions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Intervention[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="FilterType"></a>
+                        <span class="name"><b>FilterType</b><a href="#FilterType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>FilterType()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/app/pages/mesinterventions/mesinterventions.page.ts:53</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, inject, OnInit } from &#x27;@angular/core&#x27;;
+import { Intervention } from &#x27;src/app/models/intervention&#x27;;
+import { GlobalService } from &#x27;src/app/services/global.service&#x27;;
+import { InterventionService } from &#x27;src/app/services/intervention.service&#x27;;
+import { Message, MessageService } from &#x27;src/app/services/message.service&#x27;;
+import { ModalController, AlertController } from &#x27;@ionic/angular&#x27;;
+import { ImageModalComponent } from &#x27;src/app/components/image-modal/image-modal.component&#x27;;
+import { LoadingService } from &#x27;src/app/services/loading.service&#x27;;
+import { BaseService } from &#x27;src/app/services/base.service&#x27;;
+
+
+export enum FilterType {
+  PAST &#x3D; &#x27;past&#x27;,
+  UPCOMING &#x3D; &#x27;upcoming&#x27;,
+  ONGOING &#x3D; &#x27;ongoing&#x27;
+}
+
+@Component({
+  selector: &#x27;app-mesinterventions&#x27;,
+  templateUrl: &#x27;./mesinterventions.page.html&#x27;,
+  styleUrls: [&#x27;./mesinterventions.page.scss&#x27;],
+})
+
+
+export class MesinterventionsPage implements OnInit {
+
+  public interventionService &#x3D; inject(InterventionService)
+  public globalService &#x3D; inject(GlobalService)  
+  public loadingService &#x3D; inject(LoadingService)  
+  public messageService &#x3D; inject(MessageService)
+
+  technicianInterventions:Intervention[] &#x3D; [];  
+  pastInterventions: Intervention[] &#x3D; [];
+  upcomingInterventions: Intervention[] &#x3D; [];
+  ongoingInterventions: Intervention[] &#x3D; [];
+  newComment: string &#x3D; &#x27;&#x27;;
+  startDate: string &#x3D; &#x27;&#x27;;
+  endDate: string &#x3D; &#x27;&#x27;;
+  isFilterApplied: boolean &#x3D; false;
+  isFilterAppliedOngoing: boolean &#x3D; false;
+  isFilterAppliedUpcoming: boolean &#x3D; false;
+  isFilterAppliedPast: boolean &#x3D; false;
+
+  selectedTypePast: string &#x3D; &#x27;&#x27;;
+  selectedTypeOngoing: string &#x3D; &#x27;&#x27;;
+  selectedTypeUpcoming: string &#x3D; &#x27;&#x27;;
+
+
+  public displayPastInterventions: boolean &#x3D; true;
+  public displayOngoingInterventions: boolean &#x3D; true;
+  public displayUpcomingInterventions: boolean &#x3D; true;
+
+  public get FilterType() {
+    return FilterType;
+  }
+
+  /**
+   * Charge et trie les interventions du technicien par statut temporel
+   * @returns {Promise&lt;void&gt;}
+   */
+  async ionViewWillEnter() {
+    const success &#x3D; await this.interventionService.interventionsLoaded;
+    if (success) {
+      this.technicianInterventions &#x3D; await this.interventionService.getInterventionsByTechnician(this.globalService.user.getValue().id);
+      const now &#x3D; new Date();
+      
+      // Filtre les interventions passées (terminées ou annulées)
+      this.pastInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; 
+        new Date(intervention.appointment_end) &lt; now || 
+        intervention.status &#x3D;&#x3D;&#x3D; &#x27;completed&#x27; || 
+        intervention.status &#x3D;&#x3D;&#x3D; &#x27;canceled&#x27;
+      );
+      
+      // Filtre les interventions en cours (dans la plage horaire actuelle)
+      this.ongoingInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+        const start &#x3D; new Date(intervention.appointment_start);
+        const end &#x3D; new Date(intervention.appointment_end);
+        const isOngoing &#x3D; start &lt;&#x3D; now &amp;&amp; end &gt;&#x3D; now &amp;&amp; intervention.status !&#x3D;&#x3D; &#x27;completed&#x27;;
+        return isOngoing;
+      });
+
+      // Filtre les interventions à venir (non annulées et pas dans le passé)
+      this.upcomingInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+        const isUpcoming &#x3D; new Date(intervention.appointment_start) &gt; now &amp;&amp; intervention.status !&#x3D;&#x3D; &#x27;canceled&#x27;;
+        const isNotInPast &#x3D; !this.pastInterventions.some(pastIntervention &#x3D;&gt; pastIntervention.id &#x3D;&#x3D;&#x3D; intervention.id);
+        return isUpcoming &amp;&amp; isNotInPast;
+      });
+    
+      // Met à jour l&#x27;affichage des sections selon le contenu
+      this.displayPastInterventions &#x3D; this.pastInterventions.length &gt; 0;
+      this.displayOngoingInterventions &#x3D; this.ongoingInterventions.length &gt; 0;
+      this.displayUpcomingInterventions &#x3D; this.upcomingInterventions.length &gt; 0;
+    }
+  }
+
+  constructor(private modalController: ModalController, private alertController: AlertController) { }
+
+  ngOnInit() {
+  }
+
+  /**
+   * Ouvre une modal pour afficher les photos en plein écran
+   * @param {string[]} photos - Liste des URLs des photos
+   * @param {number} index - Index de la photo à afficher en premier
+   */
+  async openImageModal(photos: string[], index: number) {
+    photos &#x3D; photos.map(photo &#x3D;&gt; BaseService.baseApi + &#x27;/&#x27;+ photo);
+    const modal &#x3D; await this.modalController.create({
+      component: ImageModalComponent,
+      componentProps: {
+        photos,
+        index
+      }
+    });
+    return await modal.present();
+  }
+
+  /**
+   * Demande confirmation avant d&#x27;annuler une intervention
+   * @param {Intervention} intervention - L&#x27;intervention à annuler
+   */
+  async confirmCancel(intervention: Intervention) {
+    const alert &#x3D; await this.alertController.create({
+      header: &quot;Confirmer l&#x27;annulation&quot;,
+      message: &quot;Voulez-vous vraiment annuler ce rendez-vous ?&quot;,
+      buttons: [
+        {
+          text: &#x27;Non&#x27;,
+          role: &#x27;cancel&#x27;,
+          cssClass: &#x27;secondary&#x27;,
+          handler: () &#x3D;&gt; {
+          
+          }
+        }, {
+          text: &#x27;Oui&#x27;,
+          handler: () &#x3D;&gt; {
+            this.cancelIntervention(intervention);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Annule une intervention et met à jour son statut
+   * @param {Intervention} intervention - L&#x27;intervention à annuler
+   */
+  cancelIntervention(intervention: Intervention) {
+    console.log(&#x27;Intervention annulée:&#x27;, intervention);
+    const obs$ &#x3D; this.interventionService.manageEndIntervention(intervention.id, true, this.newComment);
+    this.loadingService.showLoaderUntilCompleted(obs$).subscribe({
+        next: (response: any) &#x3D;&gt; {
+          this.messageService.showToast(response.message, Message.success);
+          // this.technicianInterventions &#x3D; this.technicianInterventions.filter(i &#x3D;&gt; i.id !&#x3D;&#x3D; intervention.id);
+          intervention.status &#x3D; &#x27;canceled&#x27;;
+          this.updateInterventionLists();
+        },
+        error: (err: any) &#x3D;&gt; {
+          this.messageService.showToast(err, Message.danger);
+        }
+    });
+  }
+
+
+  /**
+   * Gère la sélection de fichiers photos pour une intervention
+   * @param {Event} event - Événement de sélection de fichier
+   * @param {Intervention} intervention - L&#x27;intervention concernée
+   */
+  onFileSelected(event: Event, intervention: Intervention) {
+    const input &#x3D; event.target as HTMLInputElement;
+    if (input.files) {
+      const files &#x3D; Array.from(input.files);
+      const newPhotos &#x3D; files.map(file &#x3D;&gt; URL.createObjectURL(file));
+      intervention.uploadedPhotos &#x3D; intervention.uploadedPhotos ? [...intervention.uploadedPhotos, ...newPhotos] : newPhotos;
+    }
+  }
+
+  /**
+   * Supprime une photo de la liste des photos uploadées
+   * @param {Intervention} intervention - L&#x27;intervention concernée
+   * @param {number} index - Index de la photo à supprimer
+   */
+  removePhoto(intervention: Intervention, index: number) {
+    intervention.uploadedPhotos.splice(index, 1);
+  }
+
+  filterInterventionsByType(type: string) {
+    return this.technicianInterventions.filter(intervention &#x3D;&gt; intervention.type &#x3D;&#x3D;&#x3D; type);
+  }
+
+
+  /**
+   * Marque une intervention comme terminée avec les photos sélectionnées
+   * @param {Intervention} intervention - L&#x27;intervention à terminer
+   */
+  async markAsDone(intervention: Intervention) {
+    const photos &#x3D; await this.getSelectedPhotos(intervention);
+    const obs$ &#x3D; this.interventionService.manageEndIntervention(intervention.id, false, this.newComment, photos);
+    this.loadingService.showLoaderUntilCompleted(obs$).subscribe({
+      next: (response: any) &#x3D;&gt; {
+        this.messageService.showToast(response.message, Message.success);
+        intervention.status &#x3D; &#x27;completed&#x27;;
+        this.updateInterventionLists();
+      },
+      error: (err: any) &#x3D;&gt; {
+        this.messageService.showToast(err, Message.danger);
+      }
+    });
+  }
+
+  /**
+   * Convertit les URLs des photos en objets File pour l&#x27;upload
+   * @param {Intervention} intervention - L&#x27;intervention contenant les photos
+   * @returns {Promise&lt;File[]&gt;} Liste des fichiers photos
+   */
+  async getSelectedPhotos(intervention: Intervention): Promise&lt;File[]&gt; {
+    let photoPromises &#x3D; []
+    if(intervention.uploadedPhotos){
+      photoPromises &#x3D; intervention.uploadedPhotos.map(async (photoUrl) &#x3D;&gt; {
+        const response &#x3D; await fetch(photoUrl);
+        const blob &#x3D; await response.blob();
+        const mimeType &#x3D; blob.type;
+        const extension &#x3D; mimeType.split(&#x27;/&#x27;).pop(); 
+        const fileName &#x3D; &#x60;${photoUrl.split(&#x27;/&#x27;).pop() || &#x27;photo&#x27;}.${extension}&#x60;;
+        return new File([blob], fileName, { type: mimeType });
+    });
+    }
+ 
+
+    return Promise.all(photoPromises);
+  }
+
+  /**
+   * Met à jour les listes d&#x27;interventions après modification d&#x27;un statut
+   */
+  private updateInterventionLists() {
+    const now &#x3D; new Date();
+    this.pastInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; 
+      new Date(intervention.appointment_end) &lt; now || 
+      intervention.status &#x3D;&#x3D;&#x3D; &#x27;completed&#x27; || 
+      intervention.status &#x3D;&#x3D;&#x3D; &#x27;canceled&#x27;
+    );
+    this.ongoingInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+        const start &#x3D; new Date(intervention.appointment_start);
+        const end &#x3D; new Date(intervention.appointment_end);
+        const isOngoing &#x3D; start &lt;&#x3D; now &amp;&amp; end &gt;&#x3D; now &amp;&amp; intervention.status !&#x3D;&#x3D; &#x27;completed&#x27;;
+        return isOngoing;
+    });
+    this.upcomingInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+      const isUpcoming &#x3D; new Date(intervention.appointment_start) &gt; now &amp;&amp; intervention.status !&#x3D;&#x3D; &#x27;canceled&#x27;;
+      const isNotInPast &#x3D; !this.pastInterventions.some(pastIntervention &#x3D;&gt; pastIntervention.id &#x3D;&#x3D;&#x3D; intervention.id);
+      return isUpcoming &amp;&amp; isNotInPast;
+    });
+    this.displayPastInterventions &#x3D; this.pastInterventions.length &gt; 0;
+    this.displayOngoingInterventions &#x3D; this.ongoingInterventions.length &gt; 0;
+    this.displayUpcomingInterventions &#x3D; this.upcomingInterventions.length &gt; 0;
+  }
+
+  /**
+   * Filtre les interventions selon le type et la période
+   * @param {string} filterType - Type de filtre (past, ongoing, upcoming)
+   */
+  filterInterventions(filterType: string) {
+    const now &#x3D; new Date();
+
+    if(filterType &#x3D;&#x3D;&#x3D; FilterType.PAST){ 
+        this.pastInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+          const interventionEnd &#x3D; new Date(intervention.appointment_end);
+          const matchesType &#x3D; this.selectedTypePast ? intervention.type &#x3D;&#x3D;&#x3D; this.selectedTypePast : true;
+          return (interventionEnd &lt; now || intervention.status &#x3D;&#x3D;&#x3D; &#x27;completed&#x27; || intervention.status &#x3D;&#x3D;&#x3D; &#x27;canceled&#x27;) &amp;&amp; matchesType;
+        });
+
+        this.isFilterAppliedPast &#x3D; this.selectedTypePast !&#x3D;&#x3D; &#x27;&#x27;;
+    }
+
+    if(filterType &#x3D;&#x3D;&#x3D; FilterType.ONGOING){
+      this.ongoingInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+        const interventionStart &#x3D; new Date(intervention.appointment_start);
+        const interventionEnd &#x3D; new Date(intervention.appointment_end);
+        const isOngoing &#x3D; interventionStart &lt;&#x3D; now &amp;&amp; interventionEnd &gt;&#x3D; now &amp;&amp; intervention.status !&#x3D;&#x3D; &#x27;completed&#x27;;
+        const matchesType &#x3D; this.selectedTypeOngoing ? intervention.type &#x3D;&#x3D;&#x3D; this.selectedTypeOngoing : true;
+        return isOngoing &amp;&amp; matchesType;
+      });
+      this.isFilterAppliedOngoing &#x3D; this.selectedTypeOngoing !&#x3D;&#x3D; &#x27;&#x27;;
+    }
+
+    if(filterType &#x3D;&#x3D;&#x3D; FilterType.UPCOMING){
+      this.upcomingInterventions &#x3D; this.technicianInterventions.filter(intervention &#x3D;&gt; {
+        const matchesType &#x3D; this.selectedTypeUpcoming ? intervention.type &#x3D;&#x3D;&#x3D; this.selectedTypeUpcoming : true;
+
+        const isUpcoming &#x3D; new Date(intervention.appointment_start) &gt; now &amp;&amp; intervention.status !&#x3D;&#x3D; &#x27;canceled&#x27;;
+        const isNotInPast &#x3D; !this.pastInterventions.some(pastIntervention &#x3D;&gt; pastIntervention.id &#x3D;&#x3D;&#x3D; intervention.id);
+        return isUpcoming &amp;&amp; isNotInPast &amp;&amp; matchesType;
+      });
+
+      this.isFilterAppliedUpcoming &#x3D; this.selectedTypeUpcoming !&#x3D;&#x3D; &#x27;&#x27;;
+    }
+  }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header [translucent]&#x3D;&quot;true&quot;&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-title&gt;Mes interventions&lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-content [fullscreen]&#x3D;&quot;true&quot;&gt;
+  &lt;div class&#x3D;&quot;interventions-container&quot;&gt;
+
+    &lt;ng-template #interventionCard let-intervention let-status&#x3D;&quot;status&quot;&gt;
+      &lt;ion-col size&#x3D;&quot;4&quot;&gt;
+        &lt;mat-expansion-panel&gt;
+          &lt;mat-expansion-panel-header&gt;
+            &lt;mat-panel-title&gt;
+              &lt;ion-icon name&#x3D;&quot;hammer-outline&quot;&gt;&lt;/ion-icon&gt; {{ intervention.type }} 
+            &lt;/mat-panel-title&gt;
+            &lt;mat-panel-description&gt;
+              &lt;ion-icon name&#x3D;&quot;calendar-outline&quot;&gt;&lt;/ion-icon&gt; {{ intervention.appointment_start | date:&#x27;d/M/yyyy&#x27; }} 
+
+              @if(intervention.status &#x3D;&#x3D;&#x3D; &#x27;canceled&#x27;){
+                  &lt;ion-icon name&#x3D;&quot;close-circle-outline&quot; slot&#x3D;&quot;end&quot; class&#x3D;&quot;canceled-icon&quot;&gt;&lt;/ion-icon&gt; 
+              }
+            &lt;/mat-panel-description&gt;
+
+            
+          &lt;/mat-expansion-panel-header&gt;
+          &lt;ion-card color&#x3D;&quot;primary&quot;&gt;
+            &lt;ion-card-header&gt;
+              &lt;ion-card-title&gt;
+                &lt;ion-icon name&#x3D;&quot;calendar-outline&quot;&gt;&lt;/ion-icon&gt; {{ intervention.type }}
+              &lt;/ion-card-title&gt;
+              &lt;ion-card-subtitle&gt;
+                {{ intervention.appointment_start | date:&#x27;dd MMMM yyyy&#x27; }}
+              &lt;/ion-card-subtitle&gt;
+            &lt;/ion-card-header&gt;
+            &lt;ion-card-content&gt;
+              &lt;div class&#x3D;&quot;intervention-details&quot;&gt;
+                &lt;h3&gt;Date&lt;/h3&gt;
+                &lt;p&gt;&lt;strong&gt;Heure : &lt;/strong&gt;{{ intervention.appointment_start | date:&#x27;hh:mm&#x27; }} - {{ intervention.appointment_end| date:&#x27;hh:mm&#x27; }}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Création : &lt;/strong&gt;{{ intervention.created_at | date:&#x27;d/M/yyyy&#x27; }}&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;div class&#x3D;&quot;bicycle-details&quot;&gt;
+                &lt;h3&gt;Vélo&lt;/h3&gt;
+                &lt;p&gt;{{ intervention.bicycle.brand }} - {{ intervention.bicycle.model }}&lt;/p&gt;
+                &lt;p&gt;{{ intervention.bicycle.type }}&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;div class&#x3D;&quot;client-details&quot;&gt;
+                &lt;h3&gt;Client&lt;/h3&gt;
+                &lt;p&gt;&lt;strong&gt;Nom : &lt;/strong&gt;{{ intervention.client_info.last_name }}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Prénom : &lt;/strong&gt;{{ intervention.client_info.first_name }}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Email : &lt;/strong&gt;{{ intervention.client_info.email }}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Téléphone : &lt;/strong&gt;{{ intervention.client_info.phone }}&lt;/p&gt;
+                @if(intervention.description?.length &gt; 0){
+                  &lt;p&gt;&lt;strong&gt;Commentaires : &lt;/strong&gt;{{ intervention.description }}&lt;/p&gt;
+                }
+                &lt;p&gt;&lt;strong&gt;Adresse : &lt;/strong&gt;{{ intervention.client_info.address }}&lt;/p&gt;
+              &lt;/div&gt;
+
+              @if(status &#x3D;&#x3D;&#x3D; &#x27;ongoing&#x27;){
+              &lt;div class&#x3D;&quot;photo-upload&quot;&gt;
+                &lt;div class&#x3D;&quot;uploadBtnContainer&quot;&gt;
+                  &lt;ion-button (click)&#x3D;&quot;fileInput.click()&quot;&gt;
+                    &lt;ion-icon name&#x3D;&quot;camera-outline&quot;&gt;&lt;/ion-icon&gt; Ajouter des photos
+                  &lt;/ion-button&gt;
+                  &lt;input type&#x3D;&quot;file&quot; #fileInput (change)&#x3D;&quot;onFileSelected($event, intervention)&quot; multiple accept&#x3D;&quot;image/png, image/jpeg&quot; style&#x3D;&quot;display: none;&quot;&gt;
+                &lt;/div&gt;
+                &lt;div class&#x3D;&quot;uploaded-photos&quot;&gt;
+                  &lt;ng-container *ngFor&#x3D;&quot;let photo of intervention.uploadedPhotos; let i &#x3D; index&quot;&gt;
+                    &lt;div class&#x3D;&quot;photo-container&quot;&gt;
+                      &lt;img [src]&#x3D;&quot;photo&quot; alt&#x3D;&quot;Photo du travail réalisé&quot; class&#x3D;&quot;uploaded-photo&quot; (click)&#x3D;&quot;openImageModal(intervention.uploadedPhotos, i)&quot;&gt;
+                      &lt;ion-icon name&#x3D;&quot;close-circle&quot; class&#x3D;&quot;delete-icon&quot; (click)&#x3D;&quot;removePhoto(intervention, i)&quot;&gt;&lt;/ion-icon&gt;
+                    &lt;/div&gt;
+                  &lt;/ng-container&gt;
+                &lt;/div&gt;
+                &lt;div class&#x3D;&quot;comments-section&quot;&gt;
+                  &lt;ion-item&gt;
+                    &lt;ion-label position&#x3D;&quot;stacked&quot;&gt;Ajouter un commentaire&lt;/ion-label&gt;
+                    &lt;ion-textarea [(ngModel)]&#x3D;&quot;newComment&quot;&gt;&lt;/ion-textarea&gt;
+                  &lt;/ion-item&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              }
+              &lt;div class&#x3D;&quot;buttons-container&quot;&gt;
+                &lt;ion-button *ngIf&#x3D;&quot;intervention.photos?.length &gt; 0&quot; (click)&#x3D;&quot;openImageModal(intervention.photos, 0)&quot;&gt;
+                  @if(intervention.photos?.length &gt; 1){
+                  Les photos du modèle
+                } @else {
+                  La photo du modèle
+                  }
+                &lt;/ion-button&gt;
+
+                &lt;ion-button *ngIf&#x3D;&quot;intervention.technician_photos?.length &gt; 0&quot; (click)&#x3D;&quot;openImageModal(intervention.technician_photos, 0)&quot;&gt;
+                  @if(intervention.technician_photos?.length &gt; 1){
+                  Les photos de l&#x27;intervention
+                } @else {
+                  La photo de l&#x27;intervention
+                  }
+                &lt;/ion-button&gt;
+
+
+                &lt;!-- @if(status &#x3D;&#x3D;&#x3D; &#x27;ongoing&#x27;){ --&gt;
+                &lt;ion-button color&#x3D;&quot;success&quot; (click)&#x3D;&quot;markAsDone(intervention)&quot;&gt;
+                  &lt;ion-icon name&#x3D;&quot;checkmark-circle-outline&quot;&gt;&lt;/ion-icon&gt; Marquer comme fait
+                &lt;/ion-button&gt;
+                &lt;!-- } --&gt;
+                @if(status &#x3D;&#x3D;&#x3D; &#x27;upcoming&#x27; || status &#x3D;&#x3D;&#x3D; &#x27;ongoing&#x27;){
+                &lt;ion-button color&#x3D;&quot;danger&quot; (click)&#x3D;&quot;confirmCancel(intervention)&quot;&gt;
+                  &lt;ion-icon name&#x3D;&quot;close-circle-outline&quot;&gt;&lt;/ion-icon&gt; Annuler
+                  &lt;/ion-button&gt;
+                }
+              &lt;/div&gt;
+            &lt;/ion-card-content&gt;
+          &lt;/ion-card&gt;
+        &lt;/mat-expansion-panel&gt;
+      &lt;/ion-col&gt;
+    &lt;/ng-template&gt;
+
+    &lt;mat-accordion&gt;
+
+      @if(displayPastInterventions){
+      &lt;div class&#x3D;&quot;passedInterventions&quot;&gt; 
+        &lt;h2&gt;Interventions Passées&lt;/h2&gt;
+        &lt;div class&#x3D;&quot;filter-container&quot;&gt;
+            &lt;ion-label&gt;Type d&#x27;intervention&lt;/ion-label&gt;
+            &lt;ion-select [(ngModel)]&#x3D;&quot;selectedTypePast&quot; (ionChange)&#x3D;&quot;filterInterventions(FilterType.PAST)&quot;&gt;
+              &lt;ion-select-option value&#x3D;&quot;&quot;&gt;Tous&lt;/ion-select-option&gt;
+              &lt;ion-select-option value&#x3D;&quot;Maintenance&quot;&gt;Maintenance&lt;/ion-select-option&gt;
+              &lt;ion-select-option value&#x3D;&quot;Reparation&quot;&gt;Réparation&lt;/ion-select-option&gt;
+            &lt;/ion-select&gt;
+        &lt;/div&gt;
+        &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+       @if(pastInterventions?.length &gt; 0){  
+          &lt;ng-container *ngFor&#x3D;&quot;let intervention of pastInterventions; let i &#x3D; index&quot;&gt;
+            &lt;ng-container *ngTemplateOutlet&#x3D;&quot;interventionCard; context: { $implicit: intervention, status: &#x27;past&#x27; }&quot;&gt;&lt;/ng-container&gt;
+          &lt;/ng-container&gt;
+      }
+
+        &lt;/ion-row&gt;
+        &lt;/ion-grid&gt;
+      &lt;/div&gt;
+      }
+
+      @if(displayOngoingInterventions){
+      &lt;div class&#x3D;&quot;ongoingInterventions&quot;&gt;
+        &lt;h2&gt;Interventions en Cours&lt;/h2&gt;
+
+          &lt;div class&#x3D;&quot;filter-container&quot;&gt;
+            &lt;ion-item&gt;
+              &lt;ion-label&gt;Type d&#x27;intervention&lt;/ion-label&gt;
+              &lt;ion-select [(ngModel)]&#x3D;&quot;selectedTypeOngoing&quot; (ionChange)&#x3D;&quot;filterInterventions(FilterType.ONGOING)&quot;&gt;
+                &lt;ion-select-option value&#x3D;&quot;&quot;&gt;Tous&lt;/ion-select-option&gt;
+                &lt;ion-select-option value&#x3D;&quot;Maintenance&quot;&gt;Maintenance&lt;/ion-select-option&gt;
+                &lt;ion-select-option value&#x3D;&quot;Reparation&quot;&gt;Réparation&lt;/ion-select-option&gt;
+              &lt;/ion-select&gt;
+            &lt;/ion-item&gt;
+          &lt;/div&gt;
+        &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+          &lt;ng-container *ngFor&#x3D;&quot;let intervention of ongoingInterventions; let i &#x3D; index&quot;&gt;
+            &lt;ng-container *ngTemplateOutlet&#x3D;&quot;interventionCard; context: { $implicit: intervention, status: &#x27;ongoing&#x27; }&quot;&gt;&lt;/ng-container&gt;
+          &lt;/ng-container&gt;
+        &lt;/ion-row&gt;
+        &lt;/ion-grid&gt;
+      &lt;/div&gt;
+      }
+
+      @if(displayUpcomingInterventions){
+      &lt;div class&#x3D;&quot;upcomingInterventions&quot;&gt;
+        &lt;h2&gt;Interventions à Venir&lt;/h2&gt;
+        &lt;div class&#x3D;&quot;filter-container&quot;&gt;
+          &lt;ion-item&gt;
+            &lt;ion-label&gt;Type d&#x27;intervention&lt;/ion-label&gt;
+            &lt;ion-select [(ngModel)]&#x3D;&quot;selectedTypeUpcoming&quot; (ionChange)&#x3D;&quot;filterInterventions(FilterType.UPCOMING)&quot;&gt;
+              &lt;ion-select-option value&#x3D;&quot;&quot;&gt;Tous&lt;/ion-select-option&gt;
+              &lt;ion-select-option value&#x3D;&quot;Maintenance&quot;&gt;Maintenance&lt;/ion-select-option&gt;
+              &lt;ion-select-option value&#x3D;&quot;Reparation&quot;&gt;Réparation&lt;/ion-select-option&gt;
+              &lt;!-- Ajoutez d&#x27;autres types si nécessaire --&gt;
+            &lt;/ion-select&gt;
+          &lt;/ion-item&gt;
+        &lt;/div&gt;
+        &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;upcomingInterventions?.length &gt; 0&quot;&gt;
+            &lt;ng-container *ngFor&#x3D;&quot;let intervention of upcomingInterventions; let i &#x3D; index&quot;&gt;
+              &lt;ng-container *ngTemplateOutlet&#x3D;&quot;interventionCard; context: { $implicit: intervention, status: &#x27;upcoming&#x27; }&quot;&gt;&lt;/ng-container&gt;
+            &lt;/ng-container&gt;
+          &lt;/ng-container&gt;
+        &lt;/ion-row&gt;
+        &lt;/ion-grid&gt;
+      &lt;/div&gt;
+      }
+
+
+     
+     
+
+      @if(pastInterventions?.length &#x3D;&#x3D;&#x3D; 0 &amp;&amp; upcomingInterventions?.length &#x3D;&#x3D;&#x3D; 0 &amp;&amp; !isFilterApplied){
+        &lt;ion-grid class&#x3D;&quot;ion-justify-content-center ion-align-items-center no-interventions&quot;&gt;
+          &lt;ion-row class&#x3D;&quot;ion-justify-content-center&quot;&gt;
+            &lt;ion-col size&#x3D;&quot;12&quot; size-md&#x3D;&quot;12&quot; class&#x3D;&quot;ion-text-center&quot;&gt;
+              &lt;h1&gt;Vous n&#x27;avez aucune intervention&lt;/h1&gt;
+            &lt;/ion-col&gt;
+          &lt;/ion-row&gt;
+        &lt;/ion-grid&gt;
+      }
+
+    &lt;/mat-accordion&gt;
+  &lt;/div&gt;
+&lt;/ion-content&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./mesinterventions.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.no-interventions {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.interventions-container{
+  margin: 15px;
+}
+
+.passedInterventions, .ongoingInterventions, .upcomingInterventions {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.passedInterventions {
+  background-color: #f8d7da; 
+}
+
+.ongoingInterventions {
+  background-color: #fff3cd; 
+}
+
+.upcomingInterventions {
+  background-color: #d4edda; 
+}
+
+
+ion-button[color&#x3D;&quot;danger&quot;] {
+  --background: #f44336;
+  --background-activated: #d32f2f;
+  --background-focused: #e57373;
+  --background-hover: #ef5350;
+}
+
+ion-icon[name&#x3D;&quot;close-circle-outline&quot;] {
+  font-size: 24px;
+  margin-left: 10px;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: auto;
+}
+
+.intervention-details, .bicycle-details, .client-details {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.intervention-details h3, .bicycle-details h3, .client-details h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.intervention-details p, .bicycle-details p, .client-details p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.uploaded-photos {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.photo-container {
+  position: relative;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.uploaded-photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.delete-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 20px;
+  color: red;
+  cursor: pointer;
+}
+
+.uploadBtnContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.comments-section{
+  text-align: center;
+}
+
+.canceled-icon{
+  color:firebrick;
+}
+
+
+ion-icon[name&#x3D;&quot;calendar-outline&quot;]{
+  margin-right: 5px;
+}
+
+.filter-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.filter-container ion-select{
+ color:black;
+ margin-left: 10px;
+}
+
+.filter-container ion-label{
+  white-space: nowrap;
+  color:black;
+}
+
+ion-item {
+  --background: transparent;
+  --border-radius: 8px;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+ion-label {
+  font-weight: bold;
+  color: #333;
+}
+
+ion-select {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --border-radius: 8px;
+  --background: #fff;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-title,ion-card-subtitle{
+  color:black!important;
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header [translucent]="true">  <ion-toolbar>    <ion-title>Mes interventions</ion-title>  </ion-toolbar></ion-header><ion-content [fullscreen]="true">  <div class="interventions-container">    <ng-template #interventionCard let-intervention let-status="status">      <ion-col size="4">        <mat-expansion-panel>          <mat-expansion-panel-header>            <mat-panel-title>              <ion-icon name="hammer-outline"></ion-icon> {{ intervention.type }}             </mat-panel-title>            <mat-panel-description>              <ion-icon name="calendar-outline"></ion-icon> {{ intervention.appointment_start | date:\'d/M/yyyy\' }}               @if(intervention.status === \'canceled\'){                  <ion-icon name="close-circle-outline" slot="end" class="canceled-icon"></ion-icon>               }            </mat-panel-description>                      </mat-expansion-panel-header>          <ion-card color="primary">            <ion-card-header>              <ion-card-title>                <ion-icon name="calendar-outline"></ion-icon> {{ intervention.type }}              </ion-card-title>              <ion-card-subtitle>                {{ intervention.appointment_start | date:\'dd MMMM yyyy\' }}              </ion-card-subtitle>            </ion-card-header>            <ion-card-content>              <div class="intervention-details">                <h3>Date</h3>                <p><strong>Heure : </strong>{{ intervention.appointment_start | date:\'hh:mm\' }} - {{ intervention.appointment_end| date:\'hh:mm\' }}</p>                <p><strong>Création : </strong>{{ intervention.created_at | date:\'d/M/yyyy\' }}</p>              </div>              <div class="bicycle-details">                <h3>Vélo</h3>                <p>{{ intervention.bicycle.brand }} - {{ intervention.bicycle.model }}</p>                <p>{{ intervention.bicycle.type }}</p>              </div>              <div class="client-details">                <h3>Client</h3>                <p><strong>Nom : </strong>{{ intervention.client_info.last_name }}</p>                <p><strong>Prénom : </strong>{{ intervention.client_info.first_name }}</p>                <p><strong>Email : </strong>{{ intervention.client_info.email }}</p>                <p><strong>Téléphone : </strong>{{ intervention.client_info.phone }}</p>                @if(intervention.description?.length > 0){                  <p><strong>Commentaires : </strong>{{ intervention.description }}</p>                }                <p><strong>Adresse : </strong>{{ intervention.client_info.address }}</p>              </div>              @if(status === \'ongoing\'){              <div class="photo-upload">                <div class="uploadBtnContainer">                  <ion-button (click)="fileInput.click()">                    <ion-icon name="camera-outline"></ion-icon> Ajouter des photos                  </ion-button>                  <input type="file" #fileInput (change)="onFileSelected($event, intervention)" multiple accept="image/png, image/jpeg" style="display: none;">                </div>                <div class="uploaded-photos">                  <ng-container *ngFor="let photo of intervention.uploadedPhotos; let i = index">                    <div class="photo-container">                      <img [src]="photo" alt="Photo du travail réalisé" class="uploaded-photo" (click)="openImageModal(intervention.uploadedPhotos, i)">                      <ion-icon name="close-circle" class="delete-icon" (click)="removePhoto(intervention, i)"></ion-icon>                    </div>                  </ng-container>                </div>                <div class="comments-section">                  <ion-item>                    <ion-label position="stacked">Ajouter un commentaire</ion-label>                    <ion-textarea [(ngModel)]="newComment"></ion-textarea>                  </ion-item>                </div>              </div>              }              <div class="buttons-container">                <ion-button *ngIf="intervention.photos?.length > 0" (click)="openImageModal(intervention.photos, 0)">                  @if(intervention.photos?.length > 1){                  Les photos du modèle                } @else {                  La photo du modèle                  }                </ion-button>                <ion-button *ngIf="intervention.technician_photos?.length > 0" (click)="openImageModal(intervention.technician_photos, 0)">                  @if(intervention.technician_photos?.length > 1){                  Les photos de l\'intervention                } @else {                  La photo de l\'intervention                  }                </ion-button>                <!-- @if(status === \'ongoing\'){ -->                <ion-button color="success" (click)="markAsDone(intervention)">                  <ion-icon name="checkmark-circle-outline"></ion-icon> Marquer comme fait                </ion-button>                <!-- } -->                @if(status === \'upcoming\' || status === \'ongoing\'){                <ion-button color="danger" (click)="confirmCancel(intervention)">                  <ion-icon name="close-circle-outline"></ion-icon> Annuler                  </ion-button>                }              </div>            </ion-card-content>          </ion-card>        </mat-expansion-panel>      </ion-col>    </ng-template>    <mat-accordion>      @if(displayPastInterventions){      <div class="passedInterventions">         <h2>Interventions Passées</h2>        <div class="filter-container">            <ion-label>Type d\'intervention</ion-label>            <ion-select [(ngModel)]="selectedTypePast" (ionChange)="filterInterventions(FilterType.PAST)">              <ion-select-option value="">Tous</ion-select-option>              <ion-select-option value="Maintenance">Maintenance</ion-select-option>              <ion-select-option value="Reparation">Réparation</ion-select-option>            </ion-select>        </div>        <ion-grid>        <ion-row>       @if(pastInterventions?.length > 0){            <ng-container *ngFor="let intervention of pastInterventions; let i = index">            <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention, status: \'past\' }"></ng-container>          </ng-container>      }        </ion-row>        </ion-grid>      </div>      }      @if(displayOngoingInterventions){      <div class="ongoingInterventions">        <h2>Interventions en Cours</h2>          <div class="filter-container">            <ion-item>              <ion-label>Type d\'intervention</ion-label>              <ion-select [(ngModel)]="selectedTypeOngoing" (ionChange)="filterInterventions(FilterType.ONGOING)">                <ion-select-option value="">Tous</ion-select-option>                <ion-select-option value="Maintenance">Maintenance</ion-select-option>                <ion-select-option value="Reparation">Réparation</ion-select-option>              </ion-select>            </ion-item>          </div>        <ion-grid>        <ion-row>          <ng-container *ngFor="let intervention of ongoingInterventions; let i = index">            <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention, status: \'ongoing\' }"></ng-container>          </ng-container>        </ion-row>        </ion-grid>      </div>      }      @if(displayUpcomingInterventions){      <div class="upcomingInterventions">        <h2>Interventions à Venir</h2>        <div class="filter-container">          <ion-item>            <ion-label>Type d\'intervention</ion-label>            <ion-select [(ngModel)]="selectedTypeUpcoming" (ionChange)="filterInterventions(FilterType.UPCOMING)">              <ion-select-option value="">Tous</ion-select-option>              <ion-select-option value="Maintenance">Maintenance</ion-select-option>              <ion-select-option value="Reparation">Réparation</ion-select-option>              <!-- Ajoutez d\'autres types si nécessaire -->            </ion-select>          </ion-item>        </div>        <ion-grid>        <ion-row>          <ng-container *ngIf="upcomingInterventions?.length > 0">            <ng-container *ngFor="let intervention of upcomingInterventions; let i = index">              <ng-container *ngTemplateOutlet="interventionCard; context: { $implicit: intervention, status: \'upcoming\' }"></ng-container>            </ng-container>          </ng-container>        </ion-row>        </ion-grid>      </div>      }                @if(pastInterventions?.length === 0 && upcomingInterventions?.length === 0 && !isFilterApplied){        <ion-grid class="ion-justify-content-center ion-align-items-center no-interventions">          <ion-row class="ion-justify-content-center">            <ion-col size="12" size-md="12" class="ion-text-center">              <h1>Vous n\'avez aucune intervention</h1>            </ion-col>          </ion-row>        </ion-grid>      }    </mat-accordion>  </div></ion-content></div>'
+    var COMPONENTS = [{'name': 'ActionsPage', 'selector': 'app-actions'},{'name': 'AddressAutocompleteComponent', 'selector': 'app-address-autocomplete'},{'name': 'AddressPage', 'selector': 'app-address'},{'name': 'AdminsListPage', 'selector': 'app-admins-list'},{'name': 'AdminsPage', 'selector': 'app-admins'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BikePage', 'selector': 'app-bike'},{'name': 'BikesListPage', 'selector': 'app-bikes-list'},{'name': 'CompanyListPage', 'selector': 'app-company-list'},{'name': 'CompanyPage', 'selector': 'app-company'},{'name': 'ImageModalComponent', 'selector': 'app-image-modal'},{'name': 'InterventionsPage', 'selector': 'app-interventions'},{'name': 'LeafletListPage', 'selector': 'app-leaflet-list'},{'name': 'LeafletPage', 'selector': 'app-leaflet'},{'name': 'LoaderComponent', 'selector': 'app-loader'},{'name': 'LoginAdminPage', 'selector': 'app-login-admin'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'MesinterventionsPage', 'selector': 'app-mesinterventions'},{'name': 'MessageComponent', 'selector': 'app-message'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PlanningModelsListPage', 'selector': 'app-planning-models-list'},{'name': 'PlanningModelsPage', 'selector': 'app-planning-models'},{'name': 'ResetPage', 'selector': 'app-reset'},{'name': 'ResetPasswordPage', 'selector': 'app-reset-password'},{'name': 'TechnicianListPage', 'selector': 'app-technician-list'},{'name': 'TechnicianModalComponent', 'selector': 'app-technician-modal'},{'name': 'TechnicianPage', 'selector': 'app-technician'},{'name': 'UsersListPage', 'selector': 'app-users-list'},{'name': 'UsersPage', 'selector': 'app-users'},{'name': 'ZoneModalComponent', 'selector': 'app-zone-modal'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'MesinterventionsPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'MesinterventionsPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
