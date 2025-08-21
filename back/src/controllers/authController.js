@@ -149,8 +149,10 @@ const oauth = async (req, res) => {
 
 const passwordForgot = async (req, res) => {
   const { email,domain } = req.body;
+  console.log("aper1")
   const checkUserQuery = 'SELECT email,password FROM client WHERE email = $1';
   const user = await pool.query(checkUserQuery, [email]);
+  console.log("useruseruser",user?.rows)
   if (user.rows.length > 0) {
     const currentUser = user.rows[0];
     const token = crypto.randomBytes(20).toString('hex');
@@ -160,19 +162,27 @@ const passwordForgot = async (req, res) => {
     await pool.query(`UPDATE client SET password_reset_token = $1,password_reset_token_expires = $2 WHERE email = $3 `, [token,date,currentUser.email]);
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.ionos.fr', 
+      port: 587,
+      secure: false, 
       auth: {
-        user: 'kubatarsen@gmail.com',
-        pass: 'qhoe nawk aecu dody',
+        user: 'arsen.kubatyan@lecyclelyonnais.fr',
+        pass: 'axperakan96&'
       },
     });
-    const currentdomain = domain && domain !== "localhost" ? `${domain}.localhost` : 'localhost'
+
+    const currentdomain = domain && domain !== "localhost" 
+    ? `https://${domain}.lecyclelyonnais.fr` 
+    : 'https://www.lecyclelyonnais.fr';
+
+    console.log("currentdomain",currentdomain);
     const mailOptions = {
-      from: 'kubatarsen@gmail.com',
+      from: 'arsen.kubatyan@lecyclelyonnais.fr',
       to: email,
       subject: 'Réinitialisation du mot de passe',
-      text: `Cliquer sur le lien pour réinitialiser votre mot de passe: http://${currentdomain}:8100/reset-password/${token}`,
+      text: `Cliquer sur le lien pour réinitialiser votre mot de passe: ${currentdomain}/reset-password/${token}`,
     };
+    
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log(error);

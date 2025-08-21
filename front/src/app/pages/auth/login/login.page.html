@@ -2,7 +2,7 @@
   <!-- Hero Section-->
 
   @if(!isStepper){
-  <section class="hero py-6">
+  <section class="hero" [ngClass]="{'py-4': globalService.isTablet, 'py-2': globalService.isMobile, 'py-5': globalService.isDesktop}">
     <div class="container">
       <!-- Hero Content-->
       <div class="hero-content">

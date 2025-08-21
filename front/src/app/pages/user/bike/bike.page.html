@@ -8,12 +8,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ bikeSelected ? 'Modifier mon vélo' : 'Ajouter un Bike' }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
   <div class="centered-form">
     <form [formGroup]="bikeForm" (ngSubmit)="onSubmit()">
       <ion-item>

@@ -7,6 +7,13 @@
   width: 100%;
 }
 
+:host ::ng-deep.mat-horizontal-stepper-header-container {
+  :host-context(.is-mobile) & {
+    display: none!important;
+  }
+}
+
+
 .form-content {
   display: flex;
   flex-direction: column;
