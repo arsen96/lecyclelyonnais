@@ -1,7 +1,7 @@
 <ion-app>
   <app-loader></app-loader>
   <ion-split-pane contentId="main-content" when="xs" content-id="main">
-    <ion-menu contentId="main-content" type="overlay">
+    <ion-menu contentId="main-content" type="overlay" [hidden]="globalService.isMobile && globalService.isPortrait">
       <ion-content>
         <ion-list id="inbox-list">
           <ion-list-header class="ion-margin-bottom">

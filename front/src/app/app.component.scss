@@ -9,6 +9,10 @@ ion-menu.md ion-content {
   --padding-bottom: 20px;
 }
 
+[hidden]{
+  display: none!important;
+}
+
 ion-menu.md ion-list {
   padding: 20px 0;
 }
