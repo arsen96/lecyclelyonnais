@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 
-describe('🔧 InterventionController - Tests Unitaires', () => {
+describe(' InterventionController - Tests Unitaires', () => {
   let req, res, poolMock, multerMock, sentryMock, interventionController;
 
   beforeEach(() => {
@@ -73,7 +73,6 @@ describe('🔧 InterventionController - Tests Unitaires', () => {
   // TEST manageEnd - CAS D'ÉCHEC
   // ================================================================
   describe('manageEnd() - Échecs', () => {
-
 
     it('should handle database error during intervention update', async () => {
       // ARRANGE

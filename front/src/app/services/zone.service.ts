@@ -28,7 +28,11 @@ export class ZoneService extends BaseService{
 
 
   override delete(ids: number[]): Observable<void> {
-    return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/delete`, { ids }).pipe(
+    return this.http.delete(`${BaseService.baseApi}/${this.currentRoute}/delete`, {
+      body: {
+        ids: ids
+      }
+    }).pipe(
       catchError(BaseService.handleError.bind(this))
     );
   }
@@ -73,7 +77,12 @@ export class ZoneService extends BaseService{
    * @param technicianId - ID du technicien à retirer
    */
   removeTechnicianFromZone(zoneId:number, technicianId:number): Observable<void> {
-    return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/removeTechnicianFromZone`, { zoneId, technicianId }).pipe(
+    return this.http.delete(`${BaseService.baseApi}/${this.currentRoute}/removeTechnicianFromZone`, {
+      body: {
+        zoneId: zoneId,
+        technicianId: technicianId
+      }
+    }).pipe(
       catchError(BaseService.handleError.bind(this))
     );
   }

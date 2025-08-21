@@ -65,7 +65,11 @@ export class BicycleService extends BaseService{
   }
 
   override delete(ids: number[]) {
-    return this.http.post<any>(`${BaseService.baseApi}/bicycles/deleteBicycles`, { ids }).pipe(
+    return this.http.delete<any>(`${BaseService.baseApi}/bicycles/deleteBicycles`, {
+      body: {
+        ids: ids
+      }
+    }).pipe(
       catchError((err) => BaseService.handleError(err))
     );  
   }

@@ -53,7 +53,11 @@ export class AdminService extends BaseService {
   }
 
   override delete(adminsIds: number[]):Observable<void>{
-    return this.http.post(`${BaseService.baseApi}/${this.currentUrl}/delete`, { ids: adminsIds }).pipe(map((res: any) => {
+    return this.http.delete(`${BaseService.baseApi}/${this.currentUrl}/delete`, {
+      body: {
+        ids: adminsIds
+      }
+    }).pipe(map((res: any) => {
       this.allAdmins.forEach(admin => {
         if(adminsIds.includes(admin.id)){  
           // admin.geographical_zone_id = null;

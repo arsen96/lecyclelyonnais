@@ -2,6 +2,7 @@ require('./config/sentry');
 const express = require('express');
 const path = require('path');
 const app = express();
+app.set('trust proxy', 1);
 const { sentryUserContextMiddleware } = require('./config/sentry'); // Enlever Sentry d'ici
 const routes = require('./routes/index');
 const routesAuth = require('./routes/authRoute');
@@ -18,10 +19,8 @@ const swaggerUi = require('swagger-ui-express');
 require('dotenv').config()
 const cors = require('cors'); 
 const { authLimiter, generalLimiter, helmetConfig } = require('./middlewares/security');
-
 app.use(helmetConfig);
 app.use(cors());
-
 // Middleware for JSON requests
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -36,6 +35,28 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(generalLimiter);
 
+// const options = {
+//   definition: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'HomeCycl\'Home API',
+//       version: '1.0.0',
+//       description: 'API de gestion des interventions vélo multi-tenant',
+//     },
+//     servers: [
+//       {
+//         url: 'https://www.lecyclelyonnais.fr',
+//         description: 'Production server',
+//       },
+//       {
+//         url: 'http://localhost:3000',
+//         description: 'Development server',
+//       },
+//     ],
+//   },
+//   apis: ['./src/routes/*.js'], 
+// };
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -46,7 +67,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://www.lecyclelyonnais.fr/api',
+        url: 'https://www.lecyclelyonnais.fr',
         description: 'Production server',
       },
       {
@@ -54,6 +75,16 @@ const options = {
         description: 'Development server',
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"'
+        }
+      }
+    }
   },
   apis: ['./src/routes/*.js'], 
 };
@@ -61,17 +92,30 @@ const options = {
 const specs = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-// Import and use routes
-app.use('/api', routes);
-app.use('/auth',authLimiter, routesAuth);
-app.use('/zones', routesZone);
-app.use('/technicians', routesTechnician);
-app.use('/bicycles', routesBicycle);
-app.use('/interventions', routesIntervention);
-app.use('/planning-models', routesPlanning);
-app.use('/clients', routesClient);
-app.use('/admins', routesAdmin);
-app.use('/companies', routesCompany);
+app.get('/api/', (req, res) => {
+  res.json({ 
+    message: 'HomeCycl\'Home API is running',
+    version: '1.0.0',
+    endpoints: {
+      documentation: '/api-docs',
+      auth: '/auth/*',
+      zones: '/zones/*',
+      technicians: '/technicians/*'
+    }
+  });
+});
+
+
+// app.use('/api', routes);
+app.use('/api/auth',authLimiter, routesAuth);
+app.use('/api/zones', routesZone);
+app.use('/api/technicians', routesTechnician);
+app.use('/api/bicycles', routesBicycle);
+app.use('/api/interventions', routesIntervention);
+app.use('/api/planning-models', routesPlanning);
+app.use('/api/clients', routesClient);
+app.use('/api/admins', routesAdmin);
+app.use('/api/companies', routesCompany);
 
 app.use((error, req, res, next) => {
   // Les erreurs sont déjà capturées par captureBusinessError

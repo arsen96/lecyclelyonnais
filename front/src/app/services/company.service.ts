@@ -324,7 +324,11 @@ export class CompanyService extends BaseService {
   }
 
   override delete(companyIds: number[]): Observable<void> {
-    return this.http.post(`${BaseService.baseApi}/${this.currentRoute}/delete`, { ids: companyIds }).pipe(
+    return this.http.delete(`${BaseService.baseApi}/${this.currentRoute}/delete`, {
+      body: {
+        ids: companyIds
+      }
+    }).pipe(
       map((res: any) => {
         this.companies = this.companies.filter(company => !companyIds.includes(company.id));
         return res;

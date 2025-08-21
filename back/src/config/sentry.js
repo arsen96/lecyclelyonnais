@@ -19,21 +19,7 @@ function getEndpointType(url) {
 // Configuration principale Sentry - VERSION SIMPLIFIÉE
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  // environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'development',
-  // release: process.env.SENTRY_RELEASE || 'homecyclhome@1.0.0',
   sendDefaultPii: true,
-  // Échantillonnage des performances
-  // tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-
-  // // Tags initiaux pour le projet
-  // initialScope: {
-  //   tags: {
-  //     component: 'homecyclhome-api',
-  //     version: process.env.npm_package_version || '1.0.0',
-  //     architecture: 'node-express-multicouche'
-  //   }
-  // },
-
 
   // Configuration des breadcrumbs
   beforeBreadcrumb(breadcrumb) {
