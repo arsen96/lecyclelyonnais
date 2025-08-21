@@ -9,6 +9,19 @@
   ],
   "include": [
     "src/**/*.d.ts",
-    "src/**/*.component.ts"
+    "src/**/*.component.ts",
+    "src/**/*.page.ts",          
+    "src/**/*.service.ts",       
+    "src/**/*.guard.ts",         
+    "src/**/*.pipe.ts",          
+    "src/**/*.directive.ts",     
+    "src/**/*.module.ts"         
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",          
+    "src/**/*.test.ts",          
+    "node_modules",
+    "dist",
+    "tmp"
   ]
 }
