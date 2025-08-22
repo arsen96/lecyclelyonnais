@@ -118,7 +118,7 @@ describe('BicycleService', () => {
       service.delete(idsToDelete).subscribe(() => done());
 
       const req = httpMock.expectOne(`${BaseService.baseApi}/bicycles/deleteBicycles`);
-      expect(req.request.method).toBe('POST');
+      expect(req.request.method).toBe('DELETE');
       expect(req.request.body).toEqual({ ids: idsToDelete });
       req.flush({});
     });
