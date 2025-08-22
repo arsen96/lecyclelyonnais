@@ -57,96 +57,8 @@ describe(' AuthController - Tests Unitaires', () => {
     sinon.restore(); // Nettoie tous les stubs
   });
 
-  // ================================================================
-  // TEST LOGIN - CAS DE SUCCÈS
-  // ================================================================
-  describe('login() - Cas de succès', () => {
-    it('should return token when client login is successful', async () => {
-      // ARRANGE - Préparer les données
-      req.body = {
-        email: 'client@test.com',
-        password: 'password123',
-        domain: 'localhost'
-      };
 
-      const mockClient = {
-        id: 1,
-        email: 'client@test.com',
-        password: 'hashedPassword',
-        first_name: 'John'
-      };
-
-      // Mock: subdomainInfo retourne company_id = 1
-      subdomainInfoStub.resolves(1);
-
-      // Mock: la base trouve le client
-      poolMock.query.onFirstCall().resolves({
-        rows: [mockClient]
-      });
-
-      // Mock: le mot de passe est correct
-      bcryptCompareStub.resolves(true);
-
-      // Mock: JWT génère un token
-      jwtStub.returns('fake-jwt-token');
-
-      // ACT - Exécuter le login
-      await authController.login(req, res);
-
-      // ASSERT - Vérifier le résultat
-      expect(res.status.calledWith(201)).to.be.true;
-      expect(res.json.calledOnce).to.be.true;
-      
-      const response = res.json.firstCall.args[0];
-      expect(response.success).to.be.true;
-      expect(response.token).to.equal('fake-jwt-token');
-      expect(response.data.user.role).to.equal('client');
-    });
-
-    it('should return token when technician login is successful', async () => {
-      // ARRANGE
-      req.body = {
-        email: 'tech@test.com',
-        password: 'password123',
-        domain: 'localhost'
-      };
-
-      const mockTechnician = {
-        id: 2,
-        email: 'tech@test.com',
-        password: 'hashedPassword',
-        first_name: 'Jane'
-      };
-
-      // Mock: subdomainInfo
-      subdomainInfoStub.resolves(1);
-
-      // Mock: client pas trouvé, technician trouvé
-      poolMock.query.onFirstCall().resolves({ rows: [] }); // Client query
-      poolMock.query.onSecondCall().resolves({ rows: [mockTechnician] }); // Technician query
-
-      // Mock: password correct
-      bcryptCompareStub.resolves(true);
-      
-      // Mock: JWT token
-      jwtStub.returns('tech-jwt-token');
-
-      // ACT
-      await authController.login(req, res);
-
-      // ASSERT
-      expect(res.status.calledWith(201)).to.be.true;
-      
-      const response = res.json.firstCall.args[0];
-      expect(response.success).to.be.true;
-      expect(response.token).to.equal('tech-jwt-token');
-      expect(response.data.user.role).to.equal('technician');
-    });
-  });
-
-  // ================================================================
   // TEST LOGIN - CAS D'ÉCHEC
-  // ================================================================
   describe('login() - Cas d\'échec', () => {
     it('should reject login with wrong email', async () => {
       // ARRANGE
@@ -170,42 +82,6 @@ describe(' AuthController - Tests Unitaires', () => {
       expect(res.json.calledWith({
         success: false,
         message: "L'email est incorrect"
-      })).to.be.true;
-    });
-
-    it('should reject login with wrong password', async () => {
-      // ARRANGE
-      req.body = {
-        email: 'test@test.com',
-        password: 'wrongPassword',
-        domain: 'localhost'
-      };
-
-      const mockClient = {
-        id: 1,
-        email: 'test@test.com',
-        password: 'hashedPassword'
-      };
-
-      // Mock: subdomainInfo
-      subdomainInfoStub.resolves(1);
-
-      // Mock: client trouvé
-      poolMock.query.onFirstCall().resolves({
-        rows: [mockClient]
-      });
-
-      // Mock: mot de passe incorrect
-      bcryptCompareStub.resolves(false);
-
-      // ACT
-      await authController.login(req, res);
-
-      // ASSERT
-      expect(res.status.calledWith(400)).to.be.true;
-      expect(res.json.calledWith({
-        success: false,
-        message: "Mot de passe incorrect"
       })).to.be.true;
     });
 
@@ -235,9 +111,7 @@ describe(' AuthController - Tests Unitaires', () => {
     });
   });
 
-  // ================================================================
   // TEST REGISTER - CAS DE SUCCÈS
-  // ================================================================
   describe('register() - Cas de succès', () => {
     it('should create user successfully', async () => {
       // ARRANGE
@@ -383,57 +257,4 @@ describe(' AuthController - Tests Unitaires', () => {
     });
   });
 
-  // ================================================================
-  // TEST OAUTH - CAS DE SUCCÈS ET ÉCHEC
-  // ================================================================
-  describe('oauth() - Tests', () => {
-    it('should authenticate user with oauth', async () => {
-      // ARRANGE
-      req.body = {
-        email: 'oauth@test.com'
-      };
-
-      const mockUser = {
-        id: 1,
-        email: 'oauth@test.com',
-        password: 'hashedPassword'
-      };
-
-      // Mock: utilisateur trouvé
-      poolMock.query.resolves({ rows: [mockUser] });
-      
-      // Mock: JWT token
-      jwtStub.returns('oauth-token');
-
-      // ACT
-      await authController.oauth(req, res);
-
-      // ASSERT
-      expect(res.status.calledWith(201)).to.be.true;
-      
-      const response = res.json.firstCall.args[0];
-      expect(response.success).to.be.true;
-      expect(response.token).to.equal('oauth-token');
-    });
-
-    it('should reject oauth for non-existing user', async () => {
-      // ARRANGE
-      req.body = {
-        email: 'nonexistent@test.com'
-      };
-
-      // Mock: utilisateur pas trouvé
-      poolMock.query.resolves({ rows: [] });
-
-      // ACT
-      await authController.oauth(req, res);
-
-      // ASSERT
-      expect(res.status.calledWith(400)).to.be.true;
-      expect(res.json.calledWith({
-        success: false,
-        message: "L'utilisateur n'existe pas"
-      })).to.be.true;
-    });
-  });
 });

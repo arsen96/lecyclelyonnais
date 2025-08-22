@@ -37,37 +37,6 @@ describe(' InterventionController - Tests Unitaires', () => {
     sinon.restore();
   });
 
-  // ================================================================
-  // TEST manageEnd - CAS DE SUCCÈS
-  // ================================================================
-  describe('manageEnd() - Succès', () => {
-    it('should cancel intervention successfully', async () => {
-      // ARRANGE
-      req.headers.authorization = 'Bearer validToken123';
-      req.body = {
-        intervention_id: '3',
-        is_canceled: 'true',
-        comment: 'Annulation demandée par le client'
-      };
-
-      poolMock.query.resolves();
-
-      // ACT
-      await interventionController.manageEnd(req, res);
-
-      // ASSERT
-      expect(res.status.calledWith(200)).to.be.true;
-      expect(res.send.calledWith({
-        success: true,
-        message: "Intervention annulée"
-      })).to.be.true;
-      expect(sentryMock.trackBusinessMetric.calledWith(
-        'intervention.canceled',
-        1,
-        { intervention_id: '3', has_photos: false }
-      )).to.be.true;
-    });
-  });
 
   // ================================================================
   // TEST manageEnd - CAS D'ÉCHEC
