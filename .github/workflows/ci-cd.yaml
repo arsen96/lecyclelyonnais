@@ -20,7 +20,7 @@ permissions:
   security-events: write
 
 jobs:
-  # JOB 1: Build des images Docker
+  # JOB 1: Build des images Docker (SANS PUSH)
   build-docker:
     name: Build Images Docker
     runs-on: ubuntu-latest
@@ -37,33 +37,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
-      - name: Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      # BACKEND
-      - name: Build et Push Backend
+      # BACKEND - BUILD SEULEMENT
+      - name: Build Backend
         uses: docker/build-push-action@v5
         with:
           context: ./back
-          push: true
-          tags: |
-             ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-             ${{ github.ref == 'refs/heads/main' && format('{0}/lecycle-backend:latest', secrets.DOCKER_USERNAME) || '' }}
+          push: false
+          tags: lecycle-backend:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # FRONTEND
-      - name: Build et Push Frontend
+      # FRONTEND - BUILD SEULEMENT  
+      - name: Build Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./front
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
+          push: false
+          tags: lecycle-frontend:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -235,12 +225,60 @@ jobs:
         working-directory: ./front
         continue-on-error: false
 
-  # JOB 6: Analyse de sécurité
+  # JOB 6: Push des images Docker (APRÈS tests validés)
+  push-docker:
+    name: Push Images Docker  
+    runs-on: ubuntu-latest
+    needs: [test-api, test-unit-backend, test-frontend, test-e2e]
+    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      # BACKEND - BUILD ET PUSH
+      - name: Build et Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back
+          push: true
+          tags: |
+             ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+             ${{ github.ref == 'refs/heads/main' && format('{0}/lecycle-backend:latest', secrets.DOCKER_USERNAME) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # FRONTEND - BUILD ET PUSH
+      - name: Build et Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # JOB 7: Analyse de sécurité
   security-scan:
     name: Analyse de sécurité
     runs-on: ubuntu-latest
-    needs: [test-api, test-unit-backend, test-frontend, test-e2e]
-    if: always() && (needs.test-api.result == 'success' || needs.test-unit-backend.result == 'success' || needs.test-frontend.result == 'success' || needs.test-e2e.result == 'success')
+    needs: push-docker
+    if: needs.push-docker.result == 'success'
     
     steps:
       - name: Récupérer le code
