@@ -21,6 +21,7 @@
   class="suggestions-list"
   role="listbox"
   id="suggestions-listbox"
+  [ngClass]="{'isLogin': router.url === '/login'}"
   [attr.aria-label]="'Suggestions d\'adresses'">
   <ion-item 
     *ngFor="let suggestion of suggestions; let i = index" 

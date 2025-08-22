@@ -5,7 +5,7 @@ import { distinctUntilChanged, switchMap, debounceTime, catchError } from 'rxjs/
 import { Subject, Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-
+import { Router } from '@angular/router';
 export interface AddressSuggestion {
   label: string;
   coordinates: [number, number];
@@ -47,7 +47,8 @@ export class AddressAutocompleteComponent {
   private onChange = (value: string) => {};
   private onTouched = () => {};
 
-  constructor(private http: HttpClient) {
+
+  constructor(private http: HttpClient,public router: Router) {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
