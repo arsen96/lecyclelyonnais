@@ -120,7 +120,7 @@ describe('AdminService', () => {
       service.delete(idsToDelete).subscribe(() => done());
 
       const req = httpMock.expectOne(`${BaseService.baseApi}/admins/delete`);
-      expect(req.request.method).toBe('POST');
+      expect(req.request.method).toBe('DELETE');
       expect(req.request.body).toEqual({ ids: idsToDelete });
       req.flush({});
     });
