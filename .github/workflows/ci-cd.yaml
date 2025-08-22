@@ -316,12 +316,14 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-backend-results.sarif
+          category: trivy-backend
         continue-on-error: true
       
       - name: Upload résultats Frontend
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-frontend-results.sarif
+          category: trivy-frontend
         continue-on-error: true
 
   # JOB 7: Déploiement Production
