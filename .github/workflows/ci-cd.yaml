@@ -111,7 +111,7 @@ jobs:
         run: npm run test:unit
         continue-on-error: false
 
-  # JOB 3: Build et Tests Frontend
+  # JOB 3: Build et Tests Frontend 
   test-frontend:
     name:  Frontend Tests
     runs-on: ubuntu-latest
