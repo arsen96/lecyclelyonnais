@@ -121,7 +121,7 @@ import {
       selectRepair();
     });
   
-    it.only('étape 4 - formulaire maintenance', () => {
+    it('étape 4 - formulaire maintenance', () => {
       fillAddressAndBike();
       selectMaintenance();
         
