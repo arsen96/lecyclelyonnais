@@ -43,20 +43,34 @@ import {
       const address = '20 Rue du Pasteur Alphonse Cadier, 64000 Pau, France';
       verifyCurrentStep(0);
       cy.contains('Votre adresse').should('be.visible');
-  
+
       cy.get('.address_write').first().type(address);
-      cy.window().then((win: any) => {
-        const mockPlace = {
-          label: address,
-        };
-        
-        const component = win.ng.getComponent(win.document.querySelector('app-actions'));
-        component.handleAddressChange(mockPlace);
-        component.cd.detectChanges();
-        cy.get('.adresse-btn').click();
+      
+      cy.get('.suggestions-list', { timeout: 5000 }).should('be.visible');
+      
+      cy.get('.suggestion-item').first().click();
+      
+      cy.get('.adresse-btn').click();
+      
+      cy.contains('Détails du cycle', { timeout: 10000 }).should('be.visible');
+      verifyCurrentStep(1);
+      // const address = '20 Rue du Pasteur Alphonse Cadier, 64000 Pau, France';
+      // verifyCurrentStep(0);
+      // cy.contains('Votre adresse').should('be.visible');
   
-        cy.wait('@validateAddress'); 
-        verifyCurrentStep(1);
+      // cy.get('.address_write').first().type(address);
+      // cy.window().then((win: any) => {
+      //   const mockPlace = {
+      //     label: address,
+      //   };
+        
+      //   const component = win.ng.getComponent(win.document.querySelector('app-actions'));
+      //   component.handleAddressChange(mockPlace);
+      //   component.cd.detectChanges();
+      //   cy.get('.adresse-btn').click();
+  
+      //   cy.wait('@validateAddress'); 
+      //   verifyCurrentStep(1);
       });
     });
 
@@ -109,29 +123,45 @@ import {
     });
   
     it('étape 4 - formulaire maintenance', () => {
+      // fillAddressAndBike();
+      // selectMaintenance();
+        
+      //   cy.get('mat-select[formControlName="package"]').click();
+      //   cy.get('mat-option[value="basic"]').click();
+    
+      //   cy.window().then((win: any) => {
+      //     const component = win.ng.getComponent(win.document.querySelector('app-actions'));
+      //     component.globalService.isAuthenticated = {
+      //       getValue: () => true
+      //     };
+          
+      //     // Forcer la selection de date et d'heure
+      //     component.maintenanceFormGroup.patchValue({
+      //       scheduleDate: '2024-12-25',
+      //       scheduleTime: '09:00 - 11:00'
+      //     });
+      //   });
+    
+      //   cy.get('.maintenance-btn').click();
+      //   cy.wait('@createIntervention');
+      //   verifyConfirmationStep();
+
       fillAddressAndBike();
       selectMaintenance();
         
-        cy.get('mat-select[formControlName="package"]').click();
-        cy.get('mat-option[value="basic"]').click();
-    
-        cy.window().then((win: any) => {
-          const component = win.ng.getComponent(win.document.querySelector('app-actions'));
-          component.globalService.isAuthenticated = {
-            getValue: () => true
-          };
-          
-          // Forcer la selection de date et d'heure
-          component.maintenanceFormGroup.patchValue({
-            scheduleDate: '2024-12-25',
-            scheduleTime: '09:00 - 11:00'
-          });
-        });
-    
-        cy.get('.maintenance-btn').click();
-        cy.wait('@createIntervention');
-        verifyConfirmationStep();
-      })
+      cy.get('mat-select[formControlName="package"]').click();
+      cy.get('mat-option[value="basic"]').click();
+
+      cy.get('[data-cy="schedule-date"]').click(); 
+      cy.get('.calendar-day[data-date="2024-12-25"]').click(); 
+      
+      cy.get('[data-cy="schedule-time"]').click();
+      cy.contains('09:00 - 11:00').click();
+
+      cy.get('.maintenance-btn').click();
+      cy.wait('@createIntervention');
+      verifyConfirmationStep();
+    })
   
     it('étape 4b - formulaire réparation', () => {
         goToOperationChoice();
@@ -156,5 +186,3 @@ import {
         cy.wait('@createIntervention');
         verifyConfirmationStep();
     });
-  
-  });
