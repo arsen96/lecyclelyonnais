@@ -72,7 +72,6 @@ import {
       //   cy.wait('@validateAddress'); 
       //   verifyCurrentStep(1);
       });
-    });
 
     it('étape 1 - adresse avec erreur', () => {
       const address = 'Rue inexistante';
@@ -186,3 +185,4 @@ import {
         cy.wait('@createIntervention');
         verifyConfirmationStep();
     });
+  });
