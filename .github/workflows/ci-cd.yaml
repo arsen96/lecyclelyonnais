@@ -334,10 +334,6 @@ jobs:
     if: github.ref == 'refs/heads/main' && needs.security-scan.result == 'success'
     
     steps:
-      - name: Sauvegarde de la base de données
-        run: |
-          cd ~/projet/lecyclelyonnais
-          ./back/scripts/backup.sh
       - name: Déployer sur le serveur
         uses: appleboy/ssh-action@v1.0.0
         with:
