@@ -70,7 +70,7 @@ interface LoginUser {
     cy.get('.emailRegister').type(user.email);
     cy.get('.passwordRegister').type(user.password);
     cy.get('.phoneRegister').type(user.phone);
-    cy.get('.addressRegister').type(user.address);
+    cy.get('.address_write').first().type(user.address);
   };
   
   // Envoyer formulaire connexion

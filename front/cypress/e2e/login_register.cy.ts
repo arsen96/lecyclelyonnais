@@ -121,7 +121,6 @@ describe('Test Login Page', () => {
         }
       }
     }, 'successRegister');
-
     fillRegisterForm(testUsers.newUser);
     submitRegisterForm();
     
