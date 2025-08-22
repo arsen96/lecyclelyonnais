@@ -22,9 +22,7 @@ permissions:
   security-events: write
 
 jobs:
-  # ==================================
   # JOB 1: Tests API Backend
-  # ==================================
   test-api:
     name:  Tests API Backend
     runs-on: ubuntu-latest
@@ -64,7 +62,7 @@ jobs:
           
       - name: Test - Authentification
         run: npm run test:api:auth
-        continue-on-error: true
+        continue-on-error: false
         
       - name: Test - Techniciens
         run: npm run test:api:technicians
@@ -86,9 +84,7 @@ jobs:
         run: npm run test:api:intervention
         continue-on-error: false
 
-  # ===================================  
   # JOB 2: Tests unitaires Backend
-  # ===================================
   test-unit-backend:
     name:  Tests Unitaires Backend
     runs-on: ubuntu-latest
@@ -115,9 +111,7 @@ jobs:
         run: npm run test:unit
         continue-on-error: false
 
-  # ===================================
   # JOB 3: Build et Tests Frontend
-  # ===================================
   test-frontend:
     name:  Frontend Tests
     runs-on: ubuntu-latest
@@ -144,9 +138,8 @@ jobs:
         run: npm run test:ci
         continue-on-error: false
 
-  # ===================================
+  
   # JOB 4: Tests E2E Cypress
-  # ===================================
   test-e2e:
     name: Tests E2E Cypress
     runs-on: ubuntu-latest
@@ -220,7 +213,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
-      # ====== BACKEND ======
+      # BACKEND
       - name: Build et Push Backend
         uses: docker/build-push-action@v5
         with:
