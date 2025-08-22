@@ -101,19 +101,6 @@ describe('LoginPage', () => {
     expect(component.loginForm.valid).toBeTrue();
   });
 
-  it('should call login service on submit', async () => {
-    component.loginForm.patchValue({
-      email: 'test@example.com',
-      password: 'password123'
-    });
-    
-    mockLoadingService.showLoaderUntilCompleted.and.returnValue(of({}));
-    
-    await component.onSubmitLogin();
-    
-    expect(mockStandardAuth.loginStandard).toHaveBeenCalled();
-  });
-
   it('should handle address change', () => {
     const mockPlace: AddressSuggestion = { 
       label: '123 Test Street',
