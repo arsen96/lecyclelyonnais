@@ -37,22 +37,34 @@ export const testData = {
   };
   
   
+  // export const fillAddressStep = () => {
+  //   // cy.get('.adresse-input').clear().type(testData.validAddress);
+  //   cy.get('.address_write').first().type(testData.validAddress);
+  
+  //   cy.window().then((win: any) => {
+  //     const mockPlace = {
+  //       label: testData.validAddress,
+  //     };
+  
+  //     const component = win.ng.getComponent(win.document.querySelector('app-actions'));
+  //     component.handleAddressChange(mockPlace);
+  //     component.cd.detectChanges();
+  //   });
+  
+  //   cy.get('.adresse-btn').click();
+  //   cy.wait('@validateAddress');
+  // };
+
   export const fillAddressStep = () => {
-    // cy.get('.adresse-input').clear().type(testData.validAddress);
     cy.get('.address_write').first().type(testData.validAddress);
-  
-    cy.window().then((win: any) => {
-      const mockPlace = {
-        label: testData.validAddress,
-      };
-  
-      const component = win.ng.getComponent(win.document.querySelector('app-actions'));
-      component.handleAddressChange(mockPlace);
-      component.cd.detectChanges();
-    });
-  
+    
+    cy.get('.suggestions-list', { timeout: 5000 }).should('be.visible');
+    
+    cy.get('.suggestion-item').first().click();
+    
     cy.get('.adresse-btn').click();
     cy.wait('@validateAddress');
+    cy.contains('Détails du cycle', { timeout: 10000 }).should('be.visible');
   };
   
   export const fillBikeDetails = () => {
