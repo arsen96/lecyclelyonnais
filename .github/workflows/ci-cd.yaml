@@ -68,23 +68,23 @@ jobs:
         
       - name: Test - Techniciens
         run: npm run test:api:technicians
-        continue-on-error: true
+        continue-on-error: false
         
       - name: Test - Companies
         run: npm run test:api:company
-        continue-on-error: true
+        continue-on-error: false
         
       - name: Test - Bicycles
         run: npm run test:api:bicycle
-        continue-on-error: true
+        continue-on-error: false
         
       - name: Test - Zones
         run: npm run test:api:zones
-        continue-on-error: true
+        continue-on-error: false
         
       - name: Test - Interventions
         run: npm run test:api:intervention
-        continue-on-error: true
+        continue-on-error: false
 
   # ===================================  
   # JOB 2: Tests unitaires Backend
@@ -113,7 +113,7 @@ jobs:
         
       - name: Lancer les tests unitaires
         run: npm run test:unit
-        continue-on-error: true
+        continue-on-error: false
 
   # ===================================
   # JOB 3: Build et Tests Frontend
@@ -142,7 +142,7 @@ jobs:
         
       - name: Tests unitaires Frontend
         run: npm run test:ci
-        continue-on-error: true
+        continue-on-error: false
 
   # ===================================
   # JOB 4: Tests E2E Cypress
@@ -192,7 +192,7 @@ jobs:
       - name: Tests Cypress E2E
         run: npm run cypress:run
         working-directory: ./front
-        continue-on-error: true
+        continue-on-error: false
 
   # ===================================
   # JOB 5: Build sdes images Docker
