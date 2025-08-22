@@ -94,7 +94,7 @@ jobs:
         working-directory: ./back
     
     steps:
-      - name: Récupérer le code
+      - name: Récupérer le code 
         uses: actions/checkout@v4
         
       - name: Installer Node.js
