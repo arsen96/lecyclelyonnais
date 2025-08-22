@@ -136,7 +136,7 @@ jobs:
         
       - name: Tests unitaires Frontend
         run: npm run test:ci
-        continue-on-error: true
+        continue-on-error: false
 
   
   # JOB 4: Tests E2E Cypress
