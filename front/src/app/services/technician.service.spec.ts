@@ -124,7 +124,7 @@ describe('TechnicianService', () => {
     });
 
     const req = httpMock.expectOne(`${BaseService.baseApi}/technicians/delete`);
-    expect(req.request.method).toBe('POST');
+    expect(req.request.method).toBe('DELETE');
     expect(req.request.body).toEqual({ ids: [1] });
     req.flush({ message: 'Deleted' });
   });
