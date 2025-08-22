@@ -38,12 +38,12 @@ export const testData = {
   
   
   export const fillAddressStep = () => {
-    cy.get('.adresse-input').clear().type(testData.validAddress);
+    // cy.get('.adresse-input').clear().type(testData.validAddress);
+    cy.get('.address_write').first().type(testData.validAddress);
   
     cy.window().then((win: any) => {
       const mockPlace = {
-        geometry: { location: { lat: 43.3000, lng: -0.3700 } },
-        formatted_address: testData.validAddress
+        label: testData.validAddress,
       };
   
       const component = win.ng.getComponent(win.document.querySelector('app-actions'));

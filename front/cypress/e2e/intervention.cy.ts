@@ -44,37 +44,31 @@ import {
       verifyCurrentStep(0);
       cy.contains('Votre adresse').should('be.visible');
   
-      cy.get('.adresse-btn').click();
-      verifyFormError("L'adresse est requise");
-  
-      cy.get('.adresse-input').type(address);
-      cy.window().then((win:any) => {
+      cy.get('.address_write').first().type(address);
+      cy.window().then((win: any) => {
         const mockPlace = {
-          geometry: { location: { lat: 43.2951, lng: -0.3707 } },
-          formatted_address: address
+          label: address,
         };
         
         const component = win.ng.getComponent(win.document.querySelector('app-actions'));
         component.handleAddressChange(mockPlace);
         component.cd.detectChanges();
         cy.get('.adresse-btn').click();
-
-        cy.wait('@validateAddress');
+  
+        cy.wait('@validateAddress'); 
         verifyCurrentStep(1);
       });
     });
 
     it('étape 1 - adresse avec erreur', () => {
-      const address = "Rue inexistante";
+      const address = 'Rue inexistante';
       verifyCurrentStep(0);
       cy.contains('Votre adresse').should('be.visible');
   
+      cy.get('.address_write').first().type(address);
       cy.get('.adresse-btn').click();
-      verifyFormError("L'adresse est requise");
-  
-      cy.get('.adresse-input').type(address);
-        cy.get('.adresse-btn').click();
-        verifyCurrentStep(0);
+      verifyFormError("Veuillez saisir une adresse valide");
+      verifyCurrentStep(0);
     });
   
     it('étape 2 - vélo', () => {

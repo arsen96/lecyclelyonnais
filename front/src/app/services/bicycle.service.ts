@@ -25,7 +25,6 @@ export class BicycleService extends BaseService{
     return this.http.get<any>(`${BaseService.baseApi}/bicycles/get`).pipe(
       tap((res: any) => { 
         this.allBicycles = res.data;
-        console.log('allBicycles',this.allBicycles);
         this.bicyclesLoaded.next(true); 
       }),
       catchError((err) => {
