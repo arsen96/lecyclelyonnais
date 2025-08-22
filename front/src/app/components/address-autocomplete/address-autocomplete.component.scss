@@ -3,13 +3,16 @@ ion-item{
 }   
 
 .suggestions-list{
-    position: absolute;
     width: 80%;
-    right: 50%;
-    transform: translateX(50%);
     --background: grey;
     padding: 0;
+
+    &.isLogin{
+        width: 100%;
+        position: inherit;
+    }
 }
+
 
 .suggestion-item{
     width: 100%;
