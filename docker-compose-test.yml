@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  postgres-test:
+    image: postgis/postgis:15-3.4
+    environment:
+      POSTGRES_DB: lecycle_test_db        
+      POSTGRES_USER: lecycle_test_user            
+      POSTGRES_PASSWORD: TestPassword123 
+    ports:
+      - "127.0.0.1:5434:5432" 
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - test_network
+    restart: unless-stopped
+
+  backend-test:
+    build: ./back
+    ports:
+      - "127.0.0.1:3002:3000" 
+    networks:
+      - test_network
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=postgres-test
+      - DB_PORT=5432
+      - DB_HOST_LOCAL=localhost
+      - DB_NAME=lecycle_test_db
+      - DB_USER=lecycle_test_user
+      - DB_PASSWORD=TestPassword123
+      - JWT_SECRET=test_secret_123
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend-test:
+    build: ./front
+    ports:
+      - "127.0.0.1:8081:80"    
+    environment:
+      - NODE_ENV=test
+      - API_URL=http://backend-test:3000/api
+    networks:
+      - test_network
+    depends_on:
+      - backend-test
+    restart: unless-stopped
+
+  # Tests unitaires backend
+  test-unit-backend:
+    build: ./back
+    networks:
+      - test_network
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=postgres-test
+      - DB_PORT=5432
+      - DB_NAME=lecycle_test_db
+      - DB_USER=lecycle_test_user
+      - DB_PASSWORD=TestPassword123
+      - JWT_SECRET=test_secret_123
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    command: npm run test:unit
+    restart: "no"
+
+  # Tests unitaires frontend
+  test-unit-frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile.test
+    environment:
+      - NODE_ENV=test
+    restart: "no"
+
+  # Tests API avec Newman/Postman
+  test-api:
+    build: ./back
+    networks:
+      - test_network
+    environment:
+      - NODE_ENV=test
+      - DB_PORT=5432
+      - API_URL=http://backend-test:3000
+    depends_on:
+      - backend-test
+    command: npm run test:api:staging
+    restart: "no"
+
+volumes:
+  postgres_test_data:
+
+networks:
+  test_network:
+    driver: bridge

@@ -21,13 +21,6 @@ services:
       - app_network
     environment:
       - ENVIRONMENT=production
-      - DATABASE_URL=postgresql://lecycle_user:Testtest96-@postgres:5432/lecycle_db
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=lecycle_user
-      - DB_PASSWORD=Testtest96-
-      - DB_NAME=lecycle_db
-      - JWT_SECRET=${JWT_SECRET:-defaultsecret123} 
     depends_on:
       - postgres
     restart: unless-stopped 
@@ -35,17 +28,14 @@ services:
   frontend:
     build: ./front
     ports:
-      - "8080:80"  # CHANGEMENT ICI : port 80 au lieu de 8080
+      - "8080:80"  
     depends_on:
       - backend
     networks:
       - app_network
     environment:
       - ENVIRONMENT=production 
-      # CHANGEMENT ICI : URL publique au lieu d'interne
       - API_URL=https://lecyclelyonnais.fr/api
-      - GOOGLE_CLIENT_ID=801627083778-37s8egjl71ftjs1aojhms17l2vvpj02s.apps.googleusercontent.com
-      - GOOGLE_MAP_API=AIzaSyAVlY_KrrKefvnX9hwOO-alBCajjMDfxa8
     restart: unless-stopped  
 
   pgadmin:

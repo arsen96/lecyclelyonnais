@@ -19,11 +19,11 @@ services:
       - app_network
     environment:
       - ENVIRONMENT=production
-      - DATABASE_URL=postgresql://lecycle_app:HomeCycl@Lyon2024$@postgres:5432/lecycle_db
+      - DATABASE_URL=postgresql://lecycle_user:Testtest96-@postgres:5432/lecycle_db
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=lecycle_app
-      - DB_PASSWORD=HomeCycl@Lyon2024$
+      - DB_USER=lecycle_user
+      - DB_PASSWORD=Testtest96-
       - DB_NAME=lecycle_db
       - JWT_SECRET=${JWT_SECRET:-defaultsecret123} 
     depends_on:
@@ -31,7 +31,7 @@ services:
     restart: unless-stopped 
 
   frontend:
-    image: arsenkubat/lecycle-frontend:latest
+    build: ./front
     ports:
       - "127.0.0.1:8080:80"    
     depends_on:
@@ -47,7 +47,7 @@ services:
     image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: kubatarsen@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: PgAdmin2024SecurePass!
+      PGADMIN_DEFAULT_PASSWORD: Testtest96-
     ports:
       - "127.0.0.1:5050:80"    
     volumes:
