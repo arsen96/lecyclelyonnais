@@ -72,5 +72,4 @@ Thumbs.db
 src/environments/environment.ts
 src/environments/environment.prod.ts
 
-docker-compose_dev.yml
-docker-compose.yml
+cypress.config.ts
