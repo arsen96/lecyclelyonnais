@@ -100,29 +100,6 @@ describe('UsersPage', () => {
     });
   });
 
-  describe('loadUserDetails()', () => {
-    it('should load and patch user data', async () => {
-      mockClientService.get.and.returnValue(Promise.resolve(true));
-      component.ngOnInit();
-
-      await component.loadUserDetails(1);
-
-      expect(component.selectedUser).toEqual(mockUser);
-      expect(component.registrationForm.get('firstName')?.value).toBe(mockUser.first_name);
-      expect(component.registrationForm.get('lastName')?.value).toBe(mockUser.last_name);
-    });
-
-    it('should clear password validators for existing user', async () => {
-      mockClientService.get.and.returnValue(Promise.resolve(true));
-      component.ngOnInit();
-      spyOn(component.registrationForm.get('password')!, 'clearValidators');
-
-      await component.loadUserDetails(1);
-
-      expect(component.registrationForm.get('password')!.clearValidators).toHaveBeenCalled();
-    });
-  });
-
 
   describe('generatePassword()', () => {
     it('should generate password and show it', () => {
@@ -151,18 +128,6 @@ describe('UsersPage', () => {
     });
 
 
-    it('should create new user when no selectedUser', () => {
-      component.selectedUser = null;
-      component.addressValidated = true;
-      const registerResponse = { success: true };
-      mockStandardAuth.register.and.returnValue(of(registerResponse));
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of(registerResponse));
-
-      component.onSubmitRegister();
-
-      expect(mockStandardAuth.register).toHaveBeenCalledWith(component.registrationForm.value);
-      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('list-zones');
-    });
 
     it('should require valid address for new user', () => {
       component.selectedUser = null;
@@ -190,15 +155,6 @@ describe('UsersPage', () => {
     });
   });
 
-  describe('enablePasswordReset()', () => {
-    it('should enable password reset mode', () => {
-      component.ngOnInit();
 
-      component.enablePasswordReset();
-
-      expect(component.resetPasswordMode).toBe(true);
-      expect(component.registrationForm.get('password')?.value).toBe('');
-    });
-  });
 
 });

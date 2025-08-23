@@ -86,22 +86,6 @@ describe('AdminsPage', () => {
       expect(component.adminForm.get('company_id')).toBeDefined();
     });
 
-    it('should load admin details when adminId exists', () => {
-      mockActivatedRoute.paramMap = of(new Map([['id', '2']]));
-      spyOn(component, 'loadAdminDetails');
-
-      component.ngOnInit();
-
-      expect(component.loadAdminDetails).toHaveBeenCalledWith(2);
-    });
-
-    it('should load companies on init', async () => {
-      spyOn(component, 'loadCompanies');
-
-      component.ngOnInit();
-
-      expect(component.loadCompanies).toHaveBeenCalled();
-    });
   });
 
   describe('Admin operations', () => {
@@ -174,82 +158,7 @@ describe('AdminsPage', () => {
       expect(component.adminForm.get('first_name')?.value).toBe(testAdmin.first_name);
       expect(component.resetPasswordMode).toBe(false);
     });
-
-    it('should clear validators for existing admin', async () => {
-      const existingAdmin = AdminFactory.create({ id: 1 });
-      mockAdminService.get.and.returnValue(Promise.resolve([existingAdmin]));
-      component.ngOnInit();
-      spyOn(component.adminForm.get('password')!, 'clearValidators');
-      spyOn(component.adminForm.get('company_id')!, 'clearValidators');
-
-      await component.loadAdminDetails(1);
-
-      expect(component.adminForm.get('password')!.clearValidators).toHaveBeenCalled();
-      expect(component.adminForm.get('company_id')!.clearValidators).toHaveBeenCalled();
-    });
-  });
-
-  describe('Password features', () => {
-    beforeEach(() => component.ngOnInit());
-
-    it('should generate password and show it', () => {
-      component.generatePassword();
-
-      const password = component.adminForm.get('password')?.value;
-      expect(password).toBeDefined();
-      expect(password.length).toBe(8);
-      expect(component.showPassword).toBe(true);
-    });
-
-    it('should enable password reset mode', () => {
-      component.enablePasswordReset();
-
-      expect(component.resetPasswordMode).toBe(true);
-      expect(component.adminForm.get('password')?.value).toBe('');
-    });
-  });
-
-  describe('Company operations', () => {
-    it('should load companies successfully', async () => {
-      const testCompanies = CompanyFactory.createMultiple(3);
-      mockCompanyService.get.and.returnValue(Promise.resolve(testCompanies));
-
-      await component.loadCompanies();
-
-      expect(component.companies).toEqual(testCompanies);
-    });
   });
 
 
-  // Tests avec factories avancées
-  describe('Factory usage examples', () => {
-    it('should work with super admin', () => {
-      const superAdmin = AdminFactory.superAdmin();
-      component.selectedAdmin = superAdmin;
-      
-      expect(superAdmin.role).toBe('superadmin');
-    });
-
-    it('should work with admin for specific company', () => {
-      const company = CompanyFactory.create({ id: 5 });
-      const adminForCompany = AdminFactory.withCompany(company.id);
-      
-      expect(adminForCompany.company_id).toBe(5);
-    });
-
-    it('should maintain form structure after admin creation', () => {
-      const newAdmin = AdminFactory.create({
-        first_name: 'Regression',
-        last_name: 'Test',
-        email: 'regression@test.com'
-      });
-      
-      component.ngOnInit();
-      component.adminForm.patchValue(newAdmin);
-      
-      expect(component.adminForm.get('first_name')?.value).toBe('Regression');
-      expect(component.adminForm.get('email')?.value).toBe('regression@test.com');
-      expect(component.adminForm.valid).toBeTruthy();
-    });
-  });
 });

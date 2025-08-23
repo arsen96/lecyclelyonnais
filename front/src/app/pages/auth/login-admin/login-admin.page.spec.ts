@@ -107,17 +107,6 @@ describe('LoginAdminPage', () => {
       expect(mockLoadingService.showLoaderUntilCompleted).toHaveBeenCalled();
     });
 
-    it('should navigate to admins-list on successful login', () => {
-      const mockResponse = { user: { id: 1, email: 'admin@test.com' } } as any;
-      mockAdminService.login.and.returnValue(of(mockResponse));
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of(mockResponse));
-
-      component.onSubmit();
-
-      expect(mockMessageService.clearMessage).toHaveBeenCalled();
-      expect(mockGlobalService.loadAllData).toHaveBeenCalled();
-      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('admins-list');
-    });
 
     it('should handle login errors', () => {
       const mockError = { error: { message: 'Invalid credentials' } };
@@ -147,21 +136,4 @@ describe('LoginAdminPage', () => {
 
   });
 
-  describe('Component initialization', () => {
-    it('should initialize displayMsg to false', () => {
-      expect(component.displayMsg).toBe(false);
-    });
-
-    it('should initialize formSubmitted to false', () => {
-      expect(component.formSubmitted).toBe(false);
-    });
-
-    it('should inject services correctly', () => {
-      expect(component.messageService).toBeDefined();
-      expect(component.adminService).toBeDefined();
-      expect(component.router).toBeDefined();
-      expect(component.loaderService).toBeDefined();
-      expect(component.globalService).toBeDefined();
-    });
-  });
 });

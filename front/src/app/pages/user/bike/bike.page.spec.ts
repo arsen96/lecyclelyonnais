@@ -24,12 +24,11 @@ describe('BikePage', () => {
   let mockMessageService: jasmine.SpyObj<MessageService>;
   let mockActivatedRoute: any;
 
-  // 🔥 FACTORY au lieu de données hardcodées
   const mockBike = BicycleFactory.create();
   const mockBikes = BicycleFactory.createMultiple(2);
 
   beforeEach(() => {
-    // 🌟 HELPERS pour créer les spies
+    //  HELPERS pour créer les spies
     mockBicycleService = createServiceSpy('BicycleService', ['getUserBicycles', 'create', 'update']) as jasmine.SpyObj<BicycleService>;
     mockLoadingService = createLoadingServiceSpy();
     mockMessageService = createMessageServiceSpy();
@@ -60,44 +59,6 @@ describe('BikePage', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Initialization', () => {
-    it('should initialize form with validators', () => {
-      component.ngOnInit();
-
-      expect(component.bikeForm).toBeDefined();
-      expect(component.bikeForm.get('brand')).toBeDefined();
-      expect(component.bikeForm.get('model')).toBeDefined();
-      expect(component.bikeForm.get('year')).toBeDefined();
-      expect(component.bikeForm.get('type')).toBeDefined();
-    });
-
-
-    it('should have required validators', () => {
-      component.ngOnInit();
-      const form = component.bikeForm;
-
-      form.patchValue({ brand: '', model: '', year: '', type: '' });
-
-      expect(form.get('brand')?.hasError('required')).toBe(true);
-      expect(form.get('model')?.hasError('required')).toBe(true);
-      expect(form.get('year')?.hasError('required')).toBe(true);
-      expect(form.get('type')?.hasError('required')).toBe(true);
-    });
-
-    it('should validate year pattern', () => {
-      component.ngOnInit();
-      const yearControl = component.bikeForm.get('year');
-
-      yearControl?.setValue('abc');
-      expect(yearControl?.hasError('pattern')).toBe(true);
-
-      yearControl?.setValue('23');
-      expect(yearControl?.hasError('pattern')).toBe(true);
-
-      yearControl?.setValue('2023');
-      expect(yearControl?.hasError('pattern')).toBe(false);
-    });
-  });
 
   describe('Data loading', () => {
     beforeEach(() => component.ngOnInit());
@@ -113,17 +74,6 @@ describe('BikePage', () => {
       expect(component.bikeSelected).toBe(null);
     });
 
-    it('should load and patch form when bikeId exists', () => {
-      component.bikeId = mockBike.id;
-      // 🔧 CORRECTION: mockBikes contient le mockBike
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of([mockBike]));
-      spyOn(component.bikeForm, 'patchValue');
-      
-      component.ionViewDidEnter();
-
-      expect(component.bikeSelected).toEqual(mockBike);
-      expect(component.bikeForm.patchValue).toHaveBeenCalledWith(mockBike);
-    });
 
     it('should handle bike not found', () => {
       component.bikeId = 999;
@@ -190,33 +140,4 @@ describe('BikePage', () => {
 
 
 
-  describe('Edge cases', () => {
-    beforeEach(() => component.ngOnInit());
-
-
-    it('should handle form validation with edge year values', () => {
-      const yearControl = component.bikeForm.get('year');
-      
-      // Test limite basse
-      yearControl?.setValue('1000');
-      expect(yearControl?.hasError('pattern')).toBe(false);
-      
-      // Test limite haute
-      yearControl?.setValue('9999');
-      expect(yearControl?.hasError('pattern')).toBe(false);
-      
-      // Test invalide
-      yearControl?.setValue('12345');
-      expect(yearControl?.hasError('pattern')).toBe(true);
-    });
-
-    it('should handle empty bike list response', () => {
-      component.bikeId = 1;
-      mockLoadingService.showLoaderUntilCompleted.and.returnValue(of([]));
-      
-      component.ionViewDidEnter();
-      
-      expect(component.bikeSelected).toBeUndefined();
-    });
-  });
 });

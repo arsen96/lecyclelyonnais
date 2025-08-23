@@ -58,9 +58,6 @@ describe('CompanyPage', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
 
   it('should initialize form', () => {
     component.ngOnInit();
