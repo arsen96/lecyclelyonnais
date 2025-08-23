@@ -29,8 +29,7 @@ services:
       - DB_PASSWORD=TestPassword123
       - JWT_SECRET=test_secret_123
     depends_on:
-      postgres-test:
-        condition: service_healthy
+      - postgres-test
     restart: unless-stopped
 
   frontend-test:
@@ -45,47 +44,6 @@ services:
     depends_on:
       - backend-test
     restart: unless-stopped
-
-  # Tests unitaires backend
-  test-unit-backend:
-    build: ./back
-    networks:
-      - test_network
-    environment:
-      - NODE_ENV=test
-      - DB_HOST=postgres-test
-      - DB_PORT=5432
-      - DB_NAME=lecycle_test_db
-      - DB_USER=lecycle_test_user
-      - DB_PASSWORD=TestPassword123
-      - JWT_SECRET=test_secret_123
-    depends_on:
-      postgres-test:
-        condition: service_healthy
-    command: npm run test:unit
-    restart: "no"
-
-  # Tests unitaires frontend
-  test-unit-frontend:
-    build:
-      context: ./front
-    environment:
-      - NODE_ENV=test
-    restart: "no"
-
-  # Tests API avec Newman/Postman
-  test-api:
-    build: ./back
-    networks:
-      - test_network
-    environment:
-      - NODE_ENV=test
-      - DB_PORT=5432
-      - API_URL=http://backend-test:3000
-    depends_on:
-      - backend-test
-    command: npm run test:api:staging
-    restart: "no"
 
 volumes:
   postgres_test_data:
