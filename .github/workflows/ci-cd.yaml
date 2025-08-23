@@ -59,7 +59,7 @@ jobs:
 
   # JOB 2: Tests API Backend  
   test-api:
-    name: Tests API Backend
+    name: Tests API
     runs-on: ubuntu-latest
     needs: build-docker
 
