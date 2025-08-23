@@ -70,7 +70,6 @@ services:
   test-unit-frontend:
     build:
       context: ./front
-      dockerfile: Dockerfile.test
     environment:
       - NODE_ENV=test
     restart: "no"
