@@ -343,7 +343,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}   
           port: 2222
           script: |
-            cd ~/projet/lecyclelyonnais-test
+            cd ~/projet/lecyclelyonnais
             
             git pull origin ${{ github.ref_name }}
             docker-compose -f docker-compose.test.yml down
