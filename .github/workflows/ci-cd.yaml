@@ -326,7 +326,6 @@ jobs:
           category: trivy-frontend
         continue-on-error: true
 
-
   deploy-test:
       name: Déploiement Test
       runs-on: ubuntu-latest
