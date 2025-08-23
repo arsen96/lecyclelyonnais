@@ -5,8 +5,6 @@ services:
       POSTGRES_DB: lecycle_db
       POSTGRES_USER: lecycle_user
       POSTGRES_PASSWORD: Testtest96-
-    ports:
-      - "5433:5432"  
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -16,16 +14,16 @@ services:
   backend:
     image: arsenkubat/lecycle-backend:latest
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000" 
     networks:
       - app_network
     environment:
       - ENVIRONMENT=production
-      - DATABASE_URL=postgresql://lecycle_user:Testtest96-@postgres:5432/lecycle_db
+      - DATABASE_URL=postgresql://lecycle_app:HomeCycl@Lyon2024$@postgres:5432/lecycle_db
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=lecycle_user
-      - DB_PASSWORD=Testtest96-
+      - DB_USER=lecycle_app
+      - DB_PASSWORD=HomeCycl@Lyon2024$
       - DB_NAME=lecycle_db
       - JWT_SECRET=${JWT_SECRET:-defaultsecret123} 
     depends_on:
@@ -33,9 +31,9 @@ services:
     restart: unless-stopped 
 
   frontend:
-    image: arsenkubat/lecycle-frontend:latest 
+    image: arsenkubat/lecycle-frontend:latest
     ports:
-      - "8080:80" 
+      - "127.0.0.1:8080:80"    
     depends_on:
       - backend
     networks:
@@ -43,17 +41,15 @@ services:
     environment:
       - ENVIRONMENT=production 
       - API_URL=https://lecyclelyonnais.fr/api
-      - GOOGLE_CLIENT_ID=801627083778-37s8egjl71ftjs1aojhms17l2vvpj02s.apps.googleusercontent.com
-      - GOOGLE_MAP_API=AIzaSyAVlY_KrrKefvnX9hwOO-alBCajjMDfxa8
     restart: unless-stopped  
 
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: kubatarsen@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: Testtest96-
+      PGADMIN_DEFAULT_PASSWORD: PgAdmin2024SecurePass!
     ports:
-      - "5050:80"
+      - "127.0.0.1:5050:80"    
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:

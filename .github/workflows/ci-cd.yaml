@@ -59,7 +59,7 @@ jobs:
 
   # JOB 2: Tests API Backend  
   test-api:
-    name: Tests API Backend
+    name: Tests API
     runs-on: ubuntu-latest
     needs: build-docker
 
@@ -325,6 +325,30 @@ jobs:
           sarif_file: trivy-frontend-results.sarif
           category: trivy-frontend
         continue-on-error: true
+
+
+  deploy-test:
+    name: Déploiement Test
+    runs-on: ubuntu-latest
+    needs: [security-scan]
+    if: needs.security-scan.result == 'success' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    environment: test
+    
+    steps:
+      - name: Déployer sur serveur test
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}   
+          port: 2222
+          script: |
+            cd ~/projet/lecyclelyonnais
+            
+            git pull origin ${{ github.ref_name }}
+            docker compose -f docker-compose-test.yml down
+            docker compose -f docker-compose-test.yml build --no-cache
+            docker compose -f docker-compose-test.yml up -d
 
   # JOB 7: Déploiement Production
   deploy-production:

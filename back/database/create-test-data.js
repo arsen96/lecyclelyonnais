@@ -3,20 +3,18 @@ require('dotenv').config();
 
 const MAIN_TEST_COMPANY_ID = 10;
 
-// const isRunningInDocker = process.env.ENVIRONMENT === 'docker';
-const isRunningInDocker = false;
-if (!isRunningInDocker) {
-  // Utiliser les variables locales si elles existent
-  if (process.env.DB_HOST_LOCAL) process.env.DB_HOST = process.env.DB_HOST_LOCAL;
-  if (process.env.DB_PORT_LOCAL) process.env.DB_PORT = process.env.DB_PORT_LOCAL;
-  if (process.env.DB_USER_LOCAL) process.env.DB_USER = process.env.DB_USER_LOCAL;
-  if (process.env.DB_NAME_LOCAL) process.env.DB_NAME = process.env.DB_NAME_LOCAL;
-  if (process.env.DB_PASSWORD_LOCAL) process.env.DB_PASSWORD = process.env.DB_PASSWORD_LOCAL;
-}
+const isTestEnvironment = process.env.NODE_ENV === 'test';
+
+process.env.DB_HOST = 'localhost';
+process.env.DB_PORT = 5434;  // Port mappé sur l'hôte
+process.env.DB_USER = 'lecycle_test_user';
+process.env.DB_NAME = 'lecycle_test_db';
+process.env.DB_PASSWORD = 'TestPassword123';
+
 const { Pool } = require('pg');
 const pool = new Pool({
   user: process.env.DB_USER,    
-  host: process.env.DB_HOST,     
+  host: process.env.DB_HOST,
   database: process.env.DB_NAME, 
   password: process.env.DB_PASSWORD, 
   port: process.env.DB_PORT,     
