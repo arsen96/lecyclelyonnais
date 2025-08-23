@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bicycleController = require("../controllers/bicycleController")
 const isAuthenticated = require('../middlewares/isAuthenticated');
+const { 
+  validateBicycle, 
+  } = require("../middlewares/validations/bicycleValidation"); 
 
 /**
  * @swagger
@@ -152,7 +155,7 @@ router.get('/getUserBicycles', isAuthenticated, bicycleController.getUserBicycle
  *       500:
  *         description: Erreur lors de l'ajout du vélo
  */
-router.post('/addNew', isAuthenticated, bicycleController.addNew);
+router.post('/addNew', isAuthenticated, validateBicycle, bicycleController.addNew);
 
 /**
  * @swagger
@@ -209,7 +212,7 @@ router.post('/addNew', isAuthenticated, bicycleController.addNew);
  *       500:
  *         description: Erreur lors de la mise à jour du vélo
  */
-router.post('/updateBicycle', isAuthenticated, bicycleController.updateBicycle);
+router.post('/updateBicycle', isAuthenticated, validateBicycle, bicycleController.updateBicycle);
 
 /**
  * @swagger

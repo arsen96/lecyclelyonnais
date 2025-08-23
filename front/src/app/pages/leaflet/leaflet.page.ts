@@ -62,7 +62,6 @@ export class LeafletPage {
   constructor(private cd: ChangeDetectorRef, private technicianService: TechnicianService, private route: ActivatedRoute, public messageService: MessageService, private zoneService: ZoneService, public alertController: AlertController, public router: Router, private modalController: ModalController) {
     this.route.params.subscribe(params => {
       this.zoneIdSelected = Number(params['id']) ? Number(params['id']) : null;
-      console.log(" this.zoneIdSelected this.zoneIdSelected", this.zoneIdSelected);
     });
 
     this.mapReady = new Promise<boolean>((resolve) => {
@@ -74,12 +73,9 @@ export class LeafletPage {
 
   ngOnInit() {
     this.filteredTechnicians = this.zoneSelected?.technicians || [];
-
-    console.log("apeeeeee",this.zoneSelected?.technicians)
   }
 
   filterTechnicians() {
-    console.log("this.searchTerm", this.searchTerm);
     if (this.searchTerm.trim() === '') {
       this.filteredTechnicians = this.zoneSelected?.technicians || [];
     } else {

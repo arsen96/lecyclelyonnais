@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const adminController = require("../controllers/adminController")
 const isAuthenticated = require('../middlewares/isAuthenticated');
+const { 
+    validateAdminCreation, 
+    validateAdminUpdate, 
+    validateAdminLogin 
+  } = require("../middlewares/validations/adminValidation"); 
 
 /**
  * @swagger
@@ -147,7 +152,7 @@ router.get('/get', isAuthenticated, adminController.getAdmins);
  *       500:
  *         description: Erreur lors de la création
  */
-router.post('/create', isAuthenticated, adminController.createAdmin);
+router.post('/create', isAuthenticated, validateAdminCreation, adminController.createAdmin);
 
 /**
  * @swagger
@@ -222,7 +227,7 @@ router.post('/create', isAuthenticated, adminController.createAdmin);
  *       500:
  *         description: Erreur lors de la mise à jour
  */
-router.post('/update', isAuthenticated, adminController.updateAdmin);
+router.post('/update', isAuthenticated, validateAdminUpdate, adminController.updateAdmin);
 
 /**
  * @swagger
@@ -277,6 +282,6 @@ router.post('/update', isAuthenticated, adminController.updateAdmin);
  */
 router.post('/delete', isAuthenticated, adminController.deleteAdmin);
 
-router.post('/login', adminController.loginAdmin);
+router.post('/login',validateAdminLogin, adminController.loginAdmin);
 
 module.exports = router;

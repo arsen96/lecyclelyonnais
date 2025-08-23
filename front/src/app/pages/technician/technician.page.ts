@@ -40,9 +40,9 @@ export class TechnicianPage implements OnInit {
   async manageForm(): Promise<void> {
     await this.technicianService.get();
     this.technicianForm = this.fb.group({
-      last_name: ['Kubtyan', [Validators.required, Validators.minLength(2)]],
-      first_name: ['Kubtyan', [Validators.required, Validators.minLength(2)]],
-      email: ['kubatarsen@gmail.com', [Validators.required, Validators.email]],
+      last_name: ['', [Validators.required, Validators.minLength(2)]],
+      first_name: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [
         control => {
           // Validation conditionnelle du mot de passe selon le mode (création/édition)
@@ -55,7 +55,7 @@ export class TechnicianPage implements OnInit {
           return null;
         }
       ]],
-      phone: ['06 06 06 06 06', [Validators.required]],
+      phone: ['', [Validators.required]],
       address: ['', []],
     });
 

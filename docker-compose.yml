@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   backend:
-    image: arsenkubat/lecycle-backend:latest
+    build: ./back
     ports:
       - "127.0.0.1:3000:3000" 
     networks:

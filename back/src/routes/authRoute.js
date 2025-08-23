@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const authController = require("../controllers/authController")
 const verifyToken = require("../middlewares/isAuthenticated")
+const { 
+validateRegister,
+validateLogin,
+validateForgotPassword,
+validateResetPassword
+} = require("../middlewares/validations/authValidation");
 
 /**
  * @swagger
@@ -49,7 +55,7 @@ const verifyToken = require("../middlewares/isAuthenticated")
  *       400:
  *         description: Email déjà utilisé ou entreprise non reconnue
  */
-router.post('/register', authController.register);
+router.post('/register', validateRegister, authController.register);
 
 /**
  * @swagger
@@ -79,7 +85,7 @@ router.post('/register', authController.register);
  *       400:
  *         description: Email incorrect ou mot de passe incorrect
  */
-router.post('/login', authController.login);
+router.post('/login', validateLogin, authController.login);
 
 /**
  * @swagger
@@ -137,7 +143,7 @@ router.post('/oauth', authController.oauth);
  *       500:
  *         description: Erreur lors de l'envoi de l'email
  */
-router.post('/forgot-password', authController.passwordForgot);
+router.post('/forgot-password', validateForgotPassword, authController.passwordForgot);
 
 /**
  * @swagger
@@ -167,7 +173,7 @@ router.post('/forgot-password', authController.passwordForgot);
  *       500:
  *         description: Token invalide ou expiré
  */
-router.post('/reset-password', authController.resetPassword);
+router.post('/reset-password', validateResetPassword, authController.resetPassword);
 
 /**
  * @swagger

@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const zoneController = require("../controllers/zoneController")
+const { 
+    validateZone 
+  } = require("../middlewares/validations/zoneValidation"); 
 
 /**
  * @swagger
@@ -88,7 +91,7 @@ const zoneController = require("../controllers/zoneController")
  *                   example: "17:00"
  */
 
-router.post('/save', zoneController.save);
+router.post('/save',validateZone, zoneController.save);
 /**
  * @swagger
  * /api/zones/get:
@@ -166,7 +169,7 @@ router.get('/get', zoneController.get);
  *       500:
  *         description: Erreur lors de la mise à jour
  */
-router.post('/update', zoneController.updateZone);
+router.post('/update',validateZone, zoneController.updateZone);
 
 /**
  * @swagger

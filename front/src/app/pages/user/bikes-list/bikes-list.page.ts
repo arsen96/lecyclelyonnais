@@ -70,7 +70,6 @@ export class BikesListPage implements OnInit {
 
   deleteSelected(elementId?: number) {
     const selectedIds = elementId ? [elementId] : this.selection.selected.map(item => item.id);
-    console.log('Deleting items with IDs:', selectedIds);
     const zoneRemoved$ = this.bikeService.delete(selectedIds);
     const result = this.loaderService.showLoaderUntilCompleted(zoneRemoved$); 
     result.subscribe({

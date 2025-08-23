@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const technicianController = require("../controllers/technicianController")
+const { 
+  validateCreateTechnician, 
+  validateUpdateTechnician 
+} = require("../middlewares/validations/technicianValidation"); 
 
 /**
  * @swagger
@@ -150,7 +154,7 @@ router.get('/get', technicianController.get);
  *       500:
  *         description: Erreur lors de la création du technicien
  */
-router.post('/save', technicianController.save);
+router.post('/save', validateCreateTechnician, technicianController.save);
 
 /**
  * @swagger
@@ -229,7 +233,7 @@ router.post('/save', technicianController.save);
  *       500:
  *         description: Erreur lors de la mise à jour
  */
-router.post('/update', technicianController.update);
+router.post('/update',validateUpdateTechnician, technicianController.update);
 
 /**
  * @swagger
