@@ -21,310 +21,310 @@ permissions:
 
 jobs:
   # JOB 1: Build des images Docker (SANS PUSH)
-  build-docker:
-    name: Build Images Docker
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+  # build-docker:
+  #   name: Build Images Docker
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
-    permissions:
-      contents: read
-      packages: write
+  #   permissions:
+  #     contents: read
+  #     packages: write
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
       
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
       
-      # BACKEND - BUILD SEULEMENT
-      - name: Build Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./back
-          push: false
-          tags: lecycle-backend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # BACKEND - BUILD SEULEMENT
+  #     - name: Build Backend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./back
+  #         push: false
+  #         tags: lecycle-backend:test
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
-      # FRONTEND - BUILD SEULEMENT  
-      - name: Build Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./front
-          push: false
-          tags: lecycle-frontend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # FRONTEND - BUILD SEULEMENT  
+  #     - name: Build Frontend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./front
+  #         push: false
+  #         tags: lecycle-frontend:test
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
-  # JOB 2: Tests API Backend  
-  test-api:
-    name: Tests API Backend
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # # JOB 2: Tests API Backend  
+  # test-api:
+  #   name: Tests API Backend
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    defaults:
-      run:
-        working-directory: ./back
+  #   defaults:
+  #     run:
+  #       working-directory: ./back
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
         
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./back/package-lock.json
+  #     - name: Installer Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./back/package-lock.json
           
-      - name: Installer les dépendances
-        run: npm ci
+  #     - name: Installer les dépendances
+  #       run: npm ci
         
-      - name: Sync Postman collections
-        run: npm run postman:sync
-        env:
-          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
-        continue-on-error: true
+  #     - name: Sync Postman collections
+  #       run: npm run postman:sync
+  #       env:
+  #         POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+  #       continue-on-error: true
         
-      - name: Démarrer l'application
-        run: |
-          npm start &
-          sleep 15
-        env:
-          NODE_ENV: test
-          PORT: ${{ secrets.PORT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  #     - name: Démarrer l'application
+  #       run: |
+  #         npm start &
+  #         sleep 15
+  #       env:
+  #         NODE_ENV: test
+  #         PORT: ${{ secrets.PORT }}
+  #         JWT_SECRET: ${{ secrets.JWT_SECRET }}
           
-      - name: Test - Authentification
-        run: npm run test:api:auth
-        continue-on-error: false
+  #     - name: Test - Authentification
+  #       run: npm run test:api:auth
+  #       continue-on-error: false
         
-      - name: Test - Techniciens
-        run: npm run test:api:technicians
-        continue-on-error: false
+  #     - name: Test - Techniciens
+  #       run: npm run test:api:technicians
+  #       continue-on-error: false
         
-      - name: Test - Companies
-        run: npm run test:api:company
-        continue-on-error: false
+  #     - name: Test - Companies
+  #       run: npm run test:api:company
+  #       continue-on-error: false
         
-      - name: Test - Bicycles
-        run: npm run test:api:bicycle
-        continue-on-error: false
+  #     - name: Test - Bicycles
+  #       run: npm run test:api:bicycle
+  #       continue-on-error: false
         
-      - name: Test - Zones
-        run: npm run test:api:zones
-        continue-on-error: false
+  #     - name: Test - Zones
+  #       run: npm run test:api:zones
+  #       continue-on-error: false
         
-      - name: Test - Interventions
-        run: npm run test:api:intervention
-        continue-on-error: false
+  #     - name: Test - Interventions
+  #       run: npm run test:api:intervention
+  #       continue-on-error: false
 
-  # JOB 3: Tests unitaires Backend
-  test-unit-backend:
-    name: Tests Unitaires Backend
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # # JOB 3: Tests unitaires Backend
+  # test-unit-backend:
+  #   name: Tests Unitaires Backend
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    defaults:
-      run:
-        working-directory: ./back
+  #   defaults:
+  #     run:
+  #       working-directory: ./back
     
-    steps:
-      - name: Récupérer le code 
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code 
+  #       uses: actions/checkout@v4
         
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./back/package-lock.json
+  #     - name: Installer Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./back/package-lock.json
           
-      - name: Installer les dépendances
-        run: npm ci
+  #     - name: Installer les dépendances
+  #       run: npm ci
         
-      - name: Lancer les tests unitaires
-        run: npm run test:unit
-        continue-on-error: false
+  #     - name: Lancer les tests unitaires
+  #       run: npm run test:unit
+  #       continue-on-error: false
 
-  # JOB 4: Tests Frontend 
-  test-frontend:
-    name: Frontend Tests
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # # JOB 4: Tests Frontend 
+  # test-frontend:
+  #   name: Frontend Tests
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    defaults:
-      run:
-        working-directory: ./front
+  #   defaults:
+  #     run:
+  #       working-directory: ./front
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
         
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./front/package-lock.json
+  #     - name: Installer Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./front/package-lock.json
           
-      - name: Installer les dépendances
-        run: npm ci
+  #     - name: Installer les dépendances
+  #       run: npm ci
         
-      - name: Tests unitaires Frontend
-        run: npm run test:ci
-        continue-on-error: false
+  #     - name: Tests unitaires Frontend
+  #       run: npm run test:ci
+  #       continue-on-error: false
 
-  # JOB 5: Tests E2E Cypress 
-  test-e2e:
-    name: Tests E2E Cypress
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # # JOB 5: Tests E2E Cypress 
+  # test-e2e:
+  #   name: Tests E2E Cypress
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
         
-      # Démarrer le backend
-      - name: Setup Node.js pour Backend
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./back/package-lock.json
+  #     # Démarrer le backend
+  #     - name: Setup Node.js pour Backend
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./back/package-lock.json
           
-      - name: Installer dépendances Backend
-        run: npm ci
-        working-directory: ./back
+  #     - name: Installer dépendances Backend
+  #       run: npm ci
+  #       working-directory: ./back
         
-      - name: Démarrer Backend
-        run: |
-          npm start &
-          sleep 15
-        working-directory: ./back
-        env:
-          NODE_ENV: test
-          PORT: 3000
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  #     - name: Démarrer Backend
+  #       run: |
+  #         npm start &
+  #         sleep 15
+  #       working-directory: ./back
+  #       env:
+  #         NODE_ENV: test
+  #         PORT: 3000
+  #         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
-      # Démarrer le frontend  
-      - name: Installer dépendances Frontend
-        run: npm ci
-        working-directory: ./front
+  #     # Démarrer le frontend  
+  #     - name: Installer dépendances Frontend
+  #       run: npm ci
+  #       working-directory: ./front
         
-      - name: Démarrer Frontend
-        run: |
-          npm start &
-          sleep 30
-        working-directory: ./front
+  #     - name: Démarrer Frontend
+  #       run: |
+  #         npm start &
+  #         sleep 30
+  #       working-directory: ./front
         
-      # Tests Cypress
-      - name: Tests Cypress E2E
-        run: npm run cypress:run
-        working-directory: ./front
-        continue-on-error: false
+  #     # Tests Cypress
+  #     - name: Tests Cypress E2E
+  #       run: npm run cypress:run
+  #       working-directory: ./front
+  #       continue-on-error: false
 
-  # JOB 6: Push des images Docker (APRÈS tests validés)
-  push-docker:
-    name: Push Images Docker  
-    runs-on: ubuntu-latest
-    needs: [test-api, test-unit-backend, test-frontend, test-e2e]
-    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+  # # JOB 6: Push des images Docker (APRÈS tests validés)
+  # push-docker:
+  #   name: Push Images Docker  
+  #   runs-on: ubuntu-latest
+  #   needs: [test-api, test-unit-backend, test-frontend, test-e2e]
+  #   if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
-    permissions:
-      contents: read
-      packages: write
+  #   permissions:
+  #     contents: read
+  #     packages: write
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
       
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
       
-      - name: Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Login Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
       
-      # BACKEND - BUILD ET PUSH
-      - name: Build et Push Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./back
-          push: true
-          tags: |
-             ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-             ${{ github.ref == 'refs/heads/main' && format('{0}/lecycle-backend:latest', secrets.DOCKER_USERNAME) || '' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # BACKEND - BUILD ET PUSH
+  #     - name: Build et Push Backend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./back
+  #         push: true
+  #         tags: |
+  #            ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+  #            ${{ github.ref == 'refs/heads/main' && format('{0}/lecycle-backend:latest', secrets.DOCKER_USERNAME) || '' }}
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
-      # FRONTEND - BUILD ET PUSH
-      - name: Build et Push Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./front
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # FRONTEND - BUILD ET PUSH
+  #     - name: Build et Push Frontend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./front
+  #         push: true
+  #         tags: |
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:latest
+  #           ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
-  # JOB 7: Analyse de sécurité
-  security-scan:
-    name: Analyse de sécurité
-    runs-on: ubuntu-latest
-    needs: push-docker
-    if: needs.push-docker.result == 'success'
+  # # JOB 7: Analyse de sécurité
+  # security-scan:
+  #   name: Analyse de sécurité
+  #   runs-on: ubuntu-latest
+  #   needs: push-docker
+  #   if: needs.push-docker.result == 'success'
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
       
-      - name: Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Login Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
       
-      - name: Scan Backend avec Trivy
-        uses: aquasecurity/trivy-action@master
-        id: scan-backend
-        with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
-          format: sarif
-          output: trivy-backend-results.sarif
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          ignore-unfixed: true
-          exit-code: '0'
+  #     - name: Scan Backend avec Trivy
+  #       uses: aquasecurity/trivy-action@master
+  #       id: scan-backend
+  #       with:
+  #         image-ref: ${{ secrets.DOCKER_USERNAME }}/lecycle-backend:${{ github.ref_name }}
+  #         format: sarif
+  #         output: trivy-backend-results.sarif
+  #         severity: 'CRITICAL,HIGH,MEDIUM'
+  #         ignore-unfixed: true
+  #         exit-code: '0'
       
-      - name: Scan Frontend avec Trivy
-        uses: aquasecurity/trivy-action@master
-        id: scan-frontend
-        with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
-          format: sarif
-          output: trivy-frontend-results.sarif
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          ignore-unfixed: true
-          exit-code: '0'
+  #     - name: Scan Frontend avec Trivy
+  #       uses: aquasecurity/trivy-action@master
+  #       id: scan-frontend
+  #       with:
+  #         image-ref: ${{ secrets.DOCKER_USERNAME }}/lecycle-frontend:${{ github.ref_name }}
+  #         format: sarif
+  #         output: trivy-frontend-results.sarif
+  #         severity: 'CRITICAL,HIGH,MEDIUM'
+  #         ignore-unfixed: true
+  #         exit-code: '0'
       
-      - name: Upload résultats Backend
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-backend-results.sarif
-          category: trivy-backend
-        continue-on-error: true
+  #     - name: Upload résultats Backend
+  #       uses: github/codeql-action/upload-sarif@v3
+  #       with:
+  #         sarif_file: trivy-backend-results.sarif
+  #         category: trivy-backend
+  #       continue-on-error: true
       
-      - name: Upload résultats Frontend
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-frontend-results.sarif
-          category: trivy-frontend
-        continue-on-error: true
+  #     - name: Upload résultats Frontend
+  #       uses: github/codeql-action/upload-sarif@v3
+  #       with:
+  #         sarif_file: trivy-frontend-results.sarif
+  #         category: trivy-frontend
+  #       continue-on-error: true
 
   # JOB 7: Déploiement Production
   deploy-production:
