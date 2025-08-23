@@ -340,7 +340,7 @@ jobs:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}   
-          port: 22
+          port: 2222
           script: |
             cd ~/projet/lecyclelyonnais
             docker pull arsenkubat/lecycle-backend:latest
