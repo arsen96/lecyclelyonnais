@@ -326,6 +326,7 @@ jobs:
           category: trivy-frontend
         continue-on-error: true
 
+  # JOB 8: Déploiement Test
   deploy-test: 
       name: Déploiement Test
       runs-on: ubuntu-latest
@@ -347,7 +348,7 @@ jobs:
               docker compose -f docker-compose-test.yml build --no-cache
               docker compose -f docker-compose-test.yml up -d --remove-orphans
 
-  # JOB 7: Déploiement Production
+  # JOB 9: Déploiement Production
   deploy-production:
     name: Déploiement Production
     runs-on: ubuntu-latest
