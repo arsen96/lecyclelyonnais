@@ -53,7 +53,7 @@ HomeCycl’Home est une application d'entretien et de réparation de vélos à d
    ```
 
 3. Accédez à l'application :
-   - Frontend : [http://localhost:4200](http://localhost:4200)
+   - Frontend : [http://localhost:8100](http://localhost:8100)
    - Backend API : [http://localhost:3000](http://localhost:3000)
 
 # Configuration

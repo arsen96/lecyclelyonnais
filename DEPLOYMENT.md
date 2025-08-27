@@ -26,7 +26,7 @@ docker-compose up -d
 # Réseau isolé sécurisé
 ```
 
-## 🚀 Pipeline CI/CD (.github/workflows/ci-cd.yaml)
+##  Pipeline CI/CD (.github/workflows/ci-cd.yaml)
 
 **Déclenchement :** Push sur `main`, `develop`, `feature/*`
 
@@ -56,7 +56,7 @@ docker-compose up -d
 # Redirection automatique HTTP → HTTPS
 ```
 
-## 📋 Procédures de déploiement
+##  Procédures de déploiement
 
 ### Automatique (Recommandé)
 ```bash
