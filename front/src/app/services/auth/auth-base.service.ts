@@ -121,7 +121,6 @@ export class AuthBaseService {
             if (res) {
               this.setSession(res.token);
               this.isUserLoadedSubject.next(true);
-              // ✅ Initialiser après login réussi
               this.getUser().catch(error => {
                 console.error('Error loading user after login:', error);
               });

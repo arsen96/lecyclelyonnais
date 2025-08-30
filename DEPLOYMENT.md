@@ -14,7 +14,7 @@
 ```bash
 # Lancement local
 docker-compose up -d
-# Frontend: http://localhost:4200
+# Frontend: http://localhost:8200
 # Backend: http://localhost:3000
 # pgAdmin: http://localhost:5050
 ```
@@ -26,7 +26,7 @@ docker-compose up -d
 # Réseau isolé sécurisé
 ```
 
-## 🚀 Pipeline CI/CD (.github/workflows/ci-cd.yaml)
+##  Pipeline CI/CD (.github/workflows/ci-cd.yaml)
 
 **Déclenchement :** Push sur `main`, `develop`, `feature/*`
 
@@ -56,7 +56,7 @@ docker-compose up -d
 # Redirection automatique HTTP → HTTPS
 ```
 
-## 📋 Procédures de déploiement
+##  Procédures de déploiement
 
 ### Automatique (Recommandé)
 ```bash
@@ -65,12 +65,12 @@ git push origin main  # Déploiement automatique via GitHub Actions
 
 ### Manuel d'urgence
 ```bash
-ssh root@lecyclelyonnais.fr
+ssh arsen@lecyclelyonnais.fr
 cd /opt/lecycle-production
 ./backup.sh                    # Sauvegarde
-docker-compose down            # Arrêt
-docker-compose pull            # Mise à jour
-docker-compose up -d           # Redémarrage
+docker compose down            # Arrêt
+docker compose pull            # Mise à jour
+docker compose up -d           # Redémarrage
 docker system prune -f         # Nettoyage
 ```
 

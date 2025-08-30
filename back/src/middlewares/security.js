@@ -14,7 +14,7 @@ const authLimiter = rateLimit({
   
   const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 1000, 
+    max: 500, 
     message: {
         message: 'Trop de requêtes depuis votre IP, réessayez plus tard'
     },
@@ -27,7 +27,7 @@ const authLimiter = rateLimit({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        connectSrc: ["'self'", "https://www.lecyclelyonnais.fr"],
+        connectSrc: ["'self'", "https://www.lecyclelyonnais.fr", "https://test.lecyclelyonnais.fr"],
         imgSrc: ["'self'", "data:", "blob:"],
         styleSrc: ["'self'", "'unsafe-inline'"],
       },
