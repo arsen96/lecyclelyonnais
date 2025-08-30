@@ -90,7 +90,10 @@ const options = {
 };
 
 const specs = swaggerJsdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs', basicAuth({
+  users: { 'admin': process.env.DOCS_PASSWORD },
+  challenge: true,
+}), swaggerUi.serve, swaggerUi.setup(specs));
 
 app.get('/api/', (req, res) => {
   res.json({ 
