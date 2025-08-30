@@ -1,5 +1,5 @@
 #docker build -t arsenkubat/lecycle-backend:latest .
-
+#docker compose up -d --build backend 
 services:
   postgres:
     image: postgis/postgis:15-3.4
