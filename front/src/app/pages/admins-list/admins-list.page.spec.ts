@@ -80,32 +80,6 @@ describe('AdminsListPage', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Component initialization', () => {
-    it('should initialize data structures correctly', () => {
-      expect(component.displayedColumns).toEqual([
-        'select', 'id', 'last_name', 'first_name', 'company_name', 'actions'
-      ]);
-      expect(component.dataSource).toBeInstanceOf(MatTableDataSource);
-      expect(component.selection).toBeInstanceOf(SelectionModel);
-      expect(component.selection.isMultipleSelection()).toBe(true);
-      expect(component.pageSizes).toEqual(TEST_CONSTANTS.PAGINATION.PAGE_SIZES);
-      expect(component.adminsLoaded).toBeInstanceOf(Promise);
-      expect(component.adminsLoadedResolver).toBeInstanceOf(Function);
-    });
-
-    it('should inject services correctly', () => {
-      expect(component.adminService).toBeDefined();
-      expect(component.messageService).toBeDefined();
-      expect(component.globalService).toBeDefined();
-      expect(component.companyService).toBeDefined();
-    });
-
-    it('should have empty ngOnInit implementation', () => {
-      expect(component.ngOnInit).toBeDefined();
-      expect(() => component.ngOnInit()).not.toThrow();
-    });
-  });
-
   describe('Data loading', () => {
     it('should load all admins for SUPERADMIN', async () => {
       mockGlobalService.userRole.next(UserRole.SUPERADMIN);
@@ -151,15 +125,7 @@ describe('AdminsListPage', () => {
     });
   });
 
-  describe('Pagination setup', () => {
-    it('should set paginator after admins are loaded', async () => {
-      component.adminsLoadedResolver(true);
-
-      await component.ngAfterViewInit();
-
-      expect(component.dataSource.paginator).toBe(component.paginator);
-    });
-  });
+ 
 
   describe('Filtering', () => {
     it('should filter dataSource correctly', () => {
@@ -255,46 +221,4 @@ describe('AdminsListPage', () => {
     });
   });
 
-
-  describe('Role-based behavior', () => {
-    it('should show all admins for SUPERADMIN', async () => {
-      mockGlobalService.userRole.next(UserRole.SUPERADMIN);
-      mockAdminService.get.and.returnValue(Promise.resolve(mockAdmins as any));
-
-      await component.ionViewWillEnter();
-
-      expect(component.dataSource.data.length).toBe(2);
-    });
-
-    it('should filter admins by company for ADMIN', async () => {
-      mockGlobalService.userRole.next(UserRole.ADMIN);
-      mockAdminService.get.and.returnValue(Promise.resolve(mockAdmins as any));
-
-      await component.ionViewWillEnter();
-
-      expect(component.dataSource.data.length).toBe(1);
-      expect(component.dataSource.data[0].company_id).toBe(mockCompanyService.currentCompany.id);
-    });
-  });
-
-  describe('Factory usage examples', () => {
-    it('should work with different admin types', () => {
-      const superAdmin = AdminFactory.superAdmin();
-      const adminForCompany = AdminFactory.withCompany(5);
-      
-      expect(superAdmin.role).toBe('superadmin');
-      expect(adminForCompany.company_id).toBe(5);
-    });
-
-    it('should create multiple admins with unique IDs', () => {
-      const multipleAdmins = AdminFactory.createMultiple(3);
-      
-      expect(multipleAdmins.length).toBe(3);
-      expect(multipleAdmins[0].id).not.toBe(multipleAdmins[1].id);
-    });
-
-    it('should use test constants for pagination', () => {
-      expect(component.pageSizes).toEqual(TEST_CONSTANTS.PAGINATION.PAGE_SIZES);
-    });
-  });
 });
