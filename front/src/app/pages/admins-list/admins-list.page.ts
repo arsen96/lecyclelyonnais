@@ -18,18 +18,22 @@ export class AdminsListPage implements OnInit {
 
   adminService: AdminService = inject(AdminService);
 
-  displayedColumns: string[] = ['select', 'id', 'last_name', 'first_name', 'company_name', 'actions'];
+  displayedColumns: string[] = ['select', 'id', 'last_name', 'first_name', 'company_name', 'role', 'actions'];
   dataSource = new MatTableDataSource<any>();
   selection = new SelectionModel<any>(true, []);
   public messageService = inject(MessageService);
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public loaderService = inject(LoadingService);
   @ViewChild('paginator') paginator: MatPaginator;
-  pageSizes = [3, 6, 10, 15];
+  pageSizes = [6, 10, 15];
   globalService = inject(GlobalService);
   adminsLoaded: Promise<boolean>;
   public companyService = inject(CompanyService)
   adminsLoadedResolver: (value: boolean) => void;
+
+  get UserRole() {
+    return UserRole;
+  }
 
   constructor(public cd: ChangeDetectorRef) {
     this.adminsLoaded = new Promise((resolve) => {
@@ -42,26 +46,28 @@ export class AdminsListPage implements OnInit {
    */
   ionViewWillEnter() {
     this.loaderService.setLoading(true);
-    this.adminService.get().then(() => {
-      let admins;
-      if (this.globalService.userRole?.getValue() === UserRole.ADMIN) {
-        admins = this.adminService.allAdmins.filter((admin) => admin.company_id === this.companyService.currentCompany.id);
-      } else {
-        admins = this.adminService.allAdmins;
-      }
-
-      // Map company_id to company name
-      admins = admins.map(admin => ({
-        ...admin,
-        company_name: this.companyService.getCompanyById(admin.company_id)?.name || 'Unknown'
-      }));
-
-      this.dataSource.data = admins;
-      this.loaderService.setLoading(false);
-      this.cd.detectChanges();
-      this.adminsLoadedResolver(true);
-    });
-  }
+      this.adminService.get().then(() => {
+        let admins;
+        if (this.globalService.userRole?.getValue() === UserRole.ADMIN) {
+          admins = this.adminService.allAdmins.filter(admin => admin.company_id === this.companyService.currentCompany.id);
+          this.displayedColumns = ['select', 'id', 'last_name', 'first_name', 'company_name', 'actions'];
+        } else {
+          admins = this.adminService.allAdmins;
+          this.displayedColumns = ['select', 'id', 'last_name', 'first_name', 'company_name', 'role', 'actions'];
+        }
+    
+        admins = admins.map(admin => ({
+          ...admin,
+          company_name: this.companyService.getCompanyById(admin.company_id)?.name || 'Inconnu',
+          role: admin.role
+        }));
+    
+        this.dataSource.data = admins;
+        this.loaderService.setLoading(false);
+        this.cd.detectChanges();
+        this.adminsLoadedResolver(true);
+      });
+    }
 
   /**
    * Initialise le paginateur après chargement des données.
@@ -143,6 +149,8 @@ export class AdminsListPage implements OnInit {
           return compare(a.last_name, b.last_name, isAsc);
         case 'id':
           return compare(a.id, b.id, isAsc);
+        case 'role':
+          return compare(a.role, b.role, isAsc);
         default:
           return 0;
       }

@@ -280,7 +280,7 @@ router.post('/update', isAuthenticated, validateAdminUpdate, adminController.upd
  *                   type: string
  *                   example: "Erreur lors de la suppression des admins"
  */
-router.post('/delete', isAuthenticated, adminController.deleteAdmin);
+router.delete('/delete', isAuthenticated, adminController.deleteAdmin);
 
 router.post('/login',validateAdminLogin, adminController.loginAdmin);
 

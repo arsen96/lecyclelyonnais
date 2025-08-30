@@ -55,7 +55,7 @@ const createAdmin = async (req, res) => {
 
         const emailResult = await pool.query(checkEmailQuery, [email]);
         if (emailResult.rows.length > 0) {
-            return res.status(400).json({ success: false, message: "Un utilisateur avec cet email existe déjà" });
+            return res.status(400).json({ success: false, message: "L’adresse email est déjà utilisée" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);

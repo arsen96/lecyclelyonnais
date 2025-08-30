@@ -65,7 +65,7 @@ const createTechnicianSchema = Joi.object({
       "string.max": "L'adresse ne peut pas dépasser 500 caractères"
     }),
 
-  domain: Joi.string().min(2).max(100).required()
+  domain: Joi.string().allow(null, '').optional()
 });
 
 /**

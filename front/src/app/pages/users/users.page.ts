@@ -147,7 +147,9 @@ export class UsersPage implements OnInit {
       this.updateUser();
     } else {
       if (this.registrationForm.valid && this.addressValidated) {
-        const register$ = this.standardAuthService.register(this.registrationForm.value);
+        const fromAdmin = true;
+        const data = {...this.registrationForm.value, fromAdmin};
+        const register$ = this.standardAuthService.register(data);
         const result = this.loaderService.showLoaderUntilCompleted(register$);
         result.subscribe({
           next: (res) => {

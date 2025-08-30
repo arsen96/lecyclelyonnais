@@ -56,7 +56,8 @@ export class BikePage implements OnInit {
           } 
         },
         error: (error) => {
-          this.messageService.showToast(error.message, 'danger'); 
+          console.log('ErrorErrorError', error);
+          this.messageService.showToast(error, 'danger'); 
         }
       });
     } else {

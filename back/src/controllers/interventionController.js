@@ -250,7 +250,7 @@ const manageEnd = async (req, res) => {
                     has_photos: photos ? photos.length > 0 : false
                 });
                 console.log("Intervention a été complétée");
-                res.status(200).send({ success: true, message: is_canceled ? "Intervention annulée" : "Intervention a été complétée" });
+                res.status(200).send({ success: true, message: isCanceled ? "Intervention annulée" : "Intervention a été terminée" });
             } catch (error) {
                 captureBusinessError(error, 'intervention.manage_end.failed', {
                     tags: { intervention_id, action: isCanceled ? 'cancel' : 'complete' }

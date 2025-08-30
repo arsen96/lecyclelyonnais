@@ -53,7 +53,6 @@ export class InterventionsPage implements OnInit, OnDestroy {
       filter(user => user !== null && user.id !== undefined),
       take(1)
     ).subscribe(async (user) => {
-      console.log("useruseruseruser", user)
       if (!user || !user.id) {
         console.error('User not found or user ID is missing');
         this.messageService.showToast("Utilisateur non trouvé", Message.danger);
@@ -71,7 +70,6 @@ export class InterventionsPage implements OnInit, OnDestroy {
           intervention.status === 'completed' || 
           intervention.status === 'canceled'
         );
-        
         // Filtre les interventions à venir
         this.upcomingInterventions = this.userInterventions.filter(intervention => {
           const isUpcom = new Date(intervention.appointment_end) >= now;

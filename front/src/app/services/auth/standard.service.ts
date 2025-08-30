@@ -7,6 +7,7 @@ import { TechnicianService } from '../technician.service';
 import { InterventionService } from '../intervention.service';
 import { CompanyService } from '../company.service';
 import { BaseService } from '../base.service';
+import { AdminService } from '../admin.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,8 @@ export class StandardAuth extends AuthBaseService {
   public companyService = inject(CompanyService)
   currentRoute = 'auth';
   
-  constructor(private bicycleService:BicycleService,private technicianService:TechnicianService,private company:CompanyService,private interventionService:InterventionService) {
+  
+  constructor(private adminService: AdminService,private bicycleService:BicycleService,private technicianService:TechnicianService,private company:CompanyService,private interventionService:InterventionService) {
     super();
    }
 
@@ -51,13 +53,12 @@ export class StandardAuth extends AuthBaseService {
         )
         .pipe(
           tap(res => {
-            if (res) {
+            if(res.token){
               this.bicycleService.userBicycles = [];
-
               this.globalService.user.next(res.data.user);
               this.globalService.userRole.next(res.data.user.role);
               this.setSession(res.token);
-            } 
+            }
           }),
           map(data => {
             this.globalService.isAuthenticated.next(true)
@@ -98,6 +99,7 @@ export class StandardAuth extends AuthBaseService {
 
   override logout(){
     super.logout();
+    this.adminService.allAdmins = []; 
     this.bicycleService.userBicycles = [];
     this.bicycleService.resetBicyclesLoaded();
     this.technicianService.resetTechniciansLoaded();

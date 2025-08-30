@@ -216,7 +216,11 @@ const addTechnicianToZone = async (req, res) => {
     const query = 'UPDATE technician SET geographical_zone_id = $1, address = $2 WHERE id = ANY($3::int[])';
     await pool.query(query, [zone_id, address, technician_ids]);
 
-    res.status(200).send({ success: true, message: "Techniciens mis à jour avec succès" });
+    if(technician_ids.length > 1){
+      res.status(200).send({ success: true, message: "Les techniciens ont été ajoutés à la zone" });
+    }else{
+      res.status(200).send({ success: true, message: "Le technicien a bien été ajouté à la zone" });
+    }
   } catch (error) {
     console.error("Erreur lors de la mise à jour des techniciens", error);
     res.status(500).send({success: false, message: 'Erreur lors de la mise à jour des techniciens'});

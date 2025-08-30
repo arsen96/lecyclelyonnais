@@ -7,6 +7,8 @@ import { ModalController, AlertController } from '@ionic/angular';
 import { ImageModalComponent } from 'src/app/components/image-modal/image-modal.component';
 import { LoadingService } from 'src/app/services/loading.service';
 import { BaseService } from 'src/app/services/base.service';
+import { filter } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 
 export enum FilterType {
@@ -61,35 +63,47 @@ export class MesinterventionsPage implements OnInit {
   async ionViewWillEnter() {
     const success = await this.interventionService.interventionsLoaded;
     if (success) {
-      this.technicianInterventions = await this.interventionService.getInterventionsByTechnician(this.globalService.user.getValue().id);
-      const now = new Date();
-      
-      // Filtre les interventions passées (terminées ou annulées)
-      this.pastInterventions = this.technicianInterventions.filter(intervention => 
-        new Date(intervention.appointment_end) < now || 
-        intervention.status === 'completed' || 
-        intervention.status === 'canceled'
-      );
-      
-      // Filtre les interventions en cours (dans la plage horaire actuelle)
-      this.ongoingInterventions = this.technicianInterventions.filter(intervention => {
-        const start = new Date(intervention.appointment_start);
-        const end = new Date(intervention.appointment_end);
-        const isOngoing = start <= now && end >= now && intervention.status !== 'completed';
-        return isOngoing;
-      });
+      this.globalService.user.pipe(
+        filter(user => user !== null && user.id !== undefined),
+        take(1)
+      ).subscribe(async (user) => {
+        if (!user || !user.id) {
+          console.error('User not found or user ID is missing');
+          this.messageService.showToast("Utilisateur non trouvé", Message.danger);
+          return;
+        }
 
-      // Filtre les interventions à venir (non annulées et pas dans le passé)
-      this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
-        const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';
-        const isNotInPast = !this.pastInterventions.some(pastIntervention => pastIntervention.id === intervention.id);
-        return isUpcoming && isNotInPast;
+          this.technicianInterventions = await this.interventionService.getInterventionsByTechnician(this.globalService.user.getValue().id);
+          const now = new Date();
+          
+          // Filtre les interventions passées (terminées ou annulées)
+          this.pastInterventions = this.technicianInterventions.filter(intervention => 
+            new Date(intervention.appointment_end) < now || 
+            intervention.status === 'completed' || 
+            intervention.status === 'canceled'
+          );
+          
+          // Filtre les interventions en cours (dans la plage horaire actuelle)
+          this.ongoingInterventions = this.technicianInterventions.filter(intervention => {
+            const start = new Date(intervention.appointment_start);
+            const end = new Date(intervention.appointment_end);
+            const isOngoing = start <= now && end >= now && intervention.status !== 'completed';
+            return isOngoing;
+          });
+
+          // Filtre les interventions à venir (non annulées et pas dans le passé)
+          this.upcomingInterventions = this.technicianInterventions.filter(intervention => {
+            const isUpcoming = new Date(intervention.appointment_start) > now && intervention.status !== 'canceled';
+            const isNotInPast = !this.pastInterventions.some(pastIntervention => pastIntervention.id === intervention.id);
+            return isUpcoming && isNotInPast;
+          });
+        
+          // Met à jour l'affichage des sections selon le contenu
+          this.displayPastInterventions = this.pastInterventions.length > 0;
+          this.displayOngoingInterventions = this.ongoingInterventions.length > 0;
+          this.displayUpcomingInterventions = this.upcomingInterventions.length > 0;
       });
-    
-      // Met à jour l'affichage des sections selon le contenu
-      this.displayPastInterventions = this.pastInterventions.length > 0;
-      this.displayOngoingInterventions = this.ongoingInterventions.length > 0;
-      this.displayUpcomingInterventions = this.upcomingInterventions.length > 0;
+     
     }
   }
 

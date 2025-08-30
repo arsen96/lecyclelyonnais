@@ -184,12 +184,4 @@ export class InterventionService {
     await this.initialize();
   }
 
-  /**
-   * Efface le cache des interventions
-   */
-  resetCache(): void {
-    this.allInterventions = [];
-    this.initialized = false;
-    this.interventionLoad();
-  }
 }

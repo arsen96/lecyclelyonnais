@@ -140,7 +140,7 @@ describe('🔐 AdminController - Tests Unitaires', () => {
       expect(res.status.calledWith(400)).to.be.true;
       expect(res.json.calledWith({
         success: false,
-        message: "Un utilisateur avec cet email existe déjà"
+        message: "L’adresse email est déjà utilisée"
       })).to.be.true;
     });
 

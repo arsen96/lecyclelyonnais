@@ -34,7 +34,7 @@ const updateClient = async (req, res) => {
         console.error("error", error);
         if (error.code === '23505') { // PostgreSQL error code for unique violation
           console.log("Erreur lors de la mise à jour du client", error);
-            res.status(400).send({ success: false, message: "Un client avec cette adresse email existe déjà" });
+            res.status(400).send({ success: false, message: "L’adresse email est déjà utilisée" });
         } else {
             console.log("Erreur lors de la mise à jour du client", error);
             res.status(500).send({ success: false, message: "Erreur lors de la mise à jour du client" });

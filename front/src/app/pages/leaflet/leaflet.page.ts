@@ -85,8 +85,6 @@ export class LeafletPage {
       );
     }
 
-
-    console.log("asasasa",this.filteredTechnicians );
   }
 
   onMapReady(map: Map) {
@@ -163,6 +161,7 @@ export class LeafletPage {
                 this.drawControl.remove();
               },
               error: (error) => {
+                console.log("error zone creation", error);
                 this.loaderService.setLoading(false);
               }
             });
@@ -299,7 +298,7 @@ export class LeafletPage {
    * @param {number} technicianId - ID du technicien à supprimer
    */
   removeTechnician(technicianId: number) {
-    this.zoneService.removeTechnicianFromZone(this.zoneIdSelected, technicianId).subscribe({
+    this.loaderService.showLoaderUntilCompleted(this.zoneService.removeTechnicianFromZone(this.zoneIdSelected, technicianId)).subscribe({
       next: (res: any) => {
         this.zoneSelected.technicians = this.zoneSelected.technicians.filter(t => t.id !== technicianId);
         this.filterTechnicians();
@@ -308,7 +307,7 @@ export class LeafletPage {
       error: (error) => {
         console.error("Erreur lors de la suppression du technicien", error);
       }
-    });
+    }); 
   }
 
   onSidenavClose() {
@@ -317,7 +316,6 @@ export class LeafletPage {
 
   async setModelPlanification(){
     const modalData = await this.openZoneModal(true)
-    console.log("modalData", modalData);
     if(modalData){
       this.zoneService.update(this.zoneIdSelected, modalData.zoneTitle, modalData.zoneTypeInterventionMaintenance, modalData.zoneTypeInterventionRepair).subscribe({
         next: (res: any) => {
@@ -328,7 +326,7 @@ export class LeafletPage {
           this.messageService.showToast(res.message, 'success');
         },
         error: (error) => {
-          this.messageService.showToast(error.message, 'danger');
+          this.messageService.showToast(error, 'danger');
         }
       });
     }

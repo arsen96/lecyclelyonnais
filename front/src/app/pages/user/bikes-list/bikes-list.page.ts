@@ -74,7 +74,6 @@ export class BikesListPage implements OnInit {
     const result = this.loaderService.showLoaderUntilCompleted(zoneRemoved$); 
     result.subscribe({
       next: (response: any) => {
-        console.log('Delete response:', response);
         this.dataSource.data = this.dataSource.data.filter(item => !selectedIds.includes(item.id));
         this.selection.clear();
         this.messageService.showToast(response.message, 'success');

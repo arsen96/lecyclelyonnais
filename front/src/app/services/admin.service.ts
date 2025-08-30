@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { BaseService } from './base.service';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { Admin } from '../models/admin';
 import { AuthBaseService } from './auth/auth-base.service';
-import { GlobalService } from './global.service';
+import { GlobalService, UserRole } from './global.service';
 import { CompanyService } from './company.service';
 
 @Injectable({
@@ -31,7 +31,9 @@ export class AdminService extends BaseService {
         this.http.get<any>(`${BaseService.baseApi}/${this.currentUrl}/get`).pipe(
           map((res: {success: boolean, data: Admin[]}) => { 
             this.allAdmins = res.data.filter((user) => user.id !== this.globalService.user.getValue()?.id)
-            console.log("allAdmins", res)
+            if(this.globalService.userRole.getValue() === UserRole.ADMIN){
+              this.allAdmins = this.allAdmins.filter((admin) => admin.role === UserRole.ADMIN)
+            }
             resolve(res.data)
           }),
           catchError(BaseService.handleError.bind(this))
@@ -57,14 +59,10 @@ export class AdminService extends BaseService {
       body: {
         ids: adminsIds
       }
-    }).pipe(map((res: any) => {
-      this.allAdmins.forEach(admin => {
-        if(adminsIds.includes(admin.id)){  
-          // admin.geographical_zone_id = null;
-        }
-      });
-      return res;
-      }),
+    }).pipe(
+      tap((res: any) => {
+        this.allAdmins = this.allAdmins.filter(admin => !adminsIds.includes(admin.id));
+      }), 
       catchError(BaseService.handleError.bind(this))
     )
   }

@@ -69,6 +69,9 @@ export class BicycleService extends BaseService{
         ids: ids
       }
     }).pipe(
+      tap(() => {
+        this.userBicycles = this.userBicycles.filter(b => !ids.includes(b.id));
+      }),
       catchError((err) => BaseService.handleError(err))
     );  
   }

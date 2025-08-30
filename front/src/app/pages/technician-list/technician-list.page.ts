@@ -23,7 +23,7 @@ export class TechnicianListPage implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public loaderService = inject(LoadingService);
   @ViewChild('paginator') paginator: MatPaginator;
-  pageSizes = [3, 6, 10, 15];
+  pageSizes = [6, 10, 15];
   techniciansLoaded: Promise<boolean>;
   techniciansLoadedResolver: (value: boolean) => void;
   constructor(public cd:ChangeDetectorRef) {

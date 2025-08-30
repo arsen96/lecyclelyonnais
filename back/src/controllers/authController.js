@@ -20,7 +20,7 @@ const generateToken = (user, role) => {
  * @returns obtenir le token de session
  */
 const register = async (req, res) => {
-  const { email, password, firstName, lastName, phone, address, domain } = req.body;
+  const { email, password, firstName, lastName, phone, address, domain, fromAdmin } = req.body;
   try {
     // Vérifier si l'utilisateur existe déjà dans la base de données
     const checkUserQuery = 'SELECT * FROM client WHERE email = $1';
@@ -46,8 +46,10 @@ const register = async (req, res) => {
 
     const insertUserQuery = 'INSERT INTO client (first_name, last_name, email, password, phone, address, company_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
     const newUser = await pool.query(insertUserQuery, [firstName, lastName, email, hashedPassword, phone, address, companyId]);
-
-    const token = generateToken(newUser.rows[0], 'client');
+    let token;
+    if(!fromAdmin){
+      token = generateToken(newUser.rows[0], 'client');
+    }
     res.status(201).json({
       success: true,
       token,

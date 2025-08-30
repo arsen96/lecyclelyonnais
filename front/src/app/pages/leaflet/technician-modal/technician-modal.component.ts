@@ -9,6 +9,7 @@ import { Zones } from 'src/app/models/zones';
 import { MessageService } from 'src/app/services/message.service';
 import { ZoneService } from 'src/app/services/zone.service';
 import { SelectionModel } from '@angular/cdk/collections';
+import { LoadingService } from 'src/app/services/loading.service';
 
 @Component({
   selector: 'app-technician-modal',
@@ -28,6 +29,7 @@ export class TechnicianModalComponent implements OnInit {
   @Input() zoneId: number;
   @Input() currentZone: Zones;
   messageService: MessageService = inject(MessageService);
+  loaderService: LoadingService = inject(LoadingService);
   constructor(private modalController: ModalController, public technicianService: TechnicianService,public cd:ChangeDetectorRef,public zoneService:ZoneService) {
     this.techniciansLoaded = new Promise((resolve) => {
       this.techniciansLoadedResolver = resolve;
@@ -57,7 +59,7 @@ export class TechnicianModalComponent implements OnInit {
 
   manageSelected(id: number | number[]) {
     let ids = Array.isArray(id) ? id : [id];
-      this.zoneService.addTechnicianToZone(this.zoneId,ids).subscribe(res => {
+    this.loaderService.showLoaderUntilCompleted(this.zoneService.addTechnicianToZone(this.zoneId,ids)).subscribe(res => {
         ids.forEach(id => {  
           const currentTechnician = this.technicians.find(t => t.id === id);
           this.currentZone.technicians.push({id:currentTechnician.id,first_name:currentTechnician.first_name,last_name:currentTechnician.last_name});
@@ -82,7 +84,6 @@ export class TechnicianModalComponent implements OnInit {
   }
 
   addMultipleTechnicians(){
-    console.log("addMultipleTechnicians",this.selection.selected)
     const ids = this.selection.selected.map(t => t.id);
     this.manageSelected(ids);
   }

@@ -15,6 +15,7 @@ const routesClient = require('./routes/clientRoute');
 const routesAdmin = require('./routes/adminRoute');
 const routesCompany = require('./routes/companyRoute');
 const swaggerJsdoc = require('swagger-jsdoc');
+const basicAuth = require('express-basic-auth');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config()
 const cors = require('cors'); 
@@ -30,7 +31,7 @@ app.use(sentryUserContextMiddleware);
 
 // Servir les fichiers statiques du dossier 'uploads'
 console.log("__dirname", __dirname)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
 
 
 app.use(generalLimiter);

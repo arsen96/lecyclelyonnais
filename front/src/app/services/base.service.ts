@@ -14,9 +14,8 @@ export abstract class BaseService implements CRUD<any> {
   public static $disconnect = BaseService.disconnect.asObservable();
   constructor() {
     const hostname = window.location.hostname;
-    
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      BaseService.baseApi = `http://${hostname}:3000`;
+      BaseService.baseApi = `http://${hostname}:3000/api`;
     } else if (hostname === 'test.lecyclelyonnais.fr') {
       BaseService.baseApi = 'https://test.lecyclelyonnais.fr/api';
     } else {

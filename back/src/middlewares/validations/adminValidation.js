@@ -52,28 +52,7 @@ const adminCreateSchema = Joi.object({
       "string.max": "Le mot de passe ne peut pas dépasser 128 caractères",
       "any.required": "Le mot de passe est obligatoire"
     }),
-
-  domain: Joi.string()
-    .min(3)
-    .max(50)
-    .alphanum()
-    .lowercase()
-    .optional()
-    .messages({
-      "string.min": "Le domaine doit contenir au moins 3 caractères",
-      "string.max": "Le domaine ne peut pas dépasser 50 caractères",
-      "string.alphanum": "Le domaine ne peut contenir que des lettres et chiffres"
-    }),
-
-  company_id: Joi.number()
-    .integer()
-    .positive()
-    .optional()
-    .messages({
-      "number.base": "L'ID de l'entreprise doit être un nombre",
-      "number.integer": "L'ID de l'entreprise doit être un nombre entier",
-      "number.positive": "L'ID de l'entreprise doit être positif"
-    })
+  domain: Joi.string().allow(null, '').optional()
 });
 
 // Schéma pour mise à jour d'admin
@@ -166,13 +145,6 @@ const adminLoginSchema = Joi.object({
       "string.empty": "Le mot de passe est obligatoire",
       "any.required": "Le mot de passe est obligatoire"
     }),
-
-  domain: Joi.string()
-    .required()
-    .messages({
-      "string.empty": "Le domaine est obligatoire",
-      "any.required": "Le domaine est obligatoire"
-    })
 });
 
 // Middlewares de validation

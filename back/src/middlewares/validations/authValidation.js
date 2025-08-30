@@ -23,7 +23,7 @@ const registerSchema = Joi.object({
     "any.required": "Le téléphone est obligatoire"
   }),
   address: Joi.string().min(2).allow("", null),
-  domain: Joi.string().optional() 
+  domain: Joi.string().allow(null, '').optional()
 });
 
 // Schéma pour login
@@ -36,13 +36,13 @@ const loginSchema = Joi.object({
     "string.min": "Le mot de passe doit contenir au moins 6 caractères",
     "any.required": "Le mot de passe est obligatoire"
   }),
-  domain: Joi.string().optional()
+  domain: Joi.string().allow(null, '').optional()
 });
 
 // Schéma pour demande de reset password
 const forgotPasswordSchema = Joi.object({
   email: Joi.string().email().required(),
-  domain: Joi.string().optional()
+  domain: Joi.string().allow(null, '').optional()
 });
 
 // Schéma pour reset password

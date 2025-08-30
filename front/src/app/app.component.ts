@@ -102,7 +102,6 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    console.log("logout")
     this.standard.logout();
   }
 

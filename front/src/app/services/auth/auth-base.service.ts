@@ -32,7 +32,6 @@ export class AuthBaseService {
     this.globalService.isAuthenticated.next(this.wasAuthenticated);
     
     if (!this.wasAuthenticated) {
-      console.log("logout")
       localStorage.removeItem("access_token");
     }
 
@@ -180,8 +179,6 @@ export class AuthBaseService {
     this.tokenObs = null;
     this.initialized = false;
     const role = this.globalService.userRole.getValue();
-    console.log("logout")
-    console.trace()
     localStorage.removeItem("access_token");
     
     if (role === 'admin' || role === 'superadmin') {

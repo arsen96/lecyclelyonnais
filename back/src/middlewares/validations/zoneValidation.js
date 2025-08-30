@@ -4,12 +4,9 @@ const Joi = require('joi');
  * Schéma Joi pour valider la création / mise à jour de zone
  */
 const zoneSchema = Joi.object({
-  wkt: Joi.string()
+  wkt: Joi.string().allow(null, '').optional()
     .pattern(/^POLYGON\(\(.+\)\)$/i)
-    .required()
     .messages({
-      "string.empty": "La géométrie (wkt) est obligatoire",
-      "any.required": "La géométrie (wkt) est obligatoire",
       "string.pattern.base": "Le champ wkt doit être un POLYGON valide"
     }),
 
@@ -24,14 +21,7 @@ const zoneSchema = Joi.object({
       "any.required": "Le nom de la zone est obligatoire"
     }),
 
-  domain: Joi.string()
-    .min(2)
-    .max(100)
-    .required()
-    .messages({
-      "string.empty": "Le domaine est obligatoire",
-      "any.required": "Le domaine est obligatoire"
-    }),
+  domain: Joi.string().allow(null, '').optional(),
 
   zoneTypeInterventionMaintenance: Joi.number()
     .integer()

@@ -127,6 +127,7 @@ export class AdminsPage implements OnInit {
         const result = this.loaderService.showLoaderUntilCompleted(register$);
         result.subscribe({
           next: (res) => {
+            this.adminService.allAdmins = [];
             this.router.navigateByUrl("admins-list");
           },
           error: (err) => {

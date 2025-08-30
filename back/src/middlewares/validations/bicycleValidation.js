@@ -17,12 +17,16 @@ const bicycleSchema = Joi.object({
       "any.required": "Le modèle est obligatoire"
     }),
 
-  year: Joi.string()
-    .pattern(/^[0-9]{4}$/)
+  year: Joi.number()
+    .integer()
+    .min(1900)     
+    .max(new Date().getFullYear()) 
     .required()
     .messages({
-      "string.empty": "L'année est obligatoire",
-      "string.pattern.base": "L'année doit contenir exactement 4 chiffres",
+      "number.base": "L'année doit être un nombre",
+      "number.empty": "L'année est obligatoire",
+      "number.min": "L'année doit être supérieure ou égale à 1900",
+      "number.max": `L'année ne peut pas être supérieure à ${new Date().getFullYear()}`,
       "any.required": "L'année est obligatoire"
     }),
 
@@ -36,9 +40,7 @@ const bicycleSchema = Joi.object({
 });
 
 const validateBicycle = (req, res, next) => {
-  const { error } = bicycleSchema.validate(req.body, {
-    stripUnknown: true
-  });
+  const { error } = bicycleSchema.validate(req.body, { stripUnknown: true });
   
   if (error) {
     return res.status(400).send({
