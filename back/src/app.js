@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 app.set('trust proxy', 1);
-const { sentryUserContextMiddleware } = require('./config/sentry'); // Enlever Sentry d'ici
+const { sentryUserContextMiddleware } = require('./config/sentry'); 
 const routes = require('./routes/index');
 const routesAuth = require('./routes/authRoute');
 const routesZone = require('./routes/zoneRoute');
@@ -35,27 +35,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(generalLimiter);
 
-// const options = {
-//   definition: {
-//     openapi: '3.0.0',
-//     info: {
-//       title: 'HomeCycl\'Home API',
-//       version: '1.0.0',
-//       description: 'API de gestion des interventions vélo multi-tenant',
-//     },
-//     servers: [
-//       {
-//         url: 'https://www.lecyclelyonnais.fr',
-//         description: 'Production server',
-//       },
-//       {
-//         url: 'http://localhost:3000',
-//         description: 'Development server',
-//       },
-//     ],
-//   },
-//   apis: ['./src/routes/*.js'], 
-// };
 
 const options = {
   definition: {
