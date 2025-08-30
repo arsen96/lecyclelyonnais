@@ -1,3 +1,5 @@
+#docker build -t arsenkubat/lecycle-backend:latest .
+
 services:
   postgres:
     image: postgis/postgis:15-3.4
@@ -20,6 +22,8 @@ services:
     environment:
       - ENVIRONMENT=production
       - DATABASE_URL=postgresql://lecycle_app:HomeCycl@Lyon2024$@postgres:5432/lecycle_db
+      - DOCS_PASSWORD=3M&DBAp8K#xj:ax%
+      - DOCS_USERNAME=arsenkubat
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=lecycle_app

@@ -2,6 +2,7 @@ require('./config/sentry');
 const express = require('express');
 const path = require('path');
 const app = express();
+const basicAuth = require('express-basic-auth');
 app.set('trust proxy', 1);
 const { sentryUserContextMiddleware } = require('./config/sentry'); 
 const routes = require('./routes/index');
@@ -71,7 +72,7 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 app.use('/api-docs', basicAuth({
-  users: { 'admin': process.env.DOCS_PASSWORD },
+  users: { [process.env.DOCS_USERNAME]: process.env.DOCS_PASSWORD },
   challenge: true,
 }), swaggerUi.serve, swaggerUi.setup(specs));
 

@@ -6,7 +6,7 @@ const MAIN_TEST_COMPANY_ID = 10;
 const isTestEnvironment = process.env.NODE_ENV === 'test';
 
 process.env.DB_HOST = 'localhost';
-process.env.DB_PORT = 5434;  // Port mappé sur l'hôte
+process.env.DB_PORT = 5434; 
 process.env.DB_USER = 'lecycle_test_user';
 process.env.DB_NAME = 'lecycle_test_db';
 process.env.DB_PASSWORD = 'TestPassword123';
@@ -25,54 +25,34 @@ const bcrypt = require('bcryptjs');
 
 
 async function createTestData() {
-
   console.log('DB_HOST:', process.env.DB_HOST);
   console.log('DB_USER:', process.env.DB_USER);
   console.log('DB_NAME:', process.env.DB_NAME);
   console.log('DB_PORT:', process.env.DB_PORT);
   
   try {
-    // Nettoyer les tables
     await cleanDatabase();
-    
-    // Créer les entreprises
     await createTestCompanies();
-    
-    // Créer les clients
     await createTestClients();
-    
-    // Créer les admins
     await createTestAdmins();
-    
-    // Créer les technicians
     await createTestTechnicians();
-    
-    // Créer les vélos
     await createTestBicycles();
-    
   } catch (error) {
     console.error('Erreur de requête :', error);
     throw error;
   }
 }
 
-/**
- * Supprimer les données de test
- */
 async function cleanDatabase() {
   try {
-    // Clés etrangere contrainte sur la table intervention donc supprimer les interventions liées aux vélos d'abord
-    // un vélo qui est dans une table intervntion ne peut pas etre supprimé
     try {
       const testBikesResult = await pool.query(`
         SELECT b.id 
         FROM bicycle b 
         JOIN client c ON b.client_id = c.id 
-        WHERE c.email LIKE '%@test.com'
+        WHERE c.email LIKE '%@demo.com'
       `);
-      
       const testBikeIds = testBikesResult.rows.map(row => row.id);
-      
       if (testBikeIds.length > 0) {
         try {
           await pool.query(
@@ -87,53 +67,23 @@ async function cleanDatabase() {
       console.error('Erreur avec interventions', error.message);
     }
     
-    // 2. Supprimer les vélos 
-    try {
-      await pool.query(`
-        DELETE FROM bicycle 
-        WHERE client_id IN (
-          SELECT id FROM client WHERE email LIKE '%@test.com'
-        )
-      `);
-    } catch (error) {
-      console.error('Erreur avec vélos', error.message);
-    }
-    
-    // 3. Supprimer les technicians 
-    try {
-      await pool.query('DELETE FROM technician WHERE email LIKE \'%@test.com\'');
-    } catch (error) {
-      console.error('Erreur avec technicien', error.message);
-    }
-    
-    // 4. Supprimer les admins 
-    try {
-      await pool.query('DELETE FROM administrator WHERE email LIKE \'%@test.com\'');
-    } catch (error) {
-      console.error('Erreur avec admin', error.message);
-    }
-    
-    // 5. Supprimer les clients 
-    try {
-      await pool.query('DELETE FROM client WHERE email LIKE \'%@test.com\'');
-    } catch (error) {
-      console.error('Erreur avec clients', error.message);
-    }
-    
-    // 6. Supprimer les entreprises 
-    try {
-      await pool.query(`
-        DELETE FROM company 
-        WHERE email LIKE '%@test.com' 
-           OR email LIKE '%.test.com'
-           OR subdomain IN ('test', 'alpha', 'beta')
-      `);
-    } catch (error) {
-      console.error('Erreur avec entreprises', error.message);
-    }
+    await pool.query(`
+      DELETE FROM bicycle 
+      WHERE client_id IN (
+        SELECT id FROM client WHERE email LIKE '%@demo.com'
+      )
+    `);
+    await pool.query('DELETE FROM technician WHERE email LIKE \'%@demo.com\'');
+    await pool.query('DELETE FROM administrator WHERE email LIKE \'%@demo.com\'');
+    await pool.query('DELETE FROM client WHERE email LIKE \'%@demo.com\'');
+    await pool.query(`
+      DELETE FROM company 
+      WHERE email LIKE '%@demo.com' 
+         OR email LIKE '%.demo.com'
+         OR subdomain IN ('gamma', 'delta', 'omega')
+    `);
     
     console.log('Nettoyage terminé avec succès');
-    
   } catch (error) {
     console.error('Erreur lors du nettoyage:', error.message);
     throw error;
@@ -143,25 +93,39 @@ async function cleanDatabase() {
 async function createTestCompanies() {
   const companies = [
     {
-      name: 'Test Company',
-      email: 'contact@test.com',
-      subdomain: 'test',
-      theme_color: '#ff0000',
-      phone: '0123456789'
+      name: 'VeloCity Corp',
+      email: 'contact@gamma.demo.com',
+      subdomain: 'gamma',
+      theme_color: '#aa0000',
+      phone: '0145000001'
     },
     {
-      name: 'Alpha Company',
-      email: 'contactalpha@test.com',
-      subdomain: 'alpha',
-      theme_color: '#00ff00',
-      phone: '0123456788'
+      name: 'Delta Rides',
+      email: 'hello@delta.demo.com',
+      subdomain: 'delta',
+      theme_color: '#00aa00',
+      phone: '0145000002'
     },
     {
-      name: 'Beta Company', 
-      email: 'contactbeta@test.com',
-      subdomain: 'beta',
-      theme_color: '#0000ff',
-      phone: '0123456787'
+      name: 'Omega Cycles',
+      email: 'info@omega.demo.com',
+      subdomain: 'omega',
+      theme_color: '#0000aa',
+      phone: '0145000003'
+    },
+    {
+      name: 'Speedy Wheels',
+      email: 'contact@speedy.demo.com',
+      subdomain: 'speedy',
+      theme_color: '#ffaa00',
+      phone: '0145000004'
+    },
+    {
+      name: 'Urban Pedal',
+      email: 'hello@urban.demo.com',
+      subdomain: 'urban',
+      theme_color: '#00aaff',
+      phone: '0145000005'
     }
   ];
   
@@ -171,96 +135,69 @@ async function createTestCompanies() {
       [company.name, company.email, company.subdomain, company.theme_color, company.phone]
     );
   }
-  
   console.log(`${companies.length} entreprises créées`);
 }
 
 async function createTestClients() {
   const companiesResult = await pool.query(`
     SELECT id FROM company 
-    WHERE email LIKE '%@test.com' 
-       OR subdomain IN ('test', 'alpha', 'beta')
+    WHERE email LIKE '%@demo.com' 
+       OR subdomain IN ('gamma', 'delta', 'omega')
     ORDER BY id
   `);
   const companyIds = companiesResult.rows.map(row => row.id);
   
-  
-  
   const clients = [];
   
   clients.push({
-    first_name: 'Client',
-    last_name: 'Test',
-    email: 'client.test@test.com',
+    first_name: 'Jean',
+    last_name: 'Durand',
+    email: 'jean.durand@demo.com',
     password: await bcrypt.hash('password123', 10),
-    phone: '0123456789',
-    address: '123 Rue de Test, Paris',
+    phone: '0100000100',
+    address: '5 Rue de Lyon, Paris',
     company_id: MAIN_TEST_COMPANY_ID
   });
 
   clients.push({
-    first_name: 'AAA_Premier',
-    last_name: 'AAAA',
-    email: 'premier@test.com',
+    first_name: 'Claire',
+    last_name: 'Petit',
+    email: 'claire.petit@demo.com',
     password: await bcrypt.hash('password123', 10),
-    phone: '0100000001',
-    address: '1 Première Rue, Paris',
-    company_id: MAIN_TEST_COMPANY_ID
-  });
-  
-  clients.push({
-    first_name: 'ZZZ_Dernier',
-    last_name: 'ZZZZ',
-    email: 'dernier@test.com',
-    password: await bcrypt.hash('password123', 10),
-    phone: '0100000002',
-    address: '999 Dernière Rue, Paris',
+    phone: '0100000101',
+    address: '8 Avenue République, Lyon',
     company_id: MAIN_TEST_COMPANY_ID
   });
 
   clients.push({
-    first_name: 'Martin',
-    last_name: 'Dupont',
-    email: 'martin.dupont@test.com',
+    first_name: 'Lucas',
+    last_name: 'Bernard',
+    email: 'lucas.bernard@demo.com',
     password: await bcrypt.hash('password123', 10),
-    phone: '0100000003',
-    address: '10 Rue Martin, Paris',
-    company_id: MAIN_TEST_COMPANY_ID
-  });
-  
-  clients.push({
-    first_name: 'Marie',
-    last_name: 'Martin',
-    email: 'marie.martin@test.com',
-    password: await bcrypt.hash('password123', 10),
-    phone: '0100000004',
-    address: '20 Avenue Marie, Lyon',
+    phone: '0100000102',
+    address: '12 Boulevard Sud, Marseille',
     company_id: MAIN_TEST_COMPANY_ID
   });
 
   clients.push({
-    first_name: 'Très',
-    last_name: 'Ancien',
-    email: 'ancien@test.com',
+    first_name: 'Sophie',
+    last_name: 'Roux',
+    email: 'sophie.roux@demo.com',
     password: await bcrypt.hash('password123', 10),
-    phone: '0100000006',
-    address: '40 Rue Ancienne, Nice',
-    created_at: '2020-01-01',
+    phone: '0100000103',
+    address: '25 Rue Centrale, Toulouse',
     company_id: MAIN_TEST_COMPANY_ID
   });
 
-  
-  for (let i = 7; i <= 20; i++) {
+  for (let i = 5; i <= 20; i++) {
     let assignedCompanyId = null;
-    
     if (companyIds.length > 0 && Math.random() > 0.3) { 
       assignedCompanyId = companyIds[Math.floor(Math.random() * companyIds.length)];
     }
-    
     clients.push({
       first_name: faker.person.firstName(),
       last_name: faker.person.lastName(),
-      email: `client${i}@test.com`,
+      email: `client${i}@demo.com`,
       password: await bcrypt.hash('password123', 10),
       phone: faker.phone.number('01########'),
       address: `${faker.location.streetAddress()}, ${faker.location.city()}`,
@@ -272,137 +209,165 @@ async function createTestClients() {
     });
   }
 
- 
-  let clientsWithCompany = 0;
-  let clientsWithoutCompany = 0;
-  
   for (const client of clients) {
-    const query = `
-      INSERT INTO client (first_name, last_name, email, password, phone, address, created_at, company_id) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `;
-    
-    const values = [
-      client.first_name,
-      client.last_name, 
-      client.email,
-      client.password,
-      client.phone,
-      client.address,
-      client.created_at || new Date().toISOString().split('T')[0],
-      client.company_id
-    ];
-    
-    await pool.query(query, values);
-    
-    if (client.company_id) {
-      clientsWithCompany++;
-    } else {
-      clientsWithoutCompany++;
-    }
-  }
-  
-  if (companyIds.length > 0) {
-    console.log(` Companies utilisées: [${companyIds.join(', ')}]`);
+    await pool.query(
+      `INSERT INTO client (first_name, last_name, email, password, phone, address, created_at, company_id) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [
+        client.first_name,
+        client.last_name, 
+        client.email,
+        client.password,
+        client.phone,
+        client.address,
+        client.created_at || new Date().toISOString().split('T')[0],
+        client.company_id
+      ]
+    );
   }
 }
 
 async function createTestAdmins() {
-  await pool.query(`
-    SELECT id FROM company 
-    WHERE email LIKE '%@test.com' 
-       OR subdomain IN ('test', 'alpha', 'beta')
-    ORDER BY id
-  `);
-  
   const admins = [
+    // Admins fixes
     {
-      first_name: 'Admin',
-      last_name: 'Test',
-      email: 'admin.test@test.com',
+      first_name: 'Paul',
+      last_name: 'Vincent',
+      email: 'paul.vincent@demo.com',
       password: await bcrypt.hash('admin123', 10),
-      phone: '0123456788',
       role: 'superadmin',
       company_id: MAIN_TEST_COMPANY_ID
     },
     {
-      first_name: 'Seul',
-      last_name: 'Admin',
-      email: 'seul.admin@test.com',
+      first_name: 'Maxime',
+      last_name: 'Guerin',
+      email: 'maxime.guerin@demo.com',
+      password: await bcrypt.hash('admin123', 10),
+      role: 'superadmin',
+      company_id: MAIN_TEST_COMPANY_ID
+    },
+    {
+      first_name: 'Julie',
+      last_name: 'Gestion',
+      email: 'julie.gestion@demo.com',
       password: await bcrypt.hash('password123', 10),
-      phone: '0100000005',
+      role: 'admin',
+      company_id: MAIN_TEST_COMPANY_ID
+    },
+    {
+      first_name: 'Alice',
+      last_name: 'Dupont',
+      email: 'alice.dupont@demo.com',
+      password: await bcrypt.hash('password123', 10),
+      role: 'admin',
+      company_id: MAIN_TEST_COMPANY_ID
+    },
+    {
+      first_name: 'Marc',
+      last_name: 'Leroy',
+      email: 'marc.leroy@demo.com',
+      password: await bcrypt.hash('password123', 10),
+      role: 'admin',
+      company_id: MAIN_TEST_COMPANY_ID
+    },
+    {
+      first_name: 'Elise',
+      last_name: 'Martin',
+      email: 'elise.martin@demo.com',
+      password: await bcrypt.hash('password123', 10),
       role: 'admin',
       company_id: MAIN_TEST_COMPANY_ID
     }
   ];
-  
-  for (const admin of admins) {
-    const query = `
-      INSERT INTO administrator (first_name, last_name, email, password,role,company_id) 
-      VALUES ($1, $2, $3, $4, $5, $6)
-    `;
-    
-    await pool.query(query, [
-      admin.first_name,
-      admin.last_name,
-      admin.email,
-      admin.password,
-      admin.role,
-      admin.company_id
-    ]);
+
+  //  2 superadmins supplémentaires
+  for (let i = 1; i <= 2; i++) {
+    admins.push({
+      first_name: faker.person.firstName(),
+      last_name: faker.person.lastName(),
+      email: `superadmin${i}@demo.com`,
+      password: await bcrypt.hash('superadmin123', 10),
+      role: 'superadmin',
+      company_id: MAIN_TEST_COMPANY_ID
+    });
   }
-  
+
+  // 10 admins supplémentaires
+  for (let i = 1; i <= 10; i++) {
+    admins.push({
+      first_name: faker.person.firstName(),
+      last_name: faker.person.lastName(),
+      email: `admin${i}@demo.com`,
+      password: await bcrypt.hash('admin123', 10),
+      role: 'admin',
+      company_id: MAIN_TEST_COMPANY_ID
+    });
+  }
+
+  for (const admin of admins) {
+    await pool.query(
+      `INSERT INTO administrator (first_name, last_name, email, password, role, company_id) 
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [admin.first_name, admin.last_name, admin.email, admin.password, admin.role, admin.company_id]
+    );
+  }
+
+  console.log(`${admins.length} administrateurs créés`);
 }
 
 async function createTestTechnicians() {
   const technicians = [
+    // Techniciens fixes
     {
-      first_name: 'Technicien',
-      last_name: 'Test',
-      email: 'tech.test@test.com',
+      first_name: 'Marc',
+      last_name: 'Tech',
+      email: 'marc.tech@demo.com',
       password: await bcrypt.hash('tech123', 10),
-      phone: '0123456787',
-      address: '789 Boulevard Tech, Marseille',
+      phone: '0100000300',
+      address: '45 Rue Technique, Nantes',
       company_id: MAIN_TEST_COMPANY_ID
     },
     {
-      first_name: 'AAA_Premier',
-      last_name: 'Technicien',
-      email: 'tech.premier@test.com',
+      first_name: 'Elise',
+      last_name: 'Support',
+      email: 'elise.support@demo.com',
       password: await bcrypt.hash('password123', 10),
-      phone: '0100000010',
-      address: '1 Rue Technique, Paris',
+      phone: '0100000301',
+      address: '99 Avenue Ingénieur, Bordeaux',
       company_id: MAIN_TEST_COMPANY_ID
     }
   ];
-  
-  for (const tech of technicians) {
-    const query = `
-      INSERT INTO technician (first_name, last_name, email, password, phone, address, company_id) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `;
-    
-    await pool.query(query, [
-      tech.first_name,
-      tech.last_name,
-      tech.email,
-      tech.password,
-      tech.phone,
-      tech.address,
-      tech.company_id
-    ]);
+
+  // 20 techniciens supplémentaires
+  for (let i = 1; i <= 20; i++) {
+    technicians.push({
+      first_name: faker.person.firstName(),
+      last_name: faker.person.lastName(),
+      email: `tech${i}@demo.com`,
+      password: await bcrypt.hash('tech123', 10),
+      phone: `01000003${10 + i}`,
+      address: `${faker.location.streetAddress()}, ${faker.location.city()}`,
+      company_id: MAIN_TEST_COMPANY_ID
+    });
   }
-  
-  console.log(`technicians créés`);
+
+  for (const tech of technicians) {
+    await pool.query(
+      `INSERT INTO technician (first_name, last_name, email, password, phone, company_id) 
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [tech.first_name, tech.last_name, tech.email, tech.password, tech.phone, tech.company_id]
+    );
+  }
+
+  console.log(`${technicians.length} techniciens créés`);
 }
 
 async function createTestBicycles() {
-  
   const bikeTypes = ['Vélo classique', 'Vélo électrique (VAE)', 'VTT'];
-  const brands = ['Trek', 'Giant', 'Specialized', 'Cannondale', 'Scott'];
+  const brands = ['Peugeot', 'Bianchi', 'Orbea', 'Cube', 'Merida'];
   const bicycles = [];
   
-  const clientsResult = await pool.query('SELECT id FROM client WHERE email LIKE \'%@test.com\' ORDER BY id LIMIT 20');
+  const clientsResult = await pool.query('SELECT id FROM client WHERE email LIKE \'%@demo.com\' ORDER BY id LIMIT 20');
   const clientIds = clientsResult.rows.map(row => row.id);
   
   if (clientIds.length === 0) {
@@ -410,32 +375,29 @@ async function createTestBicycles() {
     return;
   }
   
-  // ajout velo pour recherche ou tri
   bicycles.push({
     brand: 'AAA_Brand',
-    model: 'Premier Modèle',
+    model: 'Alpha Model',
     c_year: 2024,
     type: 'Vélo classique',
     client_id: clientIds[0]
   });
-  
   bicycles.push({
     brand: 'ZZZ_Brand', 
-    model: 'Dernier Modèle',
+    model: 'Omega Model',
     c_year: 2024,
     type: 'VTT',
     client_id: clientIds[1] || clientIds[0] 
   });
-  
   bicycles.push({
-    brand: 'Trek',
-    model: 'Domane SL',
+    brand: 'Peugeot',
+    model: 'SpeedX',
     c_year: 2023,
     type: 'Vélo classique',
     client_id: clientIds[2] || clientIds[0]
   });
   
-  const maxBikes = clientIds.length * 2; // max 2 velos par client
+  const maxBikes = clientIds.length * 2;
   for (let i = 4; i <= maxBikes; i++) {
     bicycles.push({
       brand: faker.helpers.arrayElement(brands),
@@ -446,7 +408,6 @@ async function createTestBicycles() {
     });
   }
   
-  // Insertion en base
   for (const bike of bicycles) {
     await pool.query(
       'INSERT INTO bicycle (brand, model, c_year, type, client_id) VALUES ($1, $2, $3, $4, $5)',
@@ -455,16 +416,20 @@ async function createTestBicycles() {
   }
 }
 
-// exec
 if (require.main === module) {
-  createTestData()
-    .then(() => {
-      console.log('Terminé avec succès');
-    })
-    .catch(error => {
-      console.error('Script échoué :', error);
-    });
+  const onlyDelete = process.argv.includes('--onlyDelete');
+
+  if (onlyDelete) {
+    cleanDatabase()
+      .then(() => console.log('Suppression terminée avec succès'))
+      .catch(error => console.error('Erreur lors de la suppression :', error));
+  } else {
+    createTestData()
+      .then(() => console.log('Terminé avec succès'))
+      .catch(error => console.error('Script échoué :', error));
+  }
 }
+
 
 module.exports = { 
   createTestData,
