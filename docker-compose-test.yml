@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   backend-test:
-    build: ./back
+    image: arsenkubat/lecycle-backend:develop
     ports:
       - "127.0.0.1:3002:3000" 
     networks:
@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
 
   frontend-test:
-    build: ./front
+    image: arsenkubat/lecycle-frontend:develop
     ports:
       - "127.0.0.1:8081:80"    
     environment:
