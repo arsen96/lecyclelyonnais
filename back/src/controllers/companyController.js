@@ -36,6 +36,7 @@ const createCompany = async (req, res) => {
     res.status(201).send({ success: true, message: "Entreprise créée avec succès" });
   } catch (error) {
     console.error(error);
+    // https://www.postgresql.org/docs/current/errcodes-appendix.html
     if(error.code === '23505'){
       res.status(400).send({ success: false, message: "Un sous-domaine est deja enregistré avec ce email" });
       return;
