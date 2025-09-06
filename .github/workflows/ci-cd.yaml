@@ -63,6 +63,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docker
 
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_DB: lecycle_ci_test
+          POSTGRES_USER: ci_test_user
+          POSTGRES_PASSWORD: ci_test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: ./back
@@ -93,7 +108,11 @@ jobs:
           sleep 15
         env:
           NODE_ENV: test
-          PORT: ${{ secrets.PORT }}
+          DB_HOST: localhost
+          DB_NAME: lecycle_ci_test
+          DB_USER: ci_test_user
+          DB_PASSWORD: ci_test_pass
+          DB_PORT: 5432
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           
       - name: Test - Authentification
