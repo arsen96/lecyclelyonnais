@@ -118,14 +118,6 @@ const adminUpdateSchema = Joi.object({
       "string.max": "Le mot de passe ne peut pas dépasser 128 caractères"
     }),
 
-  role: Joi.string()
-    .valid('admin', 'superadmin')
-    .required()
-    .messages({
-      "string.empty": "Le rôle est obligatoire",
-      "any.only": "Le rôle doit être 'admin' ou 'superadmin'",
-      "any.required": "Le rôle est obligatoire"
-    })
 });
 
 // Schéma pour login
