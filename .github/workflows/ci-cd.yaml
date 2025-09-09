@@ -20,7 +20,7 @@ permissions:
   security-events: write
 
 jobs:
-  # JOB 1: Build des images Docker (SANS PUSH)
+  # JOB 1: Build des images Docker (SANS PUSH) 
   build-docker:
     name: Build Images Docker
     runs-on: ubuntu-latest
