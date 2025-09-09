@@ -57,7 +57,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # JOB 2: Tests API Backend  
+  # JOB 2: Tests API Backend   
   test-api:
     name: Tests API
     runs-on: ubuntu-latest
