@@ -47,7 +47,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # FRONTEND -BUILD SEULEMENT  
+      # FRONTEND -BUILD SEULEMENT   
       - name: Build Frontend
         uses: docker/build-push-action@v5
         with:
