@@ -22,7 +22,7 @@ permissions:
 jobs:
   # JOB 1: Build des images Docker (SANS PUSH)
   build-docker:
-    name: Build Images Docker
+    name: Build Images Docker 
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
