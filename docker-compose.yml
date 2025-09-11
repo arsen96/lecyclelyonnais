@@ -7,6 +7,8 @@ services:
       POSTGRES_DB: lecycle_db
       POSTGRES_USER: lecycle_user
       POSTGRES_PASSWORD: Testtest96-
+    ports:
+      - "127.0.0.1:5432:5432"   
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -29,7 +31,7 @@ services:
       - DB_USER=lecycle_app
       - DB_PASSWORD=HomeCycl@Lyon2024$
       - DB_NAME=lecycle_db
-      - JWT_SECRET=${JWT_SECRET:-defaultsecret123} 
+      - JWT_SECRET=LeCycleApp2024Secret!
     depends_on:
       - postgres
     restart: unless-stopped 
