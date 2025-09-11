@@ -61,7 +61,7 @@ jobs:
   test-api:
     name: Tests API
     runs-on: ubuntu-latest
-    # needs: build-docker
+    needs: build-docker
 
     services:
       postgres:
@@ -146,11 +146,12 @@ jobs:
       - name: Test - Interventions
         run: npm run test:api:intervention
         continue-on-error: false
+
   # JOB 3: Tests unitaires Backend
   test-unit-backend: 
     name: Tests Unitaires Backend
     runs-on: ubuntu-latest
-    # needs: build-docker
+    needs: build-docker
 
     defaults:
       run:
@@ -178,7 +179,7 @@ jobs:
   test-frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
-    # needs: build-docker
+    needs: build-docker
 
     defaults:
       run:
@@ -206,7 +207,7 @@ jobs:
   test-e2e:
     name: Tests E2E Cypress
     runs-on: ubuntu-latest
-    # needs: build-docker
+    needs: build-docker
 
     steps:
       - name: Récupérer le code
