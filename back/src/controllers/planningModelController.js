@@ -122,7 +122,7 @@ const addPlanningModel = async (req, res) => {
   /**
  * Met à jour les associations de modèles de planning pour une zone
  */
-const updateZonePlanningModel = async (req, res) => {
+  const updateZonePlanningModel = async (req, res) => {
     const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
 
     try {
@@ -132,19 +132,19 @@ const updateZonePlanningModel = async (req, res) => {
       const exists = parseInt(checkResult.rows[0].count) > 0;
 
       if (!exists) {
-        // If it doesn't exist, insert a new record
         const insertQuery = 'INSERT INTO planning_model_zones (zone_id, planning_model_id_maintenance, planning_model_id_repair) VALUES ($1, $2, $3)';
         await pool.query(insertQuery, [zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair]);
       } else {
-        // If it exists, update the existing record
         const updateQuery = 'UPDATE planning_model_zones SET planning_model_id_maintenance = $1, planning_model_id_repair = $2 WHERE zone_id = $3';
         await pool.query(updateQuery, [zoneTypeInterventionMaintenance, zoneTypeInterventionRepair, zoneId]);
       }
 
-      res.status(200).json({ success: true, message: "Modèle de planning mis à jour avec succès" });
+      
+      return { success: true, message: "Modèle de planning mis à jour avec succès" };
+      
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Erreur lors de la mise à jour du modèle de planning" });
+      throw new Error("Erreur lors de la mise à jour du modèle de planning");
     }
   }
 

@@ -106,13 +106,13 @@ const updateZone = async (req, res) => {
   const query = 'UPDATE geographical_zone SET zone_name = $1 WHERE id = $2';
   try { 
     await pool.query(query, [zoneTitle, zoneId]);
-    await planningModelService.updateZonePlanningModel({ ...req, body: { ...req.body, zoneId } }, res);
+    await planningModelService.updateZonePlanningModel({ ...req, body: { ...req.body, zoneId } });
     res.status(200).json({ success: true, message: "La zone a été mise à jour" });
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la zone", error);
     res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de la zone" });
   }
-} 
+}
 
 
 

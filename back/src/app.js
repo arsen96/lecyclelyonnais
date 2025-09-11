@@ -2,7 +2,6 @@ require('./config/sentry');
 const express = require('express');
 const path = require('path');
 const app = express();
-const basicAuth = require('express-basic-auth');
 app.set('trust proxy', 1);
 const { sentryUserContextMiddleware } = require('./config/sentry'); 
 const routes = require('./routes/index');
