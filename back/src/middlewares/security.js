@@ -22,7 +22,7 @@ const authLimiter = rateLimit({
     legacyHeaders: false, 
   });
 
-  // curl -i http://localhost:3000/api
+  // curl -i http://localhost:3000/api à vérifier Content-Security-Policy:  defaultSrc: ["'self'"] empeche injection XSS 
   const helmetConfig = helmet({
     contentSecurityPolicy: {
       directives: {

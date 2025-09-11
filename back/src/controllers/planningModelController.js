@@ -111,11 +111,26 @@ const deleteModel = async (req, res) => {
 /**
  * Ajoute des associations de modèles de planning pour une zone
  */
-const addPlanningModel = async (req, res) => {
+const addPlanningModel = async (req) => {  
     const { zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair } = req.body;
+    
+    const checkMaintenanceQuery = 'SELECT id FROM planning_models WHERE id = $1';
+    const checkRepairQuery = 'SELECT id FROM planning_models WHERE id = $1';
+    
+    const maintenanceExists = await pool.query(checkMaintenanceQuery, [zoneTypeInterventionMaintenance]);
+    const repairExists = await pool.query(checkRepairQuery, [zoneTypeInterventionRepair]);
+    
+    if (maintenanceExists.rows.length === 0) {
+        throw new Error(`Planning model maintenance avec ID ${zoneTypeInterventionMaintenance} n'existe pas`);
+    }
+    
+    if (repairExists.rows.length === 0) {
+        throw new Error(`Planning model repair avec ID ${zoneTypeInterventionRepair} n'existe pas`);
+    }
+    
     const query = 'INSERT INTO planning_model_zones (zone_id, planning_model_id_maintenance,planning_model_id_repair) VALUES ($1, $2, $3)';
     return await pool.query(query, [zoneId, zoneTypeInterventionMaintenance, zoneTypeInterventionRepair]);
-  }
+}
 
 
 
