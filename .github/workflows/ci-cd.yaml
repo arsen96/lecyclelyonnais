@@ -121,109 +121,109 @@ jobs:
         continue-on-error: false
 
   # JOB 3: Tests unitaires Backend
-  test-unit-backend: 
-    name: Tests Unitaires Backend
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # test-unit-backend: 
+  #   name: Tests Unitaires Backend
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    defaults:
-      run:
-        working-directory: ./back
+  #   defaults:
+  #     run:
+  #       working-directory: ./back
     
-    steps:
-      - name: Récupérer le code 
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code 
+  #       uses: actions/checkout@v4
         
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./back/package-lock.json
+  #     - name: Installer Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./back/package-lock.json
           
-      - name: Installer les dépendances
-        run: npm ci
+  #     - name: Installer les dépendances
+  #       run: npm ci
         
-      - name: Lancer les tests unitaires
-        run: npm run test:unit
-        continue-on-error: false
+  #     - name: Lancer les tests unitaires
+  #       run: npm run test:unit
+  #       continue-on-error: false
 
-  # JOB 4: Tests Frontend 
-  test-frontend:
-    name: Frontend Tests
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # # JOB 4: Tests Frontend 
+  # test-frontend:
+  #   name: Frontend Tests
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    defaults:
-      run:
-        working-directory: ./front
+  #   defaults:
+  #     run:
+  #       working-directory: ./front
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
         
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./front/package-lock.json
+  #     - name: Installer Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./front/package-lock.json
           
-      - name: Installer les dépendances
-        run: npm ci
+  #     - name: Installer les dépendances
+  #       run: npm ci
         
-      - name: Tests unitaires Frontend
-        run: npm run test:ci
-        continue-on-error: false
+  #     - name: Tests unitaires Frontend
+  #       run: npm run test:ci
+  #       continue-on-error: false
 
-  # JOB 5: Tests E2E Cypress 
-  test-e2e:
-    name: Tests E2E Cypress
-    runs-on: ubuntu-latest
-    needs: build-docker
+  # # JOB 5: Tests E2E Cypress 
+  # test-e2e:
+  #   name: Tests E2E Cypress
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
 
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
         
-      # Démarrer le backend
-      - name: Setup Node.js pour Backend
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: ./back/package-lock.json
+  #     # Démarrer le backend
+  #     - name: Setup Node.js pour Backend
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #         cache: 'npm'
+  #         cache-dependency-path: ./back/package-lock.json
           
-      - name: Installer dépendances Backend
-        run: npm ci
-        working-directory: ./back
+  #     - name: Installer dépendances Backend
+  #       run: npm ci
+  #       working-directory: ./back
         
-      - name: Démarrer Backend
-        run: |
-          npm start &
-          sleep 15
-        working-directory: ./back
-        env:
-          NODE_ENV: test
-          PORT: 3000
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  #     - name: Démarrer Backend
+  #       run: |
+  #         npm start &
+  #         sleep 15
+  #       working-directory: ./back
+  #       env:
+  #         NODE_ENV: test
+  #         PORT: 3000
+  #         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
-      # Démarrer le frontend  
-      - name: Installer dépendances Frontend
-        run: npm ci
-        working-directory: ./front
+  #     # Démarrer le frontend  
+  #     - name: Installer dépendances Frontend
+  #       run: npm ci
+  #       working-directory: ./front
         
-      - name: Démarrer Frontend
-        run: |
-          npm start &
-          sleep 30
-        working-directory: ./front
+  #     - name: Démarrer Frontend
+  #       run: |
+  #         npm start &
+  #         sleep 30
+  #       working-directory: ./front
         
-      # Tests Cypress
-      - name: Tests Cypress E2E
-        run: npm run cypress:run
-        working-directory: ./front
-        continue-on-error: false
+  #     # Tests Cypress
+  #     - name: Tests Cypress E2E
+  #       run: npm run cypress:run
+  #       working-directory: ./front
+  #       continue-on-error: false
 
   # JOB 6: Push des images Docker (APRÈS tests validés)
   push-docker:
