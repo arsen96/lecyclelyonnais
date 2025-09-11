@@ -21,41 +21,41 @@ permissions:
 
 jobs:
   # JOB 1: Build des images Docker (SANS PUSH)
-  build-docker:
-    name: Build Images Docker 
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+  # build-docker:
+  #   name: Build Images Docker 
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
-    permissions:
-      contents: read
-      packages: write
+  #   permissions:
+  #     contents: read
+  #     packages: write
     
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Récupérer le code
+  #       uses: actions/checkout@v4
       
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
       
-      # BACKEND - BUILD SEULEMENT
-      - name: Build Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./back
-          push: false
-          tags: lecycle-backend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # BACKEND - BUILD SEULEMENT
+  #     - name: Build Backend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./back
+  #         push: false
+  #         tags: lecycle-backend:test
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
-      # FRONTEND - BUILD SEULEMENT  
-      - name: Build Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./front
-          push: false
-          tags: lecycle-frontend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  #     # FRONTEND - BUILD SEULEMENT  
+  #     - name: Build Frontend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./front
+  #         push: false
+  #         tags: lecycle-frontend:test
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
 
   # JOB 2: Tests API Backend  
   test-api:
