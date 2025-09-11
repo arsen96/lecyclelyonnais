@@ -5,8 +5,8 @@ services:
     image: postgis/postgis:15-3.4
     environment:
       POSTGRES_DB: lecycle_db
-      POSTGRES_USER: lecycle_user
-      POSTGRES_PASSWORD: Testtest96-
+      POSTGRES_USER: lecycle_app
+      POSTGRES_PASSWORD: HomeCycl@Lyon2024$
     ports:
       - "127.0.0.1:5432:5432"   
     volumes:
