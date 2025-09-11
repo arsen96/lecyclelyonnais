@@ -8,31 +8,46 @@ const {subdomainInfo} = require("../controllers/companyController")
  * @returns {Object} ID de la zone créée
  */
 const save = async (req, res) => {
-  const { wkt, zoneTitle,domain } = req.body;
+  const { wkt, zoneTitle, domain } = req.body;
   const companyId = await subdomainInfo(domain);
 
   try {
-    // Insérer le WKT dans la base de données PostgreSQL
     const insertZoneQuery = 'INSERT INTO geographical_zone (coordinates, zone_name,company_id) VALUES (ST_GeomFromText($1, 4326), $2, $3) RETURNING id';
-    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle,companyId]);
+    const result = await pool.query(insertZoneQuery, [wkt, zoneTitle, companyId]);
     const zoneId = result.rows[0].id;
 
-    // Transmettre l'ID de la zone à managePlanningModel
-    try{
-      await planningModelService.managePlanningModel({ ...req, body: { ...req.body, zoneId } }, res);
-    }catch(error){
-      console.error(error);
-      res.status(500).json({ success: false, message: "Erreur lors de la gestion du modèle de planning" });
+    try {
+      await planningModelService.managePlanningModel({ ...req, body: { ...req.body, zoneId } });
+      
+      res.status(201).json({
+        success: true,
+        message: "Zone sauvegardée",
+        zoneId: zoneId
+      });
+      
+    } catch(planningError) {
+      console.error("Erreur planning model:", planningError);
+      
+      try {
+        await pool.query('DELETE FROM geographical_zone WHERE id = $1', [zoneId]);
+      } catch(deleteError) {
+        console.error("Erreur lors du nettoyage:", deleteError);
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        message: "Erreur lors de la gestion du modèle de planning",
+        details: planningError.message 
+      });
     }
     
-    res.status(201).json({
-      success: true,
-      message: "Zone sauvegardée",
-      zoneId: zoneId
-    });
   } catch (error) {
     console.error("Erreur lors de la sauvegarde de la zone", error);
-    res.status(500).json({ success: false, message: "Erreur lors de la sauvegarde de la zone" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Erreur lors de la sauvegarde de la zone",
+      details: error.message 
+    });
   }
 };
 

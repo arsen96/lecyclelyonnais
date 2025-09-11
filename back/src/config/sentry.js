@@ -3,29 +3,14 @@
 require('dotenv').config();
 const Sentry = require('@sentry/node');
 
-// Fonction utilitaire pour catégoriser les endpoints
-function getEndpointType(url) {
-  if (url.includes('/auth/')) return 'authentication';
-  if (url.includes('/technicians/')) return 'technician_management';
-  if (url.includes('/interventions/')) return 'intervention_management';
-  if (url.includes('/clients/')) return 'client_management';
-  if (url.includes('/bicycles/')) return 'bicycle_management';
-  if (url.includes('/companies/')) return 'company_management';
-  if (url.includes('/zones/')) return 'zone_management';
-  if (url.includes('/admin/')) return 'admin_operations';
-  return 'other';
-}
 
-// Configuration principale Sentry - VERSION SIMPLIFIÉE
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   sendDefaultPii: true,
 
   // Configuration des breadcrumbs
   beforeBreadcrumb(breadcrumb) {
-    // Filtrer les breadcrumbs sensibles
     if (breadcrumb.category === 'http' && breadcrumb.data) {
-      // Masquer les données sensibles dans les URLs
       if (breadcrumb.data.url && breadcrumb.data.url.includes('password')) {
         breadcrumb.data.url = breadcrumb.data.url.replace(/password=[^&]+/gi, 'password=***');
       }
@@ -35,10 +20,8 @@ Sentry.init({
   }
 });
 
-// Middleware personnalisé pour ajouter le contexte utilisateur - VERSION MODERNE
 const sentryUserContextMiddleware = (req, res, next) => {
   Sentry.withScope((scope) => {
-    // Informations sur le domaine/entreprise (marque blanche)
     const domain = req.headers.host || 'unknown';
     scope.setTag('domain', domain);
     scope.setTag('subdomain', domain.split('.')[0]);
